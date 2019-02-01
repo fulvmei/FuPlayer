@@ -1,1 +1,1 @@
-include ':app', ':fuexoplayer2'
+include ':demo', ':fuexoplayer2'
