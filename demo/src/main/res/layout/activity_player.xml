@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -21,15 +21,19 @@
             app:shutter_background_color="#333333"
             app:surface_type="surface_view" />
 
-        <com.chengfu.fuexoplayer2.widget.DefaultControlView
-            android:id="@+id/controlView"
-            app:show_in_buffering="false"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+
     </FrameLayout>
+
+    <com.chengfu.fuexoplayer2.widget.DefaultControlView
+        android:id="@+id/controlView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:show_in_buffering="true"
+        app:show_in_ended="false" />
 
     <Button
         android:id="@+id/test"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_below="@id/controlView" />
+</RelativeLayout>

@@ -8,13 +8,12 @@ import android.widget.FrameLayout;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.video.VideoListener;
 
 
-public abstract class BaseStateView extends FrameLayout {
+public abstract class BaseStateView extends FrameLayout implements Player.EventListener, VideoListener {
 
-    private Player mPlayer;
-    private ComponentListener mComponentListener;
-    protected ExoPlaybackException mPlayerError;
+    protected Player player;
 
     public BaseStateView(@NonNull Context context) {
         this(context, null);
@@ -26,47 +25,33 @@ public abstract class BaseStateView extends FrameLayout {
 
     public BaseStateView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        mComponentListener = new ComponentListener();
-        mPlayerError = null;
     }
 
     public void setPlayer(Player player) {
-        if (mPlayer == player) {
+        if (this.player == player) {
             return;
         }
-        if (mPlayer != null) {
-            mPlayer.removeListener(mComponentListener);
-            mPlayerError = null;
-            detachPlayer();
-        }
-        mPlayer = player;
-
-        if (player != null) {
-            mPlayerError = player.getPlaybackError();
-            onStateChanged(player.getPlayWhenReady(), player.getPlaybackState());
-            player.addListener(mComponentListener);
-        }
-    }
-
-    abstract void onStateChanged(boolean playWhenReady, int playbackState);
-
-    abstract void detachPlayer();
-
-    private final class ComponentListener implements Player.EventListener {
-        @Override
-        public void onPlayerError(ExoPlaybackException error) {
-            mPlayerError = error;
-        }
-
-        @Override
-        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            if (playbackState != Player.STATE_IDLE || mPlayer.getPlaybackError() == null) {
-                mPlayerError = null;
+        if (this.player != null) {
+            this.player.removeListener(this);
+            if (this.player.getVideoComponent() != null) {
+                this.player.getVideoComponent().removeVideoListener(this);
             }
-            BaseStateView.this.onStateChanged(playWhenReady, playbackState);
         }
+        this.player = player;
+        if (player != null) {
+            player.addListener(this);
+            if (player.getVideoComponent() != null) {
+                player.getVideoComponent().addVideoListener(this);
+            }
+            onAttachedToPlayer(player);
+        } else {
+            onDetachedFromPlayer();
+        }
+
     }
 
+    protected abstract void onAttachedToPlayer(Player player);
+
+    protected abstract void onDetachedFromPlayer();
 
 }
