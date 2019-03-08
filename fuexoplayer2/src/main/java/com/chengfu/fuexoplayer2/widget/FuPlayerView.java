@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -23,7 +24,6 @@ import com.chengfu.fuexoplayer2.R;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextOutput;
-import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.ui.SubtitleView;
 import com.google.android.exoplayer2.ui.spherical.SingleTapListener;
@@ -231,8 +231,54 @@ public class FuPlayerView extends FrameLayout {
         return mResizeMode;
     }
 
+    /**
+     * Switches the view targeted by a given {@link Player}.
+     *
+     * @param player        The player whose target view is being switched.
+     * @param oldPlayerView The old view to detach from the player.
+     * @param newPlayerView The new view to attach to the player.
+     */
+    public static void switchTargetView(
+            Player player, @Nullable PlayerView oldPlayerView, @Nullable PlayerView newPlayerView) {
+        if (oldPlayerView == newPlayerView) {
+            return;
+        }
+        // We attach the new view before detaching the old one because this ordering allows the player
+        // to swap directly from one surface to another, without transitioning through a state where no
+        // surface is attached. This is significantly more efficient and achieves a more seamless
+        // transition when using platform provided video decoders.
+        if (newPlayerView != null) {
+            newPlayerView.setPlayer(player);
+        }
+        if (oldPlayerView != null) {
+            oldPlayerView.setPlayer(null);
+        }
+    }
 
-    public void setPlayer(Player player) {
+    /**
+     * Returns the player currently set on this view, or null if no player is set.
+     */
+    public Player getPlayer() {
+        return mPlayer;
+    }
+
+    /**
+     * Set the {@link Player} to use.
+     *
+     * <p>To transition a {@link Player} from targeting one view to another, it's recommended to use
+     * {@link #switchTargetView(Player, PlayerView, PlayerView)} rather than this method. If you do
+     * wish to use this method directly, be sure to attach the player to the new view <em>before</em>
+     * calling {@code setPlayer(null)} to detach it from the old one. This ordering is significantly
+     * more efficient and may allow for more seamless transitions.
+     *
+     * @param player The {@link Player} to use, or {@code null} to detach the current player. Only
+     *               players which are accessed on the main thread are supported ({@code
+     *               player.getApplicationLooper() == Looper.getMainLooper()}).
+     */
+    public void setPlayer(@Nullable Player player) {
+        Assertions.checkState(Looper.myLooper() == Looper.getMainLooper());
+        Assertions.checkArgument(
+                player == null || player.getApplicationLooper() == Looper.getMainLooper());
         if (mPlayer == player) {
             return;
         }
@@ -276,10 +322,6 @@ public class FuPlayerView extends FrameLayout {
         updtatAllViews();
     }
 
-    public Player getPlayer() {
-        return mPlayer;
-    }
-
     public void addStateView(BaseStateView stateView) {
         if (stateView == null || mStateViews.contains(stateView)) {
             return;
@@ -287,7 +329,6 @@ public class FuPlayerView extends FrameLayout {
         addView(stateView, getChildCount());
         mStateViews.add(stateView);
         stateView.setPlayer(mPlayer);
-
     }
 
     public void removeStateView(BaseStateView stateView) {

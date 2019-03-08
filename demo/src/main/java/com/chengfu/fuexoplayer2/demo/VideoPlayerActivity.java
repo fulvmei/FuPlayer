@@ -17,6 +17,7 @@ import com.chengfu.fuexoplayer2.widget.SampleEndedView;
 import com.chengfu.fuexoplayer2.widget.SampleErrorView;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
@@ -33,7 +34,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
-public class PlayerActivity extends AppCompatActivity {
+public class VideoPlayerActivity extends AppCompatActivity {
 
     private static final String path1 = "https://mov.bn.netease.com/open-movie/nos/mp4/2015/08/27/SB13F5AGJ_sd.mp4";
     private static final String path2 = " https://mov.bn.netease.com/open-movie/nos/mp4/2018/01/12/SD70VQJ74_sd.mp4";
@@ -68,7 +69,7 @@ public class PlayerActivity extends AppCompatActivity {
         ConcatenatingMediaSource concatenatedSource =
                 new ConcatenatingMediaSource(getMediaSource(Uri.parse(path1)), getMediaSource(Uri.parse(path2)), getMediaSource(Uri.parse(path3)), getMediaSource(Uri.parse(path4)));
 
-        player.prepare(concatenatedSource);
+        player.prepare(getMediaSource(Uri.parse(path1)));
 
         player.setPlayWhenReady(true);
         playerView.onResume();
@@ -79,6 +80,23 @@ public class PlayerActivity extends AppCompatActivity {
         SampleBufferingView loadingView = new SampleBufferingView(this);
         SampleErrorView errorView = new SampleErrorView(this);
         SampleEndedView endedView = new SampleEndedView(this);
+
+        errorView.setOnReTryClickListener(new SampleErrorView.OnReTryClickListener() {
+            @Override
+            public void onReTryClick(View v) {
+                player.retry();
+            }
+        });
+
+        endedView.setOnReTryClickListener(new SampleEndedView.OnReTryClickListener() {
+            @Override
+            public void onReTryClick(View v) {
+                if (player.getPlaybackState() == Player.STATE_ENDED) {
+                    player.seekTo(0);
+                }
+                player.setPlayWhenReady(true);
+            }
+        });
 
         playerView.addStateView(loadingView);
         playerView.addStateView(errorView);
@@ -91,6 +109,8 @@ public class PlayerActivity extends AppCompatActivity {
                 playerView.setPlayer(player);
             }
         });
+
+//        MediaController
 
     }
 
