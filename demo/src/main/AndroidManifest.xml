@@ -35,6 +35,13 @@
         </activity>
 
         <activity android:name=".ui.audio.AudioListActiviry">
+
+        </activity>
+
+        <activity
+            android:name=".AudioPlayerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityPlayerTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,16 +49,15 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".AudioPlayerActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/ActivityPlayerTheme" />
-
         <service android:name="com.chengfu.fuexoplayer2.MusicService">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
+        <provider
+            android:authorities="com.chengfu.fuexoplayer2.audio.MusicProvider"
+            android:exported="false"
+            android:name="com.chengfu.fuexoplayer2.audio.MusicProvider"/>
     </application>
 
 </manifest>

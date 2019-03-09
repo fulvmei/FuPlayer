@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
@@ -16,30 +18,47 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.RatingCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import com.chengfu.fuexoplayer2.audio.PackageValidator;
+import com.chengfu.fuexoplayer2.audio.UampPlaybackPreparer;
 import com.chengfu.fuexoplayer2.audio.library.MusicSource;
+import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MusicService extends MediaBrowserServiceCompat {
 
     public static final String TAG = "MusicService";
+
+    public static final String COMMAND_ADD_QUEUE_ITEM =
+            "android.support.v4.media.session.command.ADD_QUEUE_ITEM";
+
+    private static final String UAMP_USER_AGENT = "uamp.next";
+    private static final String UAMP_BROWSABLE_ROOT = "/";
+    private static final String UAMP_EMPTY_ROOT = "@empty@";
 
     private MediaSessionCompat mediaSession;
     private MediaControllerCompat mediaController;
     private BecomingNoisyReceiver becomingNoisyReceiver;
     private NotificationManagerCompat notificationManager;
     private NotificationBuilder notificationBuilder;
-    private MusicSource mediaSource;
+    //    private MusicSource mediaSource;
+    public Map<String, List<MediaBrowserCompat.MediaItem>> mediaSource;
     private MediaSessionConnector mediaSessionConnector;
     private PackageValidator packageValidator;
 
@@ -56,6 +75,9 @@ public class MusicService extends MediaBrowserServiceCompat {
         // Create a new MediaSession.
         mediaSession = new MediaSessionCompat(this, TAG);
         mediaSession.setSessionActivity(sessionActivityPendingIntent);
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+                | MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS);
         mediaSession.setActive(true);
 
         /**
@@ -84,30 +106,26 @@ public class MusicService extends MediaBrowserServiceCompat {
             e.printStackTrace();
         }
 
+        mediaSource = new HashMap<>();
+
 //        mediaSource = JsonSource(context = this, source = remoteJsonSource);
 
         // ExoPlayer will manage the MediaSession for us.
         mediaSessionConnector = new MediaSessionConnector(mediaSession);
         mediaSessionConnector.setQueueNavigator(new UampQueueNavigator(mediaSession));
 
-//        // ExoPlayer will manage the MediaSession for us.
-//        mediaSessionConnector = new MediaSessionConnector(mediaSession).also {
-//            // Produces DataSource instances through which media data is loaded.
-//            val dataSourceFactory = DefaultDataSourceFactory(
-//                    this, Util.getUserAgent(this, UAMP_USER_AGENT), null)
-//
-//            // Create the PlaybackPreparer of the media session connector.
-//            val playbackPreparer = UampPlaybackPreparer(
-//                    mediaSource,
-//                    exoPlayer,
-//                    dataSourceFactory)
-//
-//            it.setPlayer(exoPlayer, playbackPreparer)
-//            it.setQueueNavigator(UampQueueNavigator(mediaSession))
-//        }
-//
-//        packageValidator = new PackageValidator(this, R.xml.allowed_media_browser_callers);
+        DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(
+                this, Util.getUserAgent(this, UAMP_USER_AGENT), null);
+
+        SimpleExoPlayer exoPlayer = ExoPlayerFactory.newSimpleInstance(this);
+        MediaSessionConnector.PlaybackPreparer playbackPreparer = new UampPlaybackPreparer(exoPlayer, dataSourceFactory);
+
+        mediaSessionConnector.setPlayer(ExoPlayerFactory.newSimpleInstance(this), playbackPreparer);
+        mediaSessionConnector.setQueueNavigator(new UampQueueNavigator(mediaSession));
+
+        packageValidator = new PackageValidator(this, R.xml.allowed_media_browser_callers);
     }
+
 
     /**
      * This is the code that causes UAMP to stop playing when swiping it away from recents.
@@ -135,36 +153,51 @@ public class MusicService extends MediaBrowserServiceCompat {
 //        mediaSession.release();
     }
 
+    /**
+     * Returns the "root" media ID that the client should request to get the list of
+     * [MediaItem]s to browse/play.
+     */
     @Nullable
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
-        FuLog.d(TAG, "onGetRoot : clientPackageName=" + clientPackageName + ",clientUid=" + clientUid + ",rootHints=" + rootHints.get("321"));
-
-        Bundle bundle = new Bundle();
-        bundle.putString("123", "哈哈哈哈哈");
-        return new BrowserRoot("adsada", bundle);
+        if (packageValidator.isKnownCaller(clientPackageName, clientUid)) {
+            // The caller is allowed to browse, so return the root.
+            return new BrowserRoot(UAMP_BROWSABLE_ROOT, null);
+        } else {
+            /**
+             * Unknown caller. There are two main ways to handle this:
+             * 1) Return a root without any content, which still allows the connecting client
+             * to issue commands.
+             * 2) Return `null`, which will cause the system to disconnect the app.
+             *
+             * UAMP takes the first approach for a variety of reasons, but both are valid
+             * options.
+             */
+            return new BrowserRoot(UAMP_EMPTY_ROOT, null);
+        }
     }
 
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
         FuLog.d(TAG, "onLoadChildren : parentId=" + parentId + ",result=" + result);
 
-//        MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
-//                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, "http://mvoice.spriteapp.cn/voice/2016/0703/5778246106dab.mp3")
-//                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "一辈子有多少的来不及发现已失去最重要的东西 . （精神节奏）")
-//                .build();
+        MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "1")
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, "http://mvoice.spriteapp.cn/voice/2016/0703/5778246106dab.mp3")
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "一辈子有多少的来不及发现已失去最重要的东西 . （精神节奏）")
+                .build();
+
+        ArrayList<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
+
+        MediaBrowserCompat.MediaItem item = new MediaBrowserCompat.MediaItem(
+                metadata.getDescription(),
+                MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
+        );
 //
-//        ArrayList<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
-//
-//        MediaBrowserCompat.MediaItem item = new MediaBrowserCompat.MediaItem(
-//                metadata.getDescription(),
-//                MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
-//        );
-//
-//        mediaItems.add(item);
+        mediaItems.add(item);
 //
 //        //向Browser发送数据
-        result.sendResult(new ArrayList<>());
+        result.sendResult(mediaItems);
 
 
 //        // If the media source is ready, the results will be set synchronously here.
@@ -297,6 +330,13 @@ public class MusicService extends MediaBrowserServiceCompat {
             if (intent.getAction() == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
                 controller.getTransportControls().pause();
             }
+        }
+    }
+
+    private class Callbck extends MediaSessionCompat.Callback{
+        @Override
+        public void onCommand(String command, Bundle extras, ResultReceiver cb) {
+            super.onCommand(command, extras, cb);
         }
     }
 }

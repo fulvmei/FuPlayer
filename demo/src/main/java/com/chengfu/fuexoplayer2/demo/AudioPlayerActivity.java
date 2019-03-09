@@ -25,6 +25,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
     private static final String TAG = "AudioPlayerActivity";
 
     private MediaBrowserCompat mBrowser;
+    MediaControllerCompat mController ;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,8 +41,9 @@ public class AudioPlayerActivity extends AppCompatActivity {
                 this,
                 new ComponentName(this, MusicService.class),//绑定浏览器服务
                 BrowserConnectionCallback,//设置连接回调
-                rootHints
+                null
         );
+
 
 //        mBrowser.getItem("", new MediaBrowserCompat.ItemCallback() {
 //            @Override
@@ -56,7 +58,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
             @Override
             public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
                 super.onChildrenLoaded(parentId, children);
-                Log.e(TAG, "onChildrenLoaded------parentId=" + parentId + ",children=" + children);
+                Log.d(TAG, "onChildrenLoaded------parentId=" + parentId + ",children=" + children);
             }
         });
 
@@ -69,6 +71,14 @@ public class AudioPlayerActivity extends AppCompatActivity {
             Intent intent = new Intent(AudioPlayerActivity.this, MusicService.class);
             stopService(intent);
         });
+
+        findViewById(R.id.play).setOnClickListener(v -> {
+            mController.getTransportControls().playFromMediaId("1",null);
+        });
+
+        findViewById(R.id.pause).setOnClickListener(v -> {
+            mController.getTransportControls().pause();
+        });
     }
 
     private MediaBrowserCompat.ConnectionCallback BrowserConnectionCallback =
@@ -76,9 +86,8 @@ public class AudioPlayerActivity extends AppCompatActivity {
                 @Override
                 public void onConnected() {
                     super.onConnected();
-                    Log.e(TAG, "onConnected------sessionToken=" + mBrowser.getSessionToken() + ",isConnected=" + mBrowser.isConnected() + "," + mBrowser.getExtras().getString("123"));
+                    Log.d(TAG, "onConnected------sessionToken=" + mBrowser.getSessionToken() + ",isConnected=" + mBrowser.isConnected() + ",getExtras=" + mBrowser.getExtras());
                     if (mBrowser.isConnected()) {
-                        MediaControllerCompat mController = null;
                         try {
                             mController = new MediaControllerCompat(AudioPlayerActivity.this, mBrowser.getSessionToken());
                         } catch (RemoteException e) {
@@ -92,13 +101,13 @@ public class AudioPlayerActivity extends AppCompatActivity {
                 @Override
                 public void onConnectionSuspended() {
                     super.onConnectionSuspended();
-                    Log.e(TAG, "onConnected------");
+                    Log.d(TAG, "onConnected------");
                 }
 
                 @Override
                 public void onConnectionFailed() {
                     super.onConnectionFailed();
-                    Log.e(TAG, "onConnected------");
+                    Log.d(TAG, "onConnected------");
                 }
             };
 
@@ -107,73 +116,73 @@ public class AudioPlayerActivity extends AppCompatActivity {
                 @Override
                 public void onAudioInfoChanged(MediaControllerCompat.PlaybackInfo info) {
                     super.onAudioInfoChanged(info);
-                    Log.e(TAG, "onAudioInfoChanged------info=" + info);
+                    Log.d(TAG, "onAudioInfoChanged------info=" + info);
                 }
 
                 @Override
                 public void onCaptioningEnabledChanged(boolean enabled) {
                     super.onCaptioningEnabledChanged(enabled);
-                    Log.e(TAG, "onCaptioningEnabledChanged------enabled=" + enabled);
+                    Log.d(TAG, "onCaptioningEnabledChanged------enabled=" + enabled);
                 }
 
                 @Override
                 public void onExtrasChanged(Bundle extras) {
                     super.onExtrasChanged(extras);
-                    Log.e(TAG, "onExtrasChanged------extras=" + extras);
+                    Log.d(TAG, "onExtrasChanged------extras=" + extras);
                 }
 
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
                     super.onMetadataChanged(metadata);
-                    Log.e(TAG, "onMetadataChanged------metadata=" + metadata);
+                    Log.d(TAG, "onMetadataChanged------metadata=" + metadata);
                 }
 
                 @Override
                 public void onPlaybackStateChanged(PlaybackStateCompat state) {
                     super.onPlaybackStateChanged(state);
-                    Log.e(TAG, "onPlaybackStateChanged------state=" + state);
+                    Log.d(TAG, "onPlaybackStateChanged------state=" + state);
                 }
 
                 @Override
                 public void onQueueChanged(List<MediaSessionCompat.QueueItem> queue) {
                     super.onQueueChanged(queue);
-                    Log.e(TAG, "onQueueChanged------queue=" + queue);
+                    Log.d(TAG, "onQueueChanged------queue=" + queue);
                 }
 
                 @Override
                 public void onQueueTitleChanged(CharSequence title) {
                     super.onQueueTitleChanged(title);
-                    Log.e(TAG, "onQueueTitleChanged------title=" + title);
+                    Log.d(TAG, "onQueueTitleChanged------title=" + title);
                 }
 
                 @Override
                 public void onRepeatModeChanged(int repeatMode) {
                     super.onRepeatModeChanged(repeatMode);
-                    Log.e(TAG, "onRepeatModeChanged------repeatMode=" + repeatMode);
+                    Log.d(TAG, "onRepeatModeChanged------repeatMode=" + repeatMode);
                 }
 
                 @Override
                 public void onSessionDestroyed() {
                     super.onSessionDestroyed();
-                    Log.e(TAG, "onSessionDestroyed------");
+                    Log.d(TAG, "onSessionDestroyed------");
                 }
 
                 @Override
                 public void onSessionEvent(String event, Bundle extras) {
                     super.onSessionEvent(event, extras);
-                    Log.e(TAG, "onSessionEvent------event=" + event);
+                    Log.d(TAG, "onSessionEvent------event=" + event);
                 }
 
                 @Override
                 public void onSessionReady() {
                     super.onSessionReady();
-                    Log.e(TAG, "onSessionReady------");
+                    Log.d(TAG, "onSessionReady------");
                 }
 
                 @Override
                 public void onShuffleModeChanged(int shuffleMode) {
                     super.onShuffleModeChanged(shuffleMode);
-                    Log.e(TAG, "onShuffleModeChanged------shuffleMode=" + shuffleMode);
+                    Log.d(TAG, "onShuffleModeChanged------shuffleMode=" + shuffleMode);
                 }
             };
 }
