@@ -25,7 +25,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ExpandableListView.OnChildClickListener {
 
-
     private ExpandableListView expandableListView;
 
     private MediaGroupListAdapter mediaGroupListAdapter;
