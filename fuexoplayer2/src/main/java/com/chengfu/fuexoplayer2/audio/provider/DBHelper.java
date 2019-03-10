@@ -3,7 +3,6 @@ package com.chengfu.fuexoplayer2.audio.provider;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 
 public class DBHelper extends SQLiteOpenHelper {

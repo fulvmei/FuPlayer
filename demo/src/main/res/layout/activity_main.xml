@@ -4,10 +4,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".MediaChooseActivity">
 
-    <ExpandableListView
-        android:id="@+id/expandableListView"
+   <Button
+       android:layout_marginTop="12dp"
+       android:id="@+id/btnMediaChoose"
+       android:text="播放地址"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_marginTop="12dp"
+        android:id="@+id/btnVideoListPlay"
+        android:text="视频列表播放"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_marginTop="12dp"
+        android:id="@+id/btnAudioListPlay"
+        android:text="音频列表播放"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>

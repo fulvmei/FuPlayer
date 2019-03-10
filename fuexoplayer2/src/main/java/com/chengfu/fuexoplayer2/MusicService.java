@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.media.MediaSync;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.ResultReceiver;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
@@ -271,7 +273,6 @@ public class MusicService extends MediaBrowserServiceCompat {
             if (updatedState != PlaybackStateCompat.STATE_NONE) {
                 notification = notificationBuilder.buildNotification(mediaSession.getSessionToken());
             }
-
             switch (updatedState) {
 
             }

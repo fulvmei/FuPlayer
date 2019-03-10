@@ -26,7 +26,7 @@ import com.google.android.exoplayer2.mediacodec.MediaCodecSelector;
 import java.util.Arrays;
 import java.util.List;
 
-public class AudioListActiviry extends AppCompatActivity {
+public class AudioListActivity extends AppCompatActivity {
 
     private final static String TAG = "MediaSessionTest";
 

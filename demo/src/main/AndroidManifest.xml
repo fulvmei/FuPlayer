@@ -22,31 +22,30 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="com.chengfu.fuexoplayer2.demo.MainActivity">
 
-        </activity>
-        <activity
-            android:name=".VideoPlayerActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/ActivityPlayerTheme" />
-
-        <activity android:name=".ui.video.VideoListActivity">
-
-        </activity>
-
-        <activity android:name=".ui.audio.AudioListActiviry">
-
-        </activity>
-
-        <activity
-            android:name=".AudioPlayerActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/ActivityPlayerTheme" >
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name="com.chengfu.fuexoplayer2.demo.MediaChooseActivity"/>
+        <activity
+            android:name=".VideoPlayerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityPlayerTheme" />
+
+        <activity android:name=".ui.video.VideoListActivity"/>
+
+        <activity android:name=".ui.audio.AudioListActivity"/>
+
+        <activity
+            android:name=".AudioPlayerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityPlayerTheme" >
+
         </activity>
 
         <service android:name="com.chengfu.fuexoplayer2.MusicService">
