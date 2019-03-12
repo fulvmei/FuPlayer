@@ -1,1 +1,7 @@
-include ':demo', ':fuexoplayer2'
+include 'demos:main'
+
+include ':library:core'
+include ':library:ui'
+
+include ':extensions:exo'
+include ':extensions:pldroid'
