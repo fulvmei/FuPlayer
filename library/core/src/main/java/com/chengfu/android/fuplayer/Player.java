@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2017 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.chengfu.android.fuplayer;
 
 import android.os.Looper;
@@ -23,18 +8,18 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
 
-import com.google.android.exoplayer2.C.VideoScalingMode;
-import com.google.android.exoplayer2.audio.AudioAttributes;
-import com.google.android.exoplayer2.audio.AudioListener;
-import com.google.android.exoplayer2.audio.AuxEffectInfo;
-import com.google.android.exoplayer2.metadata.MetadataOutput;
-import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.text.TextOutput;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
-import com.google.android.exoplayer2.util.Util;
-import com.google.android.exoplayer2.video.VideoFrameMetadataListener;
-import com.google.android.exoplayer2.video.VideoListener;
-import com.google.android.exoplayer2.video.spherical.CameraMotionListener;
+import com.chengfu.android.fuplayer.audio.AudioAttributes;
+import com.chengfu.android.fuplayer.audio.AudioListener;
+import com.chengfu.android.fuplayer.audio.AuxEffectInfo;
+import com.chengfu.android.fuplayer.metadata.MetadataOutput;
+import com.chengfu.android.fuplayer.source.TrackGroupArray;
+import com.chengfu.android.fuplayer.text.TextOutput;
+import com.chengfu.android.fuplayer.trackselection.TrackSelectionArray;
+import com.chengfu.android.fuplayer.util.Util;
+import com.chengfu.android.fuplayer.video.VideoFrameMetadataListener;
+import com.chengfu.android.fuplayer.video.VideoListener;
+import com.chengfu.android.fuplayer.video.spherical.CameraMotionListener;
+import com.chengfu.android.fuplayer.C.VideoScalingMode;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -77,26 +62,6 @@ public interface Player {
      * @param listener The listener to unregister.
      */
     void removeAudioListener(AudioListener listener);
-
-    /**
-     * Sets the attributes for audio playback, used by the underlying audio track. If not set, the
-     * default audio attributes will be used. They are suitable for general media playback.
-     *
-     * <p>Setting the audio attributes during playback may introduce a short gap in audio output as
-     * the audio track is recreated. A new audio session id will also be generated.
-     *
-     * <p>If tunneling is enabled by the track selector, the specified audio attributes will be
-     * ignored, but they will take effect if audio is later played without tunneling.
-     *
-     * <p>If the device is running a build before platform API version 21, audio attributes cannot
-     * be set directly on the underlying audio track. In this case, the usage will be mapped onto an
-     * equivalent stream type using {@link Util#getStreamTypeForAudioUsage(int)}.
-     *
-     * @param audioAttributes The attributes to use for audio playback.
-     * @deprecated Use {@link AudioComponent#setAudioAttributes(AudioAttributes, boolean)}.
-     */
-    @Deprecated
-    void setAudioAttributes(AudioAttributes audioAttributes);
 
     /**
      * Sets the attributes for audio playback, used by the underlying audio track. If not set, the
@@ -388,7 +353,7 @@ public interface Player {
      *
      * @param error The error.
      */
-    default void onPlayerError(ExoPlaybackException error) {}
+    default void onPlayerError(FuPlaybackException error) {}
 
     /**
      * Called when a position discontinuity occurs without a change to the timeline. A position
@@ -421,28 +386,6 @@ public interface Player {
      * #onPlayerStateChanged(boolean, int)}.
      */
     default void onSeekProcessed() {}
-  }
-
-  /**
-   * @deprecated Use {@link EventListener} interface directly for selective overrides as all methods
-   *     are implemented as no-op default methods.
-   */
-  @Deprecated
-  abstract class DefaultEventListener implements EventListener {
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public void onTimelineChanged(
-        Timeline timeline, @Nullable Object manifest, @TimelineChangeReason int reason) {
-      // Call deprecated version. Otherwise, do nothing.
-      onTimelineChanged(timeline, manifest);
-    }
-
-    /** @deprecated Use {@link EventListener#onTimelineChanged(Timeline, Object, int)} instead. */
-    @Deprecated
-    public void onTimelineChanged(Timeline timeline, @Nullable Object manifest) {
-      // Do nothing.
-    }
   }
 
   /**
@@ -591,14 +534,14 @@ public interface Player {
 
   /**
    * Returns the error that caused playback to fail. This is the same error that will have been
-   * reported via {@link Player.EventListener#onPlayerError(ExoPlaybackException)} at the time of
+   * reported via {@link Player.EventListener#onPlayerError(FuPlaybackException)} at the time of
    * failure. It can be queried using this method until {@code stop(true)} is called or the player
    * is re-prepared.
    *
    * @return The error, or {@code null}.
    */
   @Nullable
-  ExoPlaybackException getPlaybackError();
+  FuPlaybackException getPlaybackError();
 
   /**
    * Sets whether playback should proceed when {@link #getPlaybackState()} == {@link #STATE_READY}.

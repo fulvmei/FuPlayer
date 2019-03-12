@@ -7,31 +7,17 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.chengfu.android.fuplayer.Player;
+import com.chengfu.android.fuplayer.ext.exo.ExoPlayer;
+import com.chengfu.android.fuplayer.ui.DefaultControlView;
+import com.chengfu.android.fuplayer.ui.FuPlayerView;
+import com.chengfu.android.fuplayer.ui.SampleBufferingView;
+import com.chengfu.android.fuplayer.ui.SampleEndedView;
+import com.chengfu.android.fuplayer.ui.SampleErrorView;
 import com.chengfu.fuexoplayer2.demo.immersion.ImmersionBar;
 import com.chengfu.fuexoplayer2.demo.immersion.QMUIStatusBarHelper;
-import com.chengfu.fuexoplayer2.widget.DefaultControlView;
-import com.chengfu.fuexoplayer2.widget.SampleBufferingView;
-import com.chengfu.fuexoplayer2.widget.FuPlayerView;
-import com.chengfu.fuexoplayer2.widget.SampleEndedView;
-import com.chengfu.fuexoplayer2.widget.SampleErrorView;
-import com.chengfu.player.extensions.pldroid.PLPlayer;
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.dash.DashMediaSource;
-import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
-import com.google.android.exoplayer2.source.hls.HlsMediaSource;
-import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
-import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
+//import com.chengfu.player.extensions.pldroid.PLPlayer;
+
 
 public class VideoPlayerActivity extends AppCompatActivity {
 
@@ -53,14 +39,14 @@ public class VideoPlayerActivity extends AppCompatActivity {
         QMUIStatusBarHelper.setStatusBarDarkMode(this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        setContentView(R.layout.activity_player);
+        setContentView(R.layout.activity_video_player);
 
         playerView = findViewById(R.id.playerView);
 
         controlView = findViewById(R.id.controlView);
 
-//        player = exoPlayer();
-        player = plPlayer();
+        player = exoPlayer();
+//        player = plPlayer();
 
         playerView.setPlayer(player);
 
@@ -100,20 +86,18 @@ public class VideoPlayerActivity extends AppCompatActivity {
     }
 
     private Player exoPlayer() {
-        SimpleExoPlayer player = ExoPlayerFactory.newSimpleInstance(this);
-        ConcatenatingMediaSource concatenatedSource =
-                new ConcatenatingMediaSource(getMediaSource(Uri.parse(path1)), getMediaSource(Uri.parse(path2)), getMediaSource(Uri.parse(path3)), getMediaSource(Uri.parse(path4)));
+        ExoPlayer ExoPlayer = new ExoPlayer(this);
 
-        player.prepare(getMediaSource(Uri.parse(path1)));
+        ExoPlayer.setDataSource(path1);
         return player;
     }
 
-    private Player plPlayer() {
-        PLPlayer player = new PLPlayer(this);
-
-        player.setDataSource(path1);
-        return player;
-    }
+//    private Player plPlayer() {
+//        PLPlayer player = new PLPlayer(this);
+//
+//        player.setDataSource(path1);
+//        return player;
+//    }
 
     @Override
     protected void onResume() {
@@ -131,36 +115,5 @@ public class VideoPlayerActivity extends AppCompatActivity {
     protected void onDestroy() {
         player.release();
         super.onDestroy();
-    }
-
-    private MediaSource getMediaSource(Uri uri) {
-        int contentType = Util.inferContentType(uri);
-        DefaultDataSourceFactory dataSourceFactory =
-                new DefaultDataSourceFactory(this,
-                        Util.getUserAgent(this, this.getPackageName()), new DefaultBandwidthMeter());
-
-
-//        String scheme = uri.getScheme();
-//        if (scheme != null && scheme.contains("rtmp")) {
-//            return new ExtractorMediaSource(uri, new RtmpDataSourceFactory(), new DefaultExtractorsFactory(), null, null);
-//        }
-
-        switch (contentType) {
-            case C.TYPE_DASH:
-                DefaultDashChunkSource.Factory factory = new DefaultDashChunkSource.Factory(dataSourceFactory);
-                return new DashMediaSource(uri, dataSourceFactory, factory, null, null);
-            case C.TYPE_SS:
-                DefaultSsChunkSource.Factory ssFactory = new DefaultSsChunkSource.Factory(dataSourceFactory);
-                return new SsMediaSource(uri, dataSourceFactory, ssFactory, null, null);
-            case C.TYPE_HLS:
-                return new HlsMediaSource(uri, dataSourceFactory, null, null);
-
-            case C.TYPE_OTHER:
-            default:
-                // This is the MediaSource representing the media to be played.
-                ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-                return new ExtractorMediaSource(uri,
-                        dataSourceFactory, extractorsFactory, null, null);
-        }
     }
 }

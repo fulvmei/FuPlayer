@@ -41,12 +41,6 @@
 
         <activity android:name=".ui.audio.AudioListActivity"/>
 
-        <activity
-            android:name=".AudioPlayerActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/ActivityPlayerTheme" >
-
-        </activity>
     </application>
 
 </manifest>

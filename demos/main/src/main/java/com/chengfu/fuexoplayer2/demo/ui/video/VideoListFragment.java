@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 
 import com.chengfu.fuexoplayer2.demo.R;
 import com.chengfu.fuexoplayer2.demo.util.VideoUtil;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
 
 public class VideoListFragment extends Fragment {
 

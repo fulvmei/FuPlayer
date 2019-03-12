@@ -8,8 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.chengfu.android.fuplayer.ui.SampleErrorView;
 import com.chengfu.fuexoplayer2.demo.R;
-import com.chengfu.fuexoplayer2.widget.SampleErrorView;
 
 public class VideoPlayErrorView extends SampleErrorView {
 

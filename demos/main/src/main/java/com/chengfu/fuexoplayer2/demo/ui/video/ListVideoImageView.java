@@ -9,10 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.chengfu.android.fuplayer.Player;
+import com.chengfu.android.fuplayer.ui.BaseStateView;
 import com.chengfu.fuexoplayer2.demo.R;
-import com.chengfu.fuexoplayer2.widget.BaseStateView;
-import com.chengfu.fuexoplayer2.widget.SampleEndedView;
-import com.google.android.exoplayer2.Player;
 
 public class ListVideoImageView extends BaseStateView {
 

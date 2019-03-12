@@ -1,25 +1,16 @@
 package com.chengfu.fuexoplayer2.demo.ui.video;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.media.MediaDescriptionCompat;
-import android.support.v4.media.RatingCompat;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.chengfu.fuexoplayer2.demo.R;
-import com.google.android.exoplayer2.Player;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

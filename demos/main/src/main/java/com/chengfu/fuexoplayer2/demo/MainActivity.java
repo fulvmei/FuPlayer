@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.chengfu.fuexoplayer2.demo.ui.audio.AudioListActivity;
 import com.chengfu.fuexoplayer2.demo.ui.video.VideoListActivity;
 
 
@@ -23,11 +22,6 @@ public class MainActivity extends AppCompatActivity  {
 
         findViewById(R.id.btnVideoListPlay).setOnClickListener(view -> {
             Intent intent=new Intent(MainActivity.this, VideoListActivity.class);
-            startActivity(intent);
-        });
-
-        findViewById(R.id.btnAudioListPlay).setOnClickListener(view -> {
-            Intent intent=new Intent(MainActivity.this, AudioListActivity.class);
             startActivity(intent);
         });
     }

@@ -1,8 +1,6 @@
 package com.chengfu.fuexoplayer2.demo;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -136,15 +134,9 @@ public class MediaChooseActivity extends AppCompatActivity implements Expandable
     public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
                                 int childPosition, long id) {
         Media media = mediaGroupList.get(groupPosition).getMediaList().get(childPosition);
-        if ("audio".equals(media.getType())) {
-            Intent intent = new Intent(this, AudioPlayerActivity.class);
-            intent.putExtra("media", media);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(this, VideoPlayerActivity.class);
-            intent.putExtra("media", media);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(this, VideoPlayerActivity.class);
+        intent.putExtra("media", media);
+        startActivity(intent);
         return true;
     }
 }
