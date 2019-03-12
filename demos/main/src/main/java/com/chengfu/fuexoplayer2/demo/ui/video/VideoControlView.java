@@ -6,8 +6,8 @@ import android.util.AttributeSet;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
+import com.chengfu.android.fuplayer.ui.DefaultControlView;
 import com.chengfu.fuexoplayer2.demo.R;
-import com.chengfu.fuexoplayer2.widget.DefaultControlView;
 
 public class VideoControlView extends DefaultControlView {
 

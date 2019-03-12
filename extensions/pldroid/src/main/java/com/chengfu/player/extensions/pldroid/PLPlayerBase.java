@@ -8,9 +8,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
 
-import com.chengfu.fuexoplayer2.FuLog;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.video.VideoListener;
 
 import java.util.concurrent.CopyOnWriteArraySet;
 

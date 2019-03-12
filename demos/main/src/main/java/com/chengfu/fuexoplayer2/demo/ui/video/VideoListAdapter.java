@@ -1,5 +1,6 @@
 package com.chengfu.fuexoplayer2.demo.ui.video;
 
+import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,16 +12,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.chengfu.android.fuplayer.ext.exo.ExoPlayer;
+import com.chengfu.android.fuplayer.ui.FuPlayerView;
+import com.chengfu.android.fuplayer.ui.SampleBufferingView;
 import com.chengfu.fuexoplayer2.demo.APP;
 import com.chengfu.fuexoplayer2.demo.R;
 import com.chengfu.fuexoplayer2.demo.StaticConfig;
 import com.chengfu.fuexoplayer2.demo.bean.Media;
 import com.chengfu.fuexoplayer2.demo.util.NetworkUtil;
 import com.chengfu.fuexoplayer2.demo.util.VideoUtil;
-import com.chengfu.fuexoplayer2.widget.FuPlayerView;
-import com.chengfu.fuexoplayer2.widget.SampleBufferingView;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
 
 import java.util.List;
 
@@ -112,7 +112,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
 
-        player = ExoPlayerFactory.newSimpleInstance(recyclerView.getContext());
+        player = new ExoPlayer(recyclerView.getContext());
 
         recyclerView.addOnScrollListener(scrollListener);
 
@@ -231,7 +231,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             playerView.setPlayer(player);
             controlView.setPlayer(player);
 
-            player.prepare(VideoUtil.getMediaSource(APP.application, dataList.get(getAdapterPosition()).getPath()));
+            player.setDataSource(dataList.get(getAdapterPosition()).getPath());
             player.setPlayWhenReady(true);
         }
 

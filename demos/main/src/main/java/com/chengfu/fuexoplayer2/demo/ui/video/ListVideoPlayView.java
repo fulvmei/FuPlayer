@@ -8,10 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.chengfu.android.fuplayer.FuPlaybackException;
+import com.chengfu.android.fuplayer.Player;
+import com.chengfu.android.fuplayer.ui.BaseStateView;
 import com.chengfu.fuexoplayer2.demo.R;
-import com.chengfu.fuexoplayer2.widget.BaseStateView;
-import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.Player;
 
 public class ListVideoPlayView extends BaseStateView {
 
@@ -93,7 +93,7 @@ public class ListVideoPlayView extends BaseStateView {
     }
 
     @Override
-    public void onPlayerError(ExoPlaybackException error) {
+    public void onPlayerError(FuPlaybackException error) {
     }
 
     @Override

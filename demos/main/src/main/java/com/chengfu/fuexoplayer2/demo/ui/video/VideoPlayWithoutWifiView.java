@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.chengfu.fuexoplayer2.demo.R;
-import com.google.android.exoplayer2.Player;
 
 public class VideoPlayWithoutWifiView extends FrameLayout {
 

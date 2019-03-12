@@ -3,20 +3,9 @@ package com.chengfu.player.extensions.pldroid;
 import android.content.Context;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Surface;
 
-import com.chengfu.fuexoplayer2.FuLog;
-
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.PlaybackParameters;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
-
-import com.google.android.exoplayer2.video.VideoFrameMetadataListener;
-import com.google.android.exoplayer2.video.spherical.CameraMotionListener;
 import com.pili.pldroid.player.AVOptions;
 import com.pili.pldroid.player.PLMediaPlayer;
 import com.pili.pldroid.player.PLOnInfoListener;
@@ -41,20 +30,20 @@ public class PLPlayer extends PLPlayerBase {
     }
 
     public PLPlayer(Context context, AVOptions options) {
-        FuLog.d(TAG, "create PLMediaPlayer");
+        Log.d(TAG, "create PLMediaPlayer");
         plMediaPlayer = new PLMediaPlayer(context, options);
 
         plMediaPlayer.setOnVideoFrameListener(new PLOnVideoFrameListener() {
             @Override
             public void onVideoFrameAvailable(byte[] bytes, int i, int i1, int i2, int i3, long l) {
-                FuLog.d(TAG, "onVideoFrameAvailable");
+                Log.d(TAG, "onVideoFrameAvailable");
             }
         });
 
         plMediaPlayer.setOnPreparedListener(new PLOnPreparedListener() {
             @Override
             public void onPrepared(int i) {
-                FuLog.d(TAG, "setOnPreparedListener");
+                Log.d(TAG, "setOnPreparedListener");
                 submitRenderedFirstFrame();
             }
         });
@@ -62,7 +51,7 @@ public class PLPlayer extends PLPlayerBase {
         plMediaPlayer.setOnVideoSizeChangedListener(new PLOnVideoSizeChangedListener() {
             @Override
             public void onVideoSizeChanged(int width, int height) {
-                FuLog.d(TAG, "onVideoSizeChanged : width=" + width + ",height=" + height);
+                Log.d(TAG, "onVideoSizeChanged : width=" + width + ",height=" + height);
                 submitVideoSizeChanged(width, height, 0, 0);
             }
         });
@@ -81,9 +70,9 @@ public class PLPlayer extends PLPlayerBase {
 
     public void setDataSource(String path, Map<String, String> headers) {
         try {
-            FuLog.d(TAG, "setDataSource : path=" + path);
+            Log.d(TAG, "setDataSource : path=" + path);
             plMediaPlayer.setDataSource(path, headers);
-            FuLog.d(TAG, "prepareAsync : ");
+            Log.d(TAG, "prepareAsync : ");
             plMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
