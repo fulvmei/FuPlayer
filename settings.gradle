@@ -1,7 +1,5 @@
-include 'demos:main'
+include ':demo'
 
-include ':library:core'
-include ':library:ui'
+include ':library'
 
-include ':extensions:exo'
 include ':extensions:pldroid'

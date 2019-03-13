@@ -6,6 +6,16 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Surface;
 
+import com.chengfu.android.fuplayer.util.FuLog;
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.video.VideoFrameMetadataListener;
+import com.google.android.exoplayer2.video.spherical.CameraMotionListener;
 import com.pili.pldroid.player.AVOptions;
 import com.pili.pldroid.player.PLMediaPlayer;
 import com.pili.pldroid.player.PLOnInfoListener;
