@@ -1,4 +1,4 @@
-package com.chengfu.android.fuplayer.demo.ui.video;
+package com.chengfu.android.fuplayer.ext.ui;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.chengfu.android.fuplayer.SampleErrorView;
-import com.chengfu.android.fuplayer.demo.R;
 
 public class VideoPlayErrorView extends SampleErrorView {
 
@@ -27,6 +26,6 @@ public class VideoPlayErrorView extends SampleErrorView {
 
     @Override
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
-        return inflater.inflate(R.layout.view_video_play_error, parent, false);
+        return inflater.inflate(R.layout.fpu_view_video_play_error, parent, false);
     }
 }

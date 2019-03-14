@@ -22,7 +22,6 @@
         android:supportsRtl="true"
         android:theme="@style/BaseAppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,15 +30,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".MediaChooseActivity"/>
+        <activity android:name=".MediaChooseActivity" />
         <activity
             android:name=".VideoPlayerActivity"
-            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboard|keyboardHidden|navigation|screenSize"
+            android:launchMode="singleTask"
             android:theme="@style/ActivityPlayerTheme" />
 
-        <activity android:name=".ui.video.VideoListActivity"/>
-
-
+        <activity android:name=".ui.video.VideoListActivity" />
     </application>
 
 </manifest>

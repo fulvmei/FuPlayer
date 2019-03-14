@@ -43,13 +43,6 @@ public class MediaChooseActivity extends AppCompatActivity implements Expandable
 
         mediaGroupListAdapter.notifyDataSetChanged();
 
-
-//        new MediaBrowserCompat(
-//                this,
-//                new ComponentName(this, MusicService.class),//绑定浏览器服务
-//                new MediaBrowserCompat.ConnectionCallback(),//设置连接回调
-//                null
-//        ).connect();
     }
 
     private List<MediaGroup> getMediaGroupList() {

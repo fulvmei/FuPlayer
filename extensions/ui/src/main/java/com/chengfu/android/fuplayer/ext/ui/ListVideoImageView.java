@@ -1,4 +1,4 @@
-package com.chengfu.android.fuplayer.demo.ui.video;
+package com.chengfu.android.fuplayer.ext.ui;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.chengfu.android.fuplayer.BaseStateView;
-import com.chengfu.android.fuplayer.demo.R;
 import com.google.android.exoplayer2.Player;
 
 public class ListVideoImageView extends BaseStateView {
@@ -56,7 +55,7 @@ public class ListVideoImageView extends BaseStateView {
     }
 
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
-        return inflater.inflate(R.layout.view_list_video_image, parent, false);
+        return inflater.inflate(R.layout.fpu_view_list_video_image, parent, false);
     }
 
     public ImageView getImage() {

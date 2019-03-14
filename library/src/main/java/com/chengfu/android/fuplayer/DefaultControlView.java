@@ -548,7 +548,7 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         }
     }
 
-    private void hideAfterTimeout() {
+    public void hideAfterTimeout() {
         removeCallbacks(mHideAction);
         if (mShowTimeoutMs > 0) {
             mHideAtMs = SystemClock.uptimeMillis() + mShowTimeoutMs;

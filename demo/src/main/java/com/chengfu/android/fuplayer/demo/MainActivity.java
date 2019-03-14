@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.chengfu.android.fuplayer.demo.ui.video.VideoListActivity;
 
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
 
 
     @Override
@@ -16,12 +16,12 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_main);
 
         findViewById(R.id.btnMediaChoose).setOnClickListener(view -> {
-            Intent intent=new Intent(MainActivity.this,MediaChooseActivity.class);
+            Intent intent = new Intent(MainActivity.this, MediaChooseActivity.class);
             startActivity(intent);
         });
 
         findViewById(R.id.btnVideoListPlay).setOnClickListener(view -> {
-            Intent intent=new Intent(MainActivity.this, VideoListActivity.class);
+            Intent intent = new Intent(MainActivity.this, VideoListActivity.class);
             startActivity(intent);
         });
     }
