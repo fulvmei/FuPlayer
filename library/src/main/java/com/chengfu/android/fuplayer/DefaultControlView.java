@@ -512,7 +512,7 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         if (mShowing) {
             mShowing = false;
             mContainerView.setVisibility(View.GONE);
-            removeCallbacks(mUpdateProgressAction);
+//            removeCallbacks(mUpdateProgressAction);
             removeCallbacks(mHideAction);
             mHideAtMs = -1;
 
