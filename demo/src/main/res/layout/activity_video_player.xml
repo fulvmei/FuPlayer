@@ -9,8 +9,9 @@
     tools:context=".MediaChooseActivity">
 
     <FrameLayout
+        android:id="@+id/playerRoot"
         android:layout_width="match_parent"
-        android:layout_height="300dp">
+        android:layout_height="202.5dp">
 
         <com.chengfu.android.fuplayer.FuPlayerView
             android:id="@+id/playerView"
@@ -19,21 +20,15 @@
             android:background="#333333"
             app:resize_mode="fit"
             app:shutter_background_color="#333333"
-            app:surface_type="surface_view" />
+            app:surface_type="texture_view" />
 
+        <com.chengfu.android.fuplayer.ext.ui.VideoControlView
+            android:id="@+id/controlView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:show_in_buffering="true"
+            app:show_in_ended="false" />
 
     </FrameLayout>
 
-    <com.chengfu.android.fuplayer.DefaultControlView
-        android:id="@+id/controlView"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        app:show_in_buffering="true"
-        app:show_in_ended="false" />
-
-    <Button
-        android:id="@+id/test"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/controlView" />
 </RelativeLayout>

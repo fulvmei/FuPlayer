@@ -1,5 +1,4 @@
-include ':demo'
-
-include ':library'
+include ':library', ':demo'
 
 include ':extensions:pldroid'
+include ':extensions:ui'

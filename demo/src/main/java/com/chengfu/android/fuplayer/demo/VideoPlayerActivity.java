@@ -1,35 +1,35 @@
 package com.chengfu.android.fuplayer.demo;
 
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 
-import com.chengfu.android.fuplayer.DefaultControlView;
 import com.chengfu.android.fuplayer.FuPlayerView;
 import com.chengfu.android.fuplayer.SampleBufferingView;
 import com.chengfu.android.fuplayer.SampleEndedView;
-import com.chengfu.android.fuplayer.SampleErrorView;
+import com.chengfu.android.fuplayer.demo.bean.Media;
 import com.chengfu.android.fuplayer.demo.immersion.ImmersionBar;
 import com.chengfu.android.fuplayer.demo.immersion.QMUIStatusBarHelper;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
-import com.chengfu.player.extensions.pldroid.PLPlayer;
+import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
+import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
+//import com.chengfu.player.extensions.pldroid.PLPlayer;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
-//import com.chengfu.player.extensions.pldroid.PLPlayer;
 
 
 public class VideoPlayerActivity extends AppCompatActivity {
-
-    private static final String path1 = "https://mov.bn.netease.com/open-movie/nos/mp4/2015/08/27/SB13F5AGJ_sd.mp4";
-    private static final String path2 = " https://mov.bn.netease.com/open-movie/nos/mp4/2018/01/12/SD70VQJ74_sd.mp4";
-    private static final String path3 = "http://221.228.226.23/11/t/j/v/b/tjvbwspwhqdmgouolposcsfafpedmb/sh.yinyuetai.com/691201536EE4912BF7E4F1E2C67B8119.mp4";
-    private static final String path4 = "http://storage.gzstv.net/uploads/media/WZZ/xjm-zhaopian.mp4";
-
+    private Media media;
+    private View playerRoot;
     private FuPlayerView playerView;
-    private DefaultControlView controlView;
+    private VideoControlView controlView;
     private Player player;
 
 
@@ -41,25 +41,33 @@ public class VideoPlayerActivity extends AppCompatActivity {
         QMUIStatusBarHelper.setStatusBarDarkMode(this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
+
         setContentView(R.layout.activity_video_player);
 
+        playerRoot = findViewById(R.id.playerRoot);
+
+        media = (Media) getIntent().getSerializableExtra("media");
+
+        initPlayer();
+
+        initPlayerView();
+
+        initControlView();
+
+    }
+
+    private void initPlayer() {
+        ExoPlayer exoPlayer = ExoPlayerFactory.newSimpleInstance(this);
+        exoPlayer.prepare(MediaSourceUtil.getMediaSource(this, media.getPath()));
+        player = exoPlayer;
+        player.setPlayWhenReady(true);
+    }
+
+    private void initPlayerView() {
         playerView = findViewById(R.id.playerView);
 
-        controlView = findViewById(R.id.controlView);
-
-        player =exoPlayer();
-//        player.prepare(MediaSourceUtil.getMediaSource(this, path1));
-
-        playerView.setPlayer(player);
-
-        player.setPlayWhenReady(true);
-        playerView.onResume();
-
-
-        controlView.setPlayer(player);
-
         SampleBufferingView loadingView = new SampleBufferingView(this);
-        SampleErrorView errorView = new SampleErrorView(this);
+        VideoPlayErrorView errorView = new VideoPlayErrorView(this);
         SampleEndedView endedView = new SampleEndedView(this);
 
         errorView.setOnReTryClickListener(v -> player.setPlayWhenReady(true));
@@ -75,30 +83,73 @@ public class VideoPlayerActivity extends AppCompatActivity {
         playerView.addStateView(errorView);
         playerView.addStateView(endedView);
 
+        playerView.setPlayer(player);
 
-        findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playerView.setPlayer(player);
+    }
+
+    private void initControlView() {
+        controlView = findViewById(R.id.controlView);
+
+        controlView.setPlayer(player);
+
+        controlView.setTitle(media.getName());
+
+        controlView.setShowBottomProgress(true);
+        controlView.setShowTop(true);
+
+        controlView.setOnScreenClickListener(fullScreen -> {
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+            } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             }
         });
 
-//        MediaController
+        controlView.setOnBackClickListener(v -> {
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } else {
+                finish();
+            }
+        });
 
     }
 
-    private Player exoPlayer() {
-        ExoPlayer exoPlayer =ExoPlayerFactory.newSimpleInstance(this);
-        exoPlayer.prepare(MediaSourceUtil.getMediaSource(this, path1));
-        return exoPlayer;
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+            controlView.setFullScreen(true);
+
+            ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
+            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+//            playerRoot.setLayoutParams(layoutParams);
+
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            controlView.setFullScreen(false);
+
+            ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
+            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            layoutParams.height = 608;
+
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
     }
 
-    private Player plPlayer() {
-        PLPlayer player = new PLPlayer(this);
-
-        player.setDataSource(path1);
-        return player;
+    @Override
+    public void onBackPressed() {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            finish();
+        }
     }
+
 
     @Override
     protected void onResume() {

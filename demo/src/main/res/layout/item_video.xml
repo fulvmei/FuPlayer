@@ -16,12 +16,12 @@
             android:layout_height="match_parent"
             app:surface_type="texture_view" />
 
-        <com.chengfu.android.fuplayer.demo.ui.video.VideoControlView
+        <com.chengfu.android.fuplayer.ext.ui.VideoControlView
             android:id="@+id/controlView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <com.chengfu.android.fuplayer.demo.ui.video.VideoPlayWithoutWifiView
+        <com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView
             android:id="@+id/noWifiView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

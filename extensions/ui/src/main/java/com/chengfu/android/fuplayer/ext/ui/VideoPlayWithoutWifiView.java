@@ -1,4 +1,4 @@
-package com.chengfu.android.fuplayer.demo.ui.video;
+package com.chengfu.android.fuplayer.ext.ui;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,8 +7,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
-
-import com.chengfu.android.fuplayer.demo.R;
 
 public class VideoPlayWithoutWifiView extends FrameLayout {
 
@@ -29,7 +27,7 @@ public class VideoPlayWithoutWifiView extends FrameLayout {
     public VideoPlayWithoutWifiView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        LayoutInflater.from(context).inflate(R.layout.view_video_play_without_wifi, this, true);
+        LayoutInflater.from(context).inflate(R.layout.fpu_view_video_play_without_wifi, this, true);
 
         findViewById(R.id.btnPlayWithoutWifi).setOnClickListener(v -> {
             if (onPlayClickListener != null) {

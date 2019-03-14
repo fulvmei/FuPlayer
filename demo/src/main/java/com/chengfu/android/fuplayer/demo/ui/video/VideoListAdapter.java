@@ -19,6 +19,11 @@ import com.chengfu.android.fuplayer.demo.StaticConfig;
 import com.chengfu.android.fuplayer.demo.bean.Media;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
 import com.chengfu.android.fuplayer.demo.util.NetworkUtil;
+import com.chengfu.android.fuplayer.ext.ui.ListVideoImageView;
+import com.chengfu.android.fuplayer.ext.ui.ListVideoPlayView;
+import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
+import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
+import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 
