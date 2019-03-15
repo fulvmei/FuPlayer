@@ -20,7 +20,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/BaseAppTheme"
+        android:theme="@style/FuAppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -35,9 +35,13 @@
             android:name=".VideoPlayerActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|navigation|screenSize"
             android:launchMode="singleTask"
-            android:theme="@style/ActivityPlayerTheme" />
+            android:theme="@style/FuActivityPlayerTheme" />
 
-        <activity android:name=".ui.video.VideoListActivity" />
+        <activity
+            android:theme="@style/FuActivityPlayerTheme"
+            android:name=".ui.video.VideoListActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|layoutDirection"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

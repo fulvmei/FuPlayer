@@ -6,29 +6,34 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <FrameLayout
+        android:id="@+id/videoContainer"
         android:layout_width="match_parent"
         android:layout_height="202.5dp">
 
-        <com.chengfu.android.fuplayer.FuPlayerView
-            android:id="@+id/playerView"
+        <FrameLayout
+            android:id="@+id/videoRoot"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:surface_type="texture_view" />
+            android:layout_height="match_parent">
 
-        <com.chengfu.android.fuplayer.ext.ui.VideoControlView
-            android:id="@+id/controlView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            <com.chengfu.android.fuplayer.FuPlayerView
+                android:id="@+id/playerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:surface_type="texture_view" />
 
-        <com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView
-            android:id="@+id/noWifiView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            <com.chengfu.android.fuplayer.ext.ui.VideoControlView
+                android:id="@+id/controlView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
+            <com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView
+                android:id="@+id/noWifiView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-    </RelativeLayout>
-
+        </FrameLayout>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/title"
