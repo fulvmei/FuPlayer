@@ -66,7 +66,6 @@ public class VideoUtil {
                 "http://open-image.nosdn.127.net/image/snapshot_movie/2017/12/2/8/f30dd5f2f09c405c98e7eb6c06c89928.jpg",
                 null,
                 null));
-
         return list;
     }
 

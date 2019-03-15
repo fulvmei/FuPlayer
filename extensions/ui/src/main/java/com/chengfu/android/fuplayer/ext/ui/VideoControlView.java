@@ -24,7 +24,7 @@ public class VideoControlView extends DefaultControlView {
     boolean showBottomProgress;
     boolean controlViewShow;
     boolean fullScreen;
-    boolean showTop;
+    boolean showTopOnlyFullScreen;
 
     protected OnScreenClickListener onScreenClickListener;
 
@@ -62,7 +62,7 @@ public class VideoControlView extends DefaultControlView {
 
         controllerTop = findViewById(R.id.controller_top);
 
-        setShowTop(showTop);
+        updateTopVisibility();
 
         mBottomProgressView = findViewById(R.id.controller_bottom_progress);
         if (mBottomProgressView != null) {
@@ -108,9 +108,18 @@ public class VideoControlView extends DefaultControlView {
     @Override
     protected void updatePlayPauseViewResource(@NonNull ImageButton imageButton, boolean playWhenReady) {
         if (playWhenReady) {
-            imageButton.setImageResource(R.drawable.fpu_ic_player_pause);
+            if (fullScreen) {
+                imageButton.setImageResource(R.drawable.fpu_selector_pause_land);
+            } else {
+                imageButton.setImageResource(R.drawable.fpu_selector_pause_port);
+            }
         } else {
-            imageButton.setImageResource(R.drawable.fpu_ic_player_play);
+            if (fullScreen) {
+                imageButton.setImageResource(R.drawable.fpu_selector_play_land);
+            } else {
+                imageButton.setImageResource(R.drawable.fpu_selector_play_port);
+            }
+
         }
     }
 
@@ -134,21 +143,30 @@ public class VideoControlView extends DefaultControlView {
         updateBottomProgressView();
     }
 
-    public boolean isShowTop() {
-        return showTop;
+    public boolean isShowTopOnlyFullScreen() {
+        return showTopOnlyFullScreen;
     }
 
-    public void setShowTop(boolean showTop) {
-        this.showTop = showTop;
+    public void setShowTopOnlyFullScreen(boolean showTopOnlyFullScreen) {
+        if (this.showTopOnlyFullScreen == showTopOnlyFullScreen) {
+            return;
+        }
+        this.showTopOnlyFullScreen = showTopOnlyFullScreen;
+
+        updateTopVisibility();
+    }
+
+    protected void updateTopVisibility() {
         if (controllerTop == null) {
             return;
         }
-        if (showTop) {
-            controllerTop.setVisibility(View.VISIBLE);
-        } else {
+        if (showTopOnlyFullScreen && !fullScreen) {
             controllerTop.setVisibility(View.GONE);
+        } else {
+            controllerTop.setVisibility(View.VISIBLE);
         }
     }
+
 
     public void setTitle(String title) {
         this.title = title;
@@ -186,8 +204,12 @@ public class VideoControlView extends DefaultControlView {
             return;
         }
         this.fullScreen = fullScreen;
+
         updateFullScreenViewResource(fullScreenView, fullScreen);
         updateBackViewResource(backView, fullScreen);
+        updatePlayPauseView();
+        updateVolumeView();
+        updateTopVisibility();
     }
 
     protected void updateBackViewResource(@Nullable ImageView imageButton, boolean fullScreen) {
@@ -209,6 +231,24 @@ public class VideoControlView extends DefaultControlView {
             imageButton.setImageResource(R.drawable.fpu_ic_exit_full_screen);
         } else {
             imageButton.setImageResource(R.drawable.fpu_ic_full_screen);
+        }
+    }
+
+    @Override
+    protected void updateVolumeViewResource(@NonNull ImageButton imageButton, float volume) {
+        if (volume > 0.0f) {
+            if (fullScreen) {
+                imageButton.setImageResource(R.drawable.fpu_ic_control_volume_on_land);
+            } else {
+                imageButton.setImageResource(R.drawable.fpu_ic_control_volume_on_port);
+            }
+
+        } else {
+            if (fullScreen) {
+                imageButton.setImageResource(R.drawable.fpu_ic_control_volume_off_land);
+            } else {
+                imageButton.setImageResource(R.drawable.fpu_ic_control_volume_off_port);
+            }
         }
     }
 

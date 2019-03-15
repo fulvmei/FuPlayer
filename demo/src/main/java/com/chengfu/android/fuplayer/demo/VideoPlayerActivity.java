@@ -17,6 +17,7 @@ import com.chengfu.android.fuplayer.demo.bean.Media;
 import com.chengfu.android.fuplayer.demo.immersion.ImmersionBar;
 import com.chengfu.android.fuplayer.demo.immersion.QMUIStatusBarHelper;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
+import com.chengfu.android.fuplayer.demo.util.ScreenRotationHelper;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
 //import com.chengfu.player.extensions.pldroid.PLPlayer;
@@ -31,6 +32,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private FuPlayerView playerView;
     private VideoControlView controlView;
     private Player player;
+    private ScreenRotationHelper screenRotationHelper;
 
 
     @Override
@@ -54,6 +56,9 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         initControlView();
 
+        screenRotationHelper = new ScreenRotationHelper(this);
+
+        screenRotationHelper.setPlayer(player);
     }
 
     private void initPlayer() {
@@ -95,20 +100,21 @@ public class VideoPlayerActivity extends AppCompatActivity {
         controlView.setTitle(media.getName());
 
         controlView.setShowBottomProgress(true);
-        controlView.setShowTop(true);
+        controlView.setShowTopOnlyFullScreen(true);
 
         controlView.setOnScreenClickListener(fullScreen -> {
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-            } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            }
+//            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//
+//            } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//            }
+            screenRotationHelper.manualToggleOrientation();
         });
 
         controlView.setOnBackClickListener(v -> {
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                screenRotationHelper.manualToggleOrientation();
             } else {
                 finish();
             }
@@ -144,7 +150,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            screenRotationHelper.manualToggleOrientation();
         } else {
             finish();
         }
@@ -154,12 +160,14 @@ public class VideoPlayerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         playerView.onResume();
+        screenRotationHelper.resume();
         super.onResume();
     }
 
     @Override
     protected void onPause() {
         playerView.onPause();
+        screenRotationHelper.pause();
         super.onPause();
     }
 

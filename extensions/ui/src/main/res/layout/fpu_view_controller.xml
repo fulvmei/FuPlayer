@@ -9,15 +9,15 @@
         <RelativeLayout
             android:id="@id/controller_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#1A000000">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:id="@+id/controller_top"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/fpu_bg_video_controller_top"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:paddingBottom="20dp">
 
                 <ImageButton
                     android:id="@+id/controller_back"
@@ -42,38 +42,33 @@
 
             <ImageButton
                 android:id="@id/controller_play_pause_switch"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:background="?android:attr/selectableItemBackground"
-                android:paddingLeft="8dp"
-                android:paddingTop="4dp"
-                android:paddingRight="8dp"
-                android:paddingBottom="4dp"
-                android:src="@drawable/ic_play_white_24dp" />
+                android:background="@null"
+                android:padding="12dp"
+                android:src="@drawable/fpu_selector_play_port" />
 
             <ImageButton
                 android:id="@id/controller_volume_switch"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:background="?android:attr/selectableItemBackground"
-                android:paddingLeft="8dp"
-                android:paddingTop="4dp"
-                android:paddingRight="8dp"
-                android:paddingBottom="4dp"
-                android:src="@drawable/ic_volume_up_white_24dp" />
+                android:background="@null"
+                android:padding="14dp"
+                android:src="@drawable/fpu_ic_control_volume_on_port" />
 
             <LinearLayout
+                android:id="@+id/controller_bottom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:background="@drawable/fpu_bg_video_controller_bottom"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:paddingTop="4dp">
+                android:paddingTop="20dp">
 
                 <TextView
                     android:id="@id/controller_position"

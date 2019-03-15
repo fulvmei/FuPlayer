@@ -303,7 +303,7 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         updateShuffleView();
     }
 
-    private void updatePlayPauseView() {
+    protected void updatePlayPauseView() {
 
         if (!isShowing() || !mAttachedToWindow || mPlayPauseSwitchView == null) {
             return;
@@ -325,7 +325,7 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         }
     }
 
-    private void updateSeekView() {
+    protected void updateSeekView() {
         if (!isShowing() || !mAttachedToWindow) {
             return;
         }
@@ -337,7 +337,7 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         }
     }
 
-    private void updateRepeatView() {
+    protected void updateRepeatView() {
         if (!isShowing() || !mAttachedToWindow || mRepeatSwitchView == null) {
             return;
         }
@@ -379,7 +379,7 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         }
     }
 
-    private void updateVolumeView() {
+    protected void updateVolumeView() {
         if (!isShowing() || !mAttachedToWindow || mVolumeSwitchView == null) {
             return;
         }
@@ -406,7 +406,7 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         }
     }
 
-    private void updateShuffleView() {
+    protected void updateShuffleView() {
         if (!isShowing() || !mAttachedToWindow || mShuffleSwitchView == null) {
             return;
         }
@@ -431,7 +431,7 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         imageButton.setVisibility(View.VISIBLE);
     }
 
-    private void updateProgress() {
+    protected void updateProgress() {
         if (!mAttachedToWindow || mPlayer == null) {
             return;
         }
