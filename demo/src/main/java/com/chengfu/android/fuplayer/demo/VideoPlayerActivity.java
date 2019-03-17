@@ -1,6 +1,5 @@
 package com.chengfu.android.fuplayer.demo;
 
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -13,21 +12,22 @@ import android.view.WindowManager;
 import com.chengfu.android.fuplayer.FuPlayerView;
 import com.chengfu.android.fuplayer.SampleBufferingView;
 import com.chengfu.android.fuplayer.SampleEndedView;
-import com.chengfu.android.fuplayer.demo.bean.Media;
+import com.chengfu.android.fuplayer.demo.bean.Video;
 import com.chengfu.android.fuplayer.demo.immersion.ImmersionBar;
 import com.chengfu.android.fuplayer.demo.immersion.QMUIStatusBarHelper;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
-import com.chengfu.android.fuplayer.demo.util.ScreenRotationHelper;
+//import com.chengfu.android.fuplayer.demo.util.ScreenRotationHelper;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
 //import com.chengfu.player.extensions.pldroid.PLPlayer;
+import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
 
 
 public class VideoPlayerActivity extends AppCompatActivity {
-    private Media media;
+    private Video media;
     private View playerRoot;
     private FuPlayerView playerView;
     private VideoControlView controlView;
@@ -48,7 +48,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         playerRoot = findViewById(R.id.playerRoot);
 
-        media = (Media) getIntent().getSerializableExtra("media");
+        media = (Video) getIntent().getSerializableExtra("media");
 
         initPlayer();
 
@@ -57,8 +57,33 @@ public class VideoPlayerActivity extends AppCompatActivity {
         initControlView();
 
         screenRotationHelper = new ScreenRotationHelper(this);
-
         screenRotationHelper.setPlayer(player);
+        screenRotationHelper.setDisableInPlayerStateEnd(true);
+        screenRotationHelper.setDisableInPlayerStateError(false);
+        screenRotationHelper.setToggleToPortraitInDisable(true);
+        screenRotationHelper.setEnablePortraitFullScreen(true);
+
+        screenRotationHelper.setOnScreenChangedListener(portraitFullScreen -> {
+            if (portraitFullScreen) {
+
+                controlView.setFullScreen(true);
+
+                ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
+                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+//            playerRoot.setLayoutParams(layoutParams);
+
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            } else  {
+                controlView.setFullScreen(false);
+
+                ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
+                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                layoutParams.height = 608;
+
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            }
+        });
     }
 
     private void initPlayer() {
@@ -113,9 +138,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         });
 
         controlView.setOnBackClickListener(v -> {
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                screenRotationHelper.manualToggleOrientation();
-            } else {
+            if (!screenRotationHelper.maybeToggleToPortrait()) {
                 finish();
             }
         });
@@ -149,9 +172,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            screenRotationHelper.manualToggleOrientation();
-        } else {
+        if (!screenRotationHelper.maybeToggleToPortrait()) {
             finish();
         }
     }
@@ -160,14 +181,14 @@ public class VideoPlayerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         playerView.onResume();
-        screenRotationHelper.resume();
+//        screenRotationHelper.resume();
         super.onResume();
     }
 
     @Override
     protected void onPause() {
         playerView.onPause();
-        screenRotationHelper.pause();
+//        screenRotationHelper.pause();
         super.onPause();
     }
 

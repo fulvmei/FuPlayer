@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center">
 
-        <View
+        <ImageView
             android:id="@+id/view_shutter"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

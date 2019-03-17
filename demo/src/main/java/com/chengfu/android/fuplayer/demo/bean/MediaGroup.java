@@ -5,13 +5,13 @@ import java.util.List;
 public class MediaGroup {
 
     public String name;
-    public List<Media> mediaList;
+    public List<Video> mediaList;
 
     public MediaGroup() {
 
     }
 
-    public MediaGroup(String name, List<Media> mediaList) {
+    public MediaGroup(String name, List<Video> mediaList) {
         this.name = name;
         this.mediaList = mediaList;
     }
@@ -24,11 +24,11 @@ public class MediaGroup {
         return name;
     }
 
-    public void setMediaList(List<Media> mediaList) {
+    public void setMediaList(List<Video> mediaList) {
         this.mediaList = mediaList;
     }
 
-    public List<Media> getMediaList() {
+    public List<Video> getMediaList() {
         return mediaList;
     }
 }

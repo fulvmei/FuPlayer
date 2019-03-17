@@ -1,5 +1,6 @@
 package com.chengfu.android.fuplayer.demo.ui.video;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -13,7 +14,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.chengfu.android.fuplayer.demo.R;
+import com.chengfu.android.fuplayer.demo.bean.Video;
 import com.chengfu.android.fuplayer.demo.util.VideoUtil;
+
+import java.util.List;
 
 public class VideoListFragment extends Fragment implements IBackPressed {
 
@@ -21,11 +25,16 @@ public class VideoListFragment extends Fragment implements IBackPressed {
 
     private VideoListAdapter adapter;
 
-//    private ExoPlayer player;
+    //    private ExoPlayer player;
+    String title;
 
 
     public static VideoListFragment newInstance(String title) {
-        return new VideoListFragment();
+        VideoListFragment fragment = new VideoListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("title", title);
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @Nullable
@@ -45,16 +54,32 @@ public class VideoListFragment extends Fragment implements IBackPressed {
         super.onActivityCreated(savedInstanceState);
 //        player = ExoPlayerFactory.newSimpleInstance(getActivity());
 
+        title = getArguments().getString("title");
+
+        List<Video> videos;
+        if ("在线".equals(title)) {
+            videos = VideoUtil.getVideoList();
+
+        } else if ("本地".equals(title)) {
+            videos = VideoUtil.getLocalVideoList(getActivity());
+        } else if ("全部".equals(title)) {
+            videos = VideoUtil.getVideoList();
+            videos.addAll(VideoUtil.getLocalVideoList(getActivity()));
+        } else {
+            videos = VideoUtil.getAudiooList();
+        }
+
         adapter = new VideoListAdapter(getActivity());
 
-        adapter.setData(VideoUtil.getVideoList());
-
         recyclerView.setAdapter(adapter);
+
+        adapter.setData(videos);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        System.out.println("onConfigurationChanged title=" + title);
         if (adapter != null) {
             adapter.onConfigurationChanged(newConfig);
         }
@@ -103,8 +128,8 @@ public class VideoListFragment extends Fragment implements IBackPressed {
 
     @Override
     public boolean onBackPressed() {
-        if (adapter!=null){
-            return  adapter.onBackPressed();
+        if (adapter != null) {
+            return adapter.onBackPressed();
         }
         return false;
     }

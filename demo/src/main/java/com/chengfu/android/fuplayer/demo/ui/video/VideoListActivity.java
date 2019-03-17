@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 
 import com.chengfu.android.fuplayer.demo.R;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,10 +23,11 @@ public class VideoListActivity extends AppCompatActivity implements IGetVideoCon
 
     private final static String TAG = "MediaSessionTest";
 
-    //    private final static String TABS[] = {"热门", "影视", "游戏", "搞笑"};
-    private final static String TABS[] = {"热门"};
+    private final static String TABS[] = {"在线", "本地", "全部", "音乐"};
+//    private final static String TABS[] = {"热门"};
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    private List<VideoListFragment> videoListFragments;
 
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
@@ -37,7 +39,12 @@ public class VideoListActivity extends AppCompatActivity implements IGetVideoCon
 
         setContentView(R.layout.activity_video_list);
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), Arrays.asList(TABS));
+        videoListFragments = new ArrayList<>();
+        for (int i = 0; i < TABS.length; i++) {
+            videoListFragments.add(VideoListFragment.newInstance(TABS[i]));
+        }
+
+        mSectionsPagerAdapter = new SectionsPagerAdapter();
 
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -51,11 +58,9 @@ public class VideoListActivity extends AppCompatActivity implements IGetVideoCon
 
     @Override
     public void onBackPressed() {
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            return;
+        if (!videoListFragments.get(mTabLayout.getSelectedTabPosition()).onBackPressed()) {
+            super.onBackPressed();
         }
-        super.onBackPressed();
     }
 
     @Override
@@ -70,30 +75,23 @@ public class VideoListActivity extends AppCompatActivity implements IGetVideoCon
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        List<String> tabs;
-
-        public SectionsPagerAdapter(FragmentManager fm, List<String> tabs) {
-            super(fm);
-            this.tabs = tabs;
+        public SectionsPagerAdapter() {
+            super(getSupportFragmentManager());
         }
 
         @Override
         public Fragment getItem(int position) {
-            String tab = tabs.get(position);
-            return VideoListFragment.newInstance(tab);
+            return videoListFragments.get(position);
         }
 
         @Override
         public int getCount() {
-            if (tabs != null) {
-                return tabs.size();
-            }
-            return 0;
+            return TABS.length;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return tabs.get(position);
+            return TABS[position];
         }
     }
 

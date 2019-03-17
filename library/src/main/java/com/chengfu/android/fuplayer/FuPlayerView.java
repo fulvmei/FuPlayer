@@ -17,11 +17,13 @@ import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 
 import com.chengfu.android.fuplayer.spherical.SingleTapListener;
 import com.chengfu.android.fuplayer.spherical.SphericalSurfaceView;
 import com.chengfu.android.fuplayer.util.FuLog;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextOutput;
@@ -49,7 +51,7 @@ public class FuPlayerView extends FrameLayout {
 
     private AspectRatioFrameLayout mSurfaceContainer;
     private View mSurfaceView;
-    private View shutterView;
+    private ImageView shutterView;
     private SubtitleView subtitleView;
     private CopyOnWriteArraySet<BaseStateView> mStateViews = new CopyOnWriteArraySet<>();
     private PlayerController playerController;
@@ -401,9 +403,10 @@ public class FuPlayerView extends FrameLayout {
         @Override
         public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
             FuLog.d(TAG, "onVideoSizeChanged : width=" + width + ",height=" + height + ",unappliedRotationDegrees=" + unappliedRotationDegrees + ",pixelWidthHeightRatio=" + pixelWidthHeightRatio);
-            if (pixelWidthHeightRatio == 0) {
-                pixelWidthHeightRatio = 1.0f;
-            }
+//            if (pixelWidthHeightRatio == 0) {
+//                pixelWidthHeightRatio = 1.0f;
+//            }
+
             float videoAspectRatio =
                     (height == 0 || width == 0) ? 1 : (width * pixelWidthHeightRatio) / height;
 
@@ -435,8 +438,33 @@ public class FuPlayerView extends FrameLayout {
         @Override
         public void onRenderedFirstFrame() {
             FuLog.d(TAG, "onRenderedFirstFrame");
-            if (shutterView != null) {
+            if (shutterView != null && shutterView.getVisibility() == VISIBLE) {
                 shutterView.setVisibility(INVISIBLE);
+                shutterView.setImageBitmap(null);
+            }
+        }
+
+        @Override
+        public void onSurfaceSizeChanged(int width, int height) {
+            FuLog.d(TAG, "onSurfaceSizeChanged : width=" + width + ",height=" + height);
+            if (width == 0 || height == 0) {
+                if (shutterView != null) {
+                    shutterView.setVisibility(VISIBLE);
+                }
+            }
+        }
+
+        @Override
+        public void onPlayerError(ExoPlaybackException error) {
+
+        }
+
+        @Override
+        public void onPositionDiscontinuity(int reason) {
+            FuLog.d(TAG, "onPositionDiscontinuity : reason=" + reason);
+            if (mSurfaceView instanceof TextureView) {
+                TextureView surfaceView = (TextureView) mSurfaceView;
+                shutterView.setImageBitmap(surfaceView.getBitmap());
             }
         }
 
