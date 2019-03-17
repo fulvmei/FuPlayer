@@ -7,7 +7,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.chengfu.android.fuplayer.demo.R;
-import com.chengfu.android.fuplayer.demo.bean.Media;
+import com.chengfu.android.fuplayer.demo.bean.Video;
 import com.chengfu.android.fuplayer.demo.bean.MediaGroup;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class MediaGroupListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public Media getChild(int groupPosition, int childPosition) {
+    public Video getChild(int groupPosition, int childPosition) {
         return getGroup(groupPosition).getMediaList().get(childPosition);
     }
 

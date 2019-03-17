@@ -7,7 +7,6 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -31,9 +30,9 @@ import com.google.android.exoplayer2.video.VideoListener;
 import java.util.Formatter;
 import java.util.Locale;
 
-public class DefaultControlView extends BaseControlView implements View.OnClickListener {
+public class DefaultControlView extends BaseControlView implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, Player.EventListener, VideoListener, AudioListener {
 
-    public static final String TAG = "DefaultControlView";
+    private static final String TAG = "DefaultControlView";
     /**
      * The default fast forward increment, in milliseconds.
      */
@@ -57,10 +56,6 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
 
     protected final Context mContext;
     protected Player mPlayer;
-    protected final ComponentListener mComponentListener;
-
-    protected GestureDetector mGestureDetector;
-    protected final ControlGestureListener mGestureListener;
 
     protected View mContainerView;
     protected ImageButton mRepeatSwitchView;
@@ -88,6 +83,7 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
     protected boolean mShowing;
     protected long mHideAtMs;
     protected boolean mTracking;
+    private int mCurrentSeekProgress;
 
     protected StringBuilder mFormatBuilder;
     protected Formatter mFormatter;
@@ -112,7 +108,6 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         super(context, attrs, defStyleAttr);
 
         mContext = context;
-        mComponentListener = new ComponentListener();
 
         int controllerLayoutId = R.layout.default_controller_view;
         mRewindMs = DEFAULT_REWIND_MS;
@@ -153,9 +148,6 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         mFormatBuilder = new StringBuilder();
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
 
-        mGestureListener = new ControlGestureListener();
-        mGestureDetector = new GestureDetector(mContext, mGestureListener);
-
         initView(context, attrs, defStyleAttr);
 
     }
@@ -175,7 +167,7 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         mSeekView = findViewById(R.id.controller_seek);
         if (mSeekView != null) {
             mSeekView.setMax(mSeekNumber);
-            mSeekView.setOnSeekBarChangeListener(mSeekListener);
+            mSeekView.setOnSeekBarChangeListener(this);
         }
         mPlayPauseSwitchView = findViewById(R.id.controller_play_pause_switch);
         if (mPlayPauseSwitchView != null) {
@@ -266,12 +258,12 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
             return;
         }
         if (mPlayer != null) {
-            mPlayer.removeListener(mComponentListener);
+            mPlayer.removeListener(this);
             if (mPlayer.getVideoComponent() != null) {
-                mPlayer.getVideoComponent().removeVideoListener(mComponentListener);
+                mPlayer.getVideoComponent().removeVideoListener(this);
             }
             if (mPlayer.getAudioComponent() != null) {
-                mPlayer.getAudioComponent().removeAudioListener(mComponentListener);
+                mPlayer.getAudioComponent().removeAudioListener(this);
             }
         }
         mSeekable = false;
@@ -279,12 +271,12 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         mVolume = 1.0f;
         mPlayer = player;
         if (player != null) {
-            player.addListener(mComponentListener);
+            player.addListener(this);
             if (player.getVideoComponent() != null) {
-                player.getVideoComponent().addVideoListener(mComponentListener);
+                player.getVideoComponent().addVideoListener(this);
             }
             if (player.getAudioComponent() != null) {
-                player.getAudioComponent().addAudioListener(mComponentListener);
+                player.getAudioComponent().addAudioListener(this);
             }
         }
         updateAll();
@@ -357,9 +349,6 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
     }
 
     protected void updateRepeatViewResource(@NonNull ImageButton imageButton, int repeatMode) {
-        if (imageButton == null) {
-            return;
-        }
         switch (repeatMode) {
             case Player.REPEAT_MODE_OFF:
                 imageButton.setImageResource(R.drawable.default_controls_repeat_off);
@@ -638,21 +627,47 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        mGestureDetector.onTouchEvent(event);
-        if (isInShowState()) {
-            return true;
+    public boolean onTouchEvent(MotionEvent ev) {
+//        return mGestureDetector.onTouchEvent(event);
+//        if (isInShowState()) {
+//            return true;
+//        }
+//        return false;
+
+        if (ev.getActionMasked() != MotionEvent.ACTION_DOWN) {
+            return false;
+        }
+        return performClick();
+    }
+
+    @Override
+    public boolean performClick() {
+        super.performClick();
+        if (!isInShowState()) {
+            return false;
+        }
+        if (isShowing()) {
+            hide();
+        } else {
+            show();
         }
         return false;
     }
 
     @Override
     public boolean onTrackballEvent(MotionEvent event) {
-        mGestureDetector.onTouchEvent(event);
-        if (isInShowState()) {
-            return true;
+        if (!isInShowState()) {
+            return false;
         }
-        return false;
+        if (!isShowing()) {
+            show();
+        }
+        return true;
+//        return mGestureDetector.onTouchEvent(event);
+//        if (isInShowState()) {
+//            return true;
+//        }
+//        return false;
     }
 
     @Override
@@ -748,154 +763,144 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         hideAfterTimeout();
     }
 
-    private final SeekBar.OnSeekBarChangeListener mSeekListener = new SeekBar.OnSeekBarChangeListener() {
 
-        private int progress;
+    @Override
+    public void onStartTrackingTouch(SeekBar bar) {
+        removeCallbacks(mHideAction);
+        mTracking = true;
+    }
 
-        @Override
-        public void onStartTrackingTouch(SeekBar bar) {
-            removeCallbacks(mHideAction);
-            mTracking = true;
+    @Override
+    public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
+        if (!fromuser) {
+            return;
         }
-
-        @Override
-        public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
-            if (!fromuser) {
-                return;
-            }
-            this.progress = progress;
-            if (!isInShowState()) {
-                return;
-            }
-            long duration = mPlayer.getDuration();
-            long newPosition = (duration * progress) / mSeekNumber;
-            if (mPositionView != null) {
-                mPositionView.setText(stringForTime(newPosition));
-            }
+        mCurrentSeekProgress = progress;
+        if (!isInShowState()) {
+            return;
         }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar bar) {
-            mTracking = false;
-            if (!isInShowState()) {
-                return;
-            }
-            long duration = mPlayer.getDuration();
-            long newPosition = duration * progress / mSeekNumber;
-            seekTo(newPosition);
-
-            hideAfterTimeout();
-        }
-    };
-
-    private final class ComponentListener implements Player.EventListener, VideoListener, AudioListener {
-
-        @Override
-        public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
-            FuLog.d(TAG, "onTimelineChanged : timeline=" + timeline + ",manifest=" + manifest + ",reason=" + reason);
-            boolean haveNonEmptyTimeline = timeline != null && !timeline.isEmpty();
-            if (haveNonEmptyTimeline && !mPlayer.isPlayingAd()) {
-                int windowIndex = mPlayer.getCurrentWindowIndex();
-                Timeline.Window window = new Timeline.Window();
-                timeline.getWindow(windowIndex, window);
-                mSeekable = window.isSeekable;
-                mDynamic = window.isDynamic;
-            }
-            updateSeekView();
-        }
-
-        @Override
-        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-            FuLog.d(TAG, "onTracksChanged : trackGroups=" + trackGroups + ",trackSelections=" + trackSelections);
-        }
-
-        @Override
-        public void onLoadingChanged(boolean isLoading) {
-            FuLog.d(TAG, "onLoadingChanged : isLoading=" + isLoading);
-        }
-
-
-        @Override
-        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            FuLog.d(TAG, "onPlayerStateChanged : playWhenReady=" + playWhenReady + ",playbackState=" + playbackState);
-            updateAll();
-        }
-
-        @Override
-        public void onRepeatModeChanged(int repeatMode) {
-            FuLog.d(TAG, "onRepeatModeChanged : repeatMode=" + repeatMode);
-            updateRepeatView();
-        }
-
-        @Override
-        public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
-            FuLog.d(TAG, "onShuffleModeEnabledChanged : shuffleModeEnabled=" + shuffleModeEnabled);
-            updateShuffleView();
-        }
-
-        @Override
-        public void onPlayerError(ExoPlaybackException error) {
-            FuLog.d(TAG, "onPlayerError : error=" + error);
-        }
-
-        @Override
-        public void onPositionDiscontinuity(int reason) {
-            FuLog.d(TAG, "onPositionDiscontinuity : reason=" + reason);
-        }
-
-        @Override
-        public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-            FuLog.d(TAG, "onPlaybackParametersChanged : playbackParameters=" + playbackParameters);
-        }
-
-        @Override
-        public void onSeekProcessed() {
-            FuLog.d(TAG, "onSeekProcessed : ");
-        }
-
-        @Override
-        public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
-            FuLog.d(TAG, "onVideoSizeChanged : width=" + width + ",height=" + height + ",unappliedRotationDegrees=" + unappliedRotationDegrees + ",pixelWidthHeightRatio=" + pixelWidthHeightRatio);
-        }
-
-        @Override
-        public void onSurfaceSizeChanged(int width, int height) {
-            FuLog.d(TAG, "onSurfaceSizeChanged : width=" + width + ",height=" + height);
-        }
-
-        @Override
-        public void onRenderedFirstFrame() {
-            FuLog.d(TAG, "onRenderedFirstFrame : ");
-        }
-
-        @Override
-        public void onAudioSessionId(int audioSessionId) {
-            FuLog.d(TAG, "onAudioSessionId : audioSessionId=" + audioSessionId);
-        }
-
-        @Override
-        public void onAudioAttributesChanged(AudioAttributes audioAttributes) {
-            FuLog.d(TAG, "onAudioAttributesChanged : audioAttributes=" + audioAttributes);
-        }
-
-        @Override
-        public void onVolumeChanged(float volume) {
-            FuLog.d(TAG, "onVolumeChanged : volume=" + volume);
-            mVolume = volume;
-            updateVolumeView();
+        long duration = mPlayer.getDuration();
+        long newPosition = (duration * progress) / mSeekNumber;
+        if (mPositionView != null) {
+            mPositionView.setText(stringForTime(newPosition));
         }
     }
 
-    private final class ControlGestureListener extends GestureDetector.SimpleOnGestureListener {
-        @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            if (isShowing()) {
-                hide();
-            } else {
-                show();
-            }
-            return super.onSingleTapUp(e);
+    @Override
+    public void onStopTrackingTouch(SeekBar bar) {
+        mTracking = false;
+        if (!isInShowState()) {
+            return;
         }
+        long duration = mPlayer.getDuration();
+        long newPosition = duration * mCurrentSeekProgress / mSeekNumber;
+        seekTo(newPosition);
+
+        hideAfterTimeout();
     }
+
+    @Override
+    public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
+        FuLog.d(TAG, "onTimelineChanged : timeline=" + timeline + ",manifest=" + manifest + ",reason=" + reason);
+        boolean haveNonEmptyTimeline = timeline != null && !timeline.isEmpty();
+        if (haveNonEmptyTimeline && !mPlayer.isPlayingAd()) {
+            int windowIndex = mPlayer.getCurrentWindowIndex();
+            Timeline.Window window = new Timeline.Window();
+            timeline.getWindow(windowIndex, window);
+            mSeekable = window.isSeekable;
+            mDynamic = window.isDynamic;
+        }
+        updateSeekView();
+    }
+
+    @Override
+    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+        FuLog.d(TAG, "onTracksChanged : trackGroups=" + trackGroups + ",trackSelections=" + trackSelections);
+    }
+
+    @Override
+    public void onLoadingChanged(boolean isLoading) {
+        FuLog.d(TAG, "onLoadingChanged : isLoading=" + isLoading);
+    }
+
+
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        FuLog.d(TAG, "onPlayerStateChanged : playWhenReady=" + playWhenReady + ",playbackState=" + playbackState);
+        updateAll();
+    }
+
+    @Override
+    public void onRepeatModeChanged(int repeatMode) {
+        FuLog.d(TAG, "onRepeatModeChanged : repeatMode=" + repeatMode);
+        updateRepeatView();
+    }
+
+    @Override
+    public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+        FuLog.d(TAG, "onShuffleModeEnabledChanged : shuffleModeEnabled=" + shuffleModeEnabled);
+        updateShuffleView();
+    }
+
+    @Override
+    public void onPlayerError(ExoPlaybackException error) {
+        FuLog.d(TAG, "onPlayerError : error=" + error);
+    }
+
+    @Override
+    public void onPositionDiscontinuity(int reason) {
+        FuLog.d(TAG, "onPositionDiscontinuity : reason=" + reason);
+    }
+
+    @Override
+    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+        FuLog.d(TAG, "onPlaybackParametersChanged : playbackParameters=" + playbackParameters);
+    }
+
+    @Override
+    public void onSeekProcessed() {
+        FuLog.d(TAG, "onSeekProcessed : ");
+    }
+
+    @Override
+    public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
+        FuLog.d(TAG, "onVideoSizeChanged : width=" + width + ",height=" + height + ",unappliedRotationDegrees=" + unappliedRotationDegrees + ",pixelWidthHeightRatio=" + pixelWidthHeightRatio);
+    }
+
+    @Override
+    public void onSurfaceSizeChanged(int width, int height) {
+        FuLog.d(TAG, "onSurfaceSizeChanged : width=" + width + ",height=" + height);
+    }
+
+    @Override
+    public void onRenderedFirstFrame() {
+        FuLog.d(TAG, "onRenderedFirstFrame : ");
+    }
+
+    @Override
+    public void onAudioSessionId(int audioSessionId) {
+        FuLog.d(TAG, "onAudioSessionId : audioSessionId=" + audioSessionId);
+    }
+
+    @Override
+    public void onAudioAttributesChanged(AudioAttributes audioAttributes) {
+        FuLog.d(TAG, "onAudioAttributesChanged : audioAttributes=" + audioAttributes);
+    }
+
+    @Override
+    public void onVolumeChanged(float volume) {
+        FuLog.d(TAG, "onVolumeChanged : volume=" + volume);
+        mVolume = volume;
+        updateVolumeView();
+    }
+//    @Override
+//    public boolean onSingleTapUp(MotionEvent motionEvent) {
+//        if (isShowing()) {
+//            hide();
+//        } else {
+//            show();
+//        }
+//        return false;
+//    }
 
 }

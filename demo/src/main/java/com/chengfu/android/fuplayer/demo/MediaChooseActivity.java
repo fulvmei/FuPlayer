@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.ExpandableListView;
 
 import com.chengfu.android.fuplayer.demo.adapter.MediaGroupListAdapter;
-import com.chengfu.android.fuplayer.demo.bean.Media;
+import com.chengfu.android.fuplayer.demo.bean.Video;
 import com.chengfu.android.fuplayer.demo.bean.MediaGroup;
 
 import org.json.JSONArray;
@@ -75,8 +75,8 @@ public class MediaChooseActivity extends AppCompatActivity implements Expandable
         return mediaGroup;
     }
 
-    private List<Media> parsedMediaList(JSONArray ja) {
-        List<Media> mediaList = null;
+    private List<Video> parsedMediaList(JSONArray ja) {
+        List<Video> mediaList = null;
         if (ja != null) {
             mediaList = new ArrayList<>();
             for (int i = 0; i < ja.length(); i++) {
@@ -90,10 +90,10 @@ public class MediaChooseActivity extends AppCompatActivity implements Expandable
         return mediaList;
     }
 
-    private Media parsedMedia(JSONObject jo) {
-        Media media = null;
+    private Video parsedMedia(JSONObject jo) {
+        Video media = null;
         if (jo != null) {
-            media = new Media();
+            media = new Video();
             media.setName(jo.optString("name"));
             media.setPath(jo.optString("path"));
             media.setType(jo.optString("type"));
@@ -126,7 +126,7 @@ public class MediaChooseActivity extends AppCompatActivity implements Expandable
     @Override
     public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
                                 int childPosition, long id) {
-        Media media = mediaGroupList.get(groupPosition).getMediaList().get(childPosition);
+        Video media = mediaGroupList.get(groupPosition).getMediaList().get(childPosition);
         Intent intent = new Intent(this, VideoPlayerActivity.class);
         intent.putExtra("media", media);
         startActivity(intent);

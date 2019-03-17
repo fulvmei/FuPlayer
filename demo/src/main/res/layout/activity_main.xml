@@ -6,10 +6,17 @@
     android:orientation="vertical"
     tools:context=".MediaChooseActivity">
 
+    <Button
+        android:layout_marginTop="12dp"
+        android:id="@+id/btnLocalVideos"
+        android:text="本地视频"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
    <Button
        android:layout_marginTop="12dp"
-       android:id="@+id/btnMediaChoose"
-       android:text="播放地址"
+       android:id="@+id/btnNetVideos"
+       android:text="在线视频"
        android:layout_width="match_parent"
        android:layout_height="wrap_content" />
 

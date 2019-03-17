@@ -8,10 +8,13 @@ import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.view.OrientationEventListener;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.video.VideoListener;
 
 public class ScreenRotationHelper {
 
@@ -19,15 +22,17 @@ public class ScreenRotationHelper {
     private Player player;
     private final PlayerEventListener playerEventListener;
     private final OrientationEventListener orientationEventListener;
-    private boolean enableInPlayerStateBuffering;
-    private boolean enableInPlayerStateEnd;
-    private boolean enableInPlayerStateError;
-    private boolean startSign;
+    private boolean enableInPlayerStateEnd;// 播放完成时是否可用，默认false
+    private boolean enableInPlayerStateError;// 播放出错时是否可用，默认false
+    private boolean startSign;// 开启信号，默认false
     private boolean clickPSign;// 竖屏模式下点击屏幕切换按钮
     private boolean clickLSign;// 横屏模式下点击屏幕切换按钮
     private int orientation;
     private int accelerometerRotation;//屏幕旋转系统设置（1 开启、0 关闭）
     private RotationObserver rotationObserver;//屏幕旋转系统设置监听
+    private boolean stopInVideoHightBigger;//视频高度大于宽度时是否停止，默认false
+    private int videoWidth;
+    private int videoHeight;
 
 
     public ScreenRotationHelper(Activity activity) {
@@ -38,6 +43,9 @@ public class ScreenRotationHelper {
         orientationEventListener = new OrientationEventListener(activity) {
             @Override
             public void onOrientationChanged(int orientation) {
+                if (!isInEnableState()) {
+                    return;
+                }
                 ScreenRotationHelper.this.orientation = orientation;
 
                 if (clickPSign) {
@@ -86,22 +94,20 @@ public class ScreenRotationHelper {
         }
         if (this.player != null) {
             this.player.removeListener(playerEventListener);
-
+            if (this.player.getVideoComponent() != null) {
+                this.player.getVideoComponent().removeVideoListener(playerEventListener);
+            }
         }
         this.player = player;
         if (player != null) {
             player.addListener(playerEventListener);
+            if (this.player.getVideoComponent() != null) {
+                this.player.getVideoComponent().addVideoListener(playerEventListener);
+            }
         }
-
+        videoWidth = 0;
+        videoHeight = 0;
         switchOrientationState();
-    }
-
-    public boolean isEnableInPlayerStateBuffering() {
-        return enableInPlayerStateBuffering;
-    }
-
-    public void setEnableInPlayerStateBuffering(boolean enableInPlayerStateBuffering) {
-        this.enableInPlayerStateBuffering = enableInPlayerStateBuffering;
     }
 
     public boolean isEnableInPlayerStateEnd() {
@@ -113,6 +119,7 @@ public class ScreenRotationHelper {
             return;
         }
         this.enableInPlayerStateEnd = enableInPlayerStateEnd;
+        switchOrientationState();
     }
 
     public boolean isEnableInPlayerStateError() {
@@ -124,6 +131,19 @@ public class ScreenRotationHelper {
             return;
         }
         this.enableInPlayerStateError = enableInPlayerStateError;
+        switchOrientationState();
+    }
+
+    public boolean isStopInVideoHightBigger() {
+        return stopInVideoHightBigger;
+    }
+
+    public void setStopInVideoHightBigger(boolean stopInVideoHightBigger) {
+        if (this.stopInVideoHightBigger == stopInVideoHightBigger) {
+            return;
+        }
+        this.stopInVideoHightBigger = stopInVideoHightBigger;
+        switchOrientationState();
     }
 
     public void resume() {
@@ -160,9 +180,25 @@ public class ScreenRotationHelper {
         } else {
             orientationEventListener.disable();
         }
+        if (!isInEnableState()) {
+            maybeToggleToPortrait();
+        }
+    }
+
+    public boolean maybeToggleToPortrait() {
+        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            clickLSign = true;
+            clickPSign = false;
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            return true;
+        }
+        return false;
     }
 
     public void manualToggleOrientation() {
+        if (!isInEnableState()) {
+            return;
+        }
         if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             clickPSign = true;
             clickLSign = false;
@@ -178,14 +214,14 @@ public class ScreenRotationHelper {
         }
     }
 
-    protected boolean isInEnableState() {
+    public boolean isInEnableState() {
         if (player == null) {
             return false;
         }
-        if (player.getPlaybackState() == Player.STATE_READY) {
-            return true;
+        if (stopInVideoHightBigger && (videoHeight * 3 > videoWidth * 4)) {
+            return false;
         }
-        if (player.getPlaybackState() == Player.STATE_BUFFERING && enableInPlayerStateBuffering) {
+        if (player.getPlaybackState() == Player.STATE_READY || player.getPlaybackState() == Player.STATE_BUFFERING) {
             return true;
         }
         if (player.getPlaybackState() == Player.STATE_ENDED && enableInPlayerStateEnd) {
@@ -200,7 +236,8 @@ public class ScreenRotationHelper {
         return false;
     }
 
-    private class PlayerEventListener implements Player.EventListener {
+    private class PlayerEventListener implements Player.EventListener, VideoListener {
+
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             switchOrientationState();
@@ -208,6 +245,13 @@ public class ScreenRotationHelper {
 
         @Override
         public void onPlayerError(ExoPlaybackException error) {
+            switchOrientationState();
+        }
+
+        @Override
+        public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
+            videoWidth = width;
+            videoHeight = height;
             switchOrientationState();
         }
     }

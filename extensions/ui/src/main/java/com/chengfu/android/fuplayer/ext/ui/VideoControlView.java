@@ -1,19 +1,27 @@
 package com.chengfu.android.fuplayer.ext.ui;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.chengfu.android.fuplayer.DefaultControlView;
+import com.chengfu.android.fuplayer.ext.ui.gesture.GestureHelper;
 
-public class VideoControlView extends DefaultControlView {
+public class VideoControlView extends DefaultControlView implements GestureHelper.OnSlideChangedListener {
+
+    private static final String TAG = "VideoControlView";
 
     View controllerTop;
     TextView titleView;
@@ -25,6 +33,9 @@ public class VideoControlView extends DefaultControlView {
     boolean controlViewShow;
     boolean fullScreen;
     boolean showTopOnlyFullScreen;
+    boolean showPlayPauseInBuffering;
+    GestureHelper gestureHelper;
+    GestureDetector mGestureDetector;
 
     protected OnScreenClickListener onScreenClickListener;
 
@@ -40,15 +51,21 @@ public class VideoControlView extends DefaultControlView {
     }
 
     public VideoControlView(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public VideoControlView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public VideoControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        mGestureDetector = new GestureDetector(mContext, onGestureListener);
+
+        gestureHelper = new GestureHelper(this);
+
+        gestureHelper.setOnSlideChangedListener(this);
     }
 
     @Override
@@ -271,4 +288,89 @@ public class VideoControlView extends DefaultControlView {
         this.showBottomProgress = showBottomProgress;
         updateBottomProgressView();
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL) {
+            gestureHelper.onUp(ev);
+        }
+        if (isInShowState()) {
+            return mGestureDetector.onTouchEvent(ev);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onTrackballEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL) {
+            gestureHelper.onUp(ev);
+        }
+        if (isInShowState()) {
+            return mGestureDetector.onTouchEvent(ev);
+        }
+        return false;
+    }
+
+    @Override
+    public void onStartSlide(int slideType) {
+        if (isShowing()) {
+            hide();
+        }
+        switch (slideType) {
+            case GestureHelper.SLIDE_TYPE_HORIZONTAL:
+                findViewById(R.id.p).setVisibility(View.VISIBLE);
+                break;
+            case GestureHelper.SLIDE_TYPE_LEFT_VERTICAL:
+                findViewById(R.id.b).setVisibility(View.VISIBLE);
+                break;
+            case GestureHelper.SLIDE_TYPE_RIGHT_VERTICAL:
+                findViewById(R.id.v).setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    @Override
+    public void onProgressChanged(int slideType, float progress) {
+
+    }
+
+    @Override
+    public void onStopSlide(int slideType) {
+        switch (slideType) {
+            case GestureHelper.SLIDE_TYPE_HORIZONTAL:
+                findViewById(R.id.p).setVisibility(View.GONE);
+                break;
+            case GestureHelper.SLIDE_TYPE_LEFT_VERTICAL:
+                findViewById(R.id.b).setVisibility(View.GONE);
+                break;
+            case GestureHelper.SLIDE_TYPE_RIGHT_VERTICAL:
+                findViewById(R.id.v).setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    private final GestureDetector.SimpleOnGestureListener onGestureListener = new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onDown(MotionEvent e) {
+            gestureHelper.onDown(e);
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent motionEvent) {
+            if (isShowing()) {
+                hide();
+            } else {
+                show();
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            gestureHelper.onScroll(e1, e2, distanceX, distanceY);
+            return true;
+        }
+    };
+
 }

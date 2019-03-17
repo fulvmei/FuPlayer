@@ -35,13 +35,18 @@
             android:name=".VideoPlayerActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|navigation|screenSize"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/FuActivityPlayerTheme" />
 
         <activity
-            android:theme="@style/FuActivityPlayerTheme"
+            android:name=".ui.local.LocalVideosActivity"
+            android:theme="@style/FuActivityPlayerTheme" />
+
+        <activity
             android:name=".ui.video.VideoListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|layoutDirection"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/FuActivityPlayerTheme" />
     </application>
 
 </manifest>

@@ -1,10 +1,8 @@
 package com.chengfu.android.fuplayer.demo.ui.video;
 
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
@@ -13,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,24 +20,25 @@ import com.chengfu.android.fuplayer.SampleBufferingView;
 import com.chengfu.android.fuplayer.demo.APP;
 import com.chengfu.android.fuplayer.demo.R;
 import com.chengfu.android.fuplayer.demo.StaticConfig;
-import com.chengfu.android.fuplayer.demo.bean.Media;
+import com.chengfu.android.fuplayer.demo.bean.Video;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
 import com.chengfu.android.fuplayer.demo.util.NetworkUtil;
-import com.chengfu.android.fuplayer.demo.util.ScreenRotationHelper;
+//import com.chengfu.android.fuplayer.demo.util.ScreenRotationHelper;
 import com.chengfu.android.fuplayer.ext.ui.ListVideoImageView;
 import com.chengfu.android.fuplayer.ext.ui.ListVideoPlayView;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
+import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 
 import java.util.List;
 
-public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.ViewHolder> {
+public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.ViewHolder> implements ScreenRotationHelper.OnScreenChangedListener {
 
     private static final Integer PLAY_VH_PAYLOAD_ID = 1;
-    private List<Media> dataList;
+    private List<Video> dataList;
     private ExoPlayer player;
     private int lastPlayPosition = -1;
     private ViewHolder currentPlayVH;
@@ -83,35 +81,18 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             videoFullScreenContainer = ((IGetVideoContainer) activity).getVideoContainer();
         }
         screenRotationHelper = new ScreenRotationHelper(activity);
+        screenRotationHelper.setDisableInPlayerStateEnd(true);
+        screenRotationHelper.setDisableInPlayerStateError(false);
+        screenRotationHelper.setToggleToPortraitInDisable(true);
+        screenRotationHelper.setEnablePortraitFullScreen(true);
+
+        screenRotationHelper.setOnScreenChangedListener(this);
     }
 
-    public void setData(List<Media> dataList) {
+    public void setData(List<Video> dataList) {
         this.dataList = dataList;
         lastPlayPosition = -1;
         notifyDataSetChanged();
-    }
-
-    public void onConfigurationChanged(Configuration newConfig) {
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
-            currentPlayVH.videoRoot.clearAnimation();
-            currentPlayVH.videoContainer.removeView(currentPlayVH.videoRoot);
-            if (currentPlayVH.videoRoot.getParent() == null) {
-                videoFullScreenContainer.addView(currentPlayVH.videoRoot);
-            }
-            currentPlayVH.controlView.setFullScreen(true);
-
-            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            currentPlayVH.videoRoot.clearAnimation();
-            videoFullScreenContainer.removeView(currentPlayVH.videoRoot);
-            if (currentPlayVH.videoRoot.getParent() == null) {
-                currentPlayVH.videoContainer.addView(currentPlayVH.videoRoot);
-            }
-            currentPlayVH.controlView.setFullScreen(false);
-
-            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
     }
 
     public boolean isAutoPlayWhenItemVisible() {
@@ -152,14 +133,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         currentPlayVH = null;
     }
 
-    public boolean onBackPressed() {
-        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
@@ -192,7 +165,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder vh, int position) {
-        Media item = dataList.get(position);
+        Video item = dataList.get(position);
 
         vh.title.setText(item.getName());
         Glide.with(vh.imageView).load(item.getImage()).into(vh.imageView.getImage());
@@ -215,6 +188,52 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public int getItemCount() {
         return dataList != null ? dataList.size() : 0;
     }
+
+    public boolean onBackPressed() {
+      boolean b=  screenRotationHelper.maybeToggleToPortrait();
+        System.out.println("onBackPressed  return="+b);
+        return b;
+    }
+
+    @Override
+    public void onScreenChanged(boolean portraitFullScreen) {
+        System.out.println("onScreenChanged  portraitFullScreen="+portraitFullScreen);
+        toggleScreen(portraitFullScreen);
+    }
+
+    public void onConfigurationChanged(Configuration newConfig) {
+        if (currentPlayVH == null) {
+            return;
+        }
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            toggleScreen(true);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            toggleScreen(false);
+        }
+    }
+
+    public void toggleScreen(boolean fullScreen) {
+        if (fullScreen) {
+            currentPlayVH.videoRoot.clearAnimation();
+            currentPlayVH.videoContainer.removeView(currentPlayVH.videoRoot);
+            if (currentPlayVH.videoRoot.getParent() == null) {
+                videoFullScreenContainer.addView(currentPlayVH.videoRoot);
+            }
+            currentPlayVH.controlView.setFullScreen(true);
+
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            currentPlayVH.videoRoot.clearAnimation();
+            videoFullScreenContainer.removeView(currentPlayVH.videoRoot);
+            if (currentPlayVH.videoRoot.getParent() == null) {
+                currentPlayVH.videoContainer.addView(currentPlayVH.videoRoot);
+            }
+            currentPlayVH.controlView.setFullScreen(false);
+
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+    }
+
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -243,7 +262,11 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
 
             controlView.setShowBottomProgress(true);
             controlView.setShowTopOnlyFullScreen(true);
-            controlView.setOnScreenClickListener(fullScreen -> screenRotationHelper.manualToggleOrientation());
+            controlView.setOnScreenClickListener(fullScreen ->
+                    screenRotationHelper.manualToggleOrientation()
+            );
+
+            controlView.setOnBackClickListener(v -> screenRotationHelper.manualToggleOrientation());
 
             loadingView = new SampleBufferingView(itemView.getContext());
             errorView = new VideoPlayErrorView(itemView.getContext());
@@ -295,7 +318,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             player.prepare(MediaSourceUtil.getMediaSource(APP.application, dataList.get(getAdapterPosition()).getPath()));
             player.setPlayWhenReady(true);
 
-            screenRotationHelper.resume();
+//            screenRotationHelper.resume();
         }
 
         void pausePlay() {
@@ -316,7 +339,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             playView.setVisibility(View.VISIBLE);
             noWifiView.hide();
             player.stop();
-            screenRotationHelper.pause();
+//            screenRotationHelper.pause();
         }
     }
 }
