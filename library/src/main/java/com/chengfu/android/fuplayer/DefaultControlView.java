@@ -596,7 +596,7 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
     }
 
     protected void seekTo(long positionMs) {
-        if (positionMs <= 0 || mPlayer == null) {
+        if (positionMs < 0 || mPlayer == null) {
             return;
         }
         mPlayer.seekTo(positionMs);
@@ -628,12 +628,6 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-//        return mGestureDetector.onTouchEvent(event);
-//        if (isInShowState()) {
-//            return true;
-//        }
-//        return false;
-
         if (ev.getActionMasked() != MotionEvent.ACTION_DOWN) {
             return false;
         }
@@ -663,11 +657,6 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
             show();
         }
         return true;
-//        return mGestureDetector.onTouchEvent(event);
-//        if (isInShowState()) {
-//            return true;
-//        }
-//        return false;
     }
 
     @Override
@@ -789,9 +778,6 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
     @Override
     public void onStopTrackingTouch(SeekBar bar) {
         mTracking = false;
-        if (!isInShowState()) {
-            return;
-        }
         long duration = mPlayer.getDuration();
         long newPosition = duration * mCurrentSeekProgress / mSeekNumber;
         seekTo(newPosition);
@@ -893,14 +879,4 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         mVolume = volume;
         updateVolumeView();
     }
-//    @Override
-//    public boolean onSingleTapUp(MotionEvent motionEvent) {
-//        if (isShowing()) {
-//            hide();
-//        } else {
-//            show();
-//        }
-//        return false;
-//    }
-
 }

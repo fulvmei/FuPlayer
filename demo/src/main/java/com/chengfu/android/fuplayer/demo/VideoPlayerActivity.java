@@ -62,6 +62,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         screenRotationHelper.setDisableInPlayerStateError(false);
         screenRotationHelper.setToggleToPortraitInDisable(true);
         screenRotationHelper.setEnablePortraitFullScreen(true);
+        screenRotationHelper.setAutoRotationMode(ScreenRotationHelper.AUTO_ROTATION_MODE_SYSTEM);
 
         screenRotationHelper.setOnScreenChangedListener(portraitFullScreen -> {
             if (portraitFullScreen) {
@@ -74,7 +75,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
 //            playerRoot.setLayoutParams(layoutParams);
 
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            } else  {
+            } else {
                 controlView.setFullScreen(false);
 
                 ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();

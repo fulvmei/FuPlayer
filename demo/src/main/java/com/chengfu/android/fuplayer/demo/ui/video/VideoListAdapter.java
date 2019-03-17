@@ -85,6 +85,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         screenRotationHelper.setDisableInPlayerStateError(false);
         screenRotationHelper.setToggleToPortraitInDisable(true);
         screenRotationHelper.setEnablePortraitFullScreen(true);
+        screenRotationHelper.setAutoRotationMode(ScreenRotationHelper.AUTO_ROTATION_MODE_SYSTEM);
 
         screenRotationHelper.setOnScreenChangedListener(this);
     }
@@ -190,14 +191,14 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     }
 
     public boolean onBackPressed() {
-      boolean b=  screenRotationHelper.maybeToggleToPortrait();
-        System.out.println("onBackPressed  return="+b);
+        boolean b = screenRotationHelper.maybeToggleToPortrait();
+        System.out.println("onBackPressed  return=" + b);
         return b;
     }
 
     @Override
     public void onScreenChanged(boolean portraitFullScreen) {
-        System.out.println("onScreenChanged  portraitFullScreen="+portraitFullScreen);
+        System.out.println("onScreenChanged  portraitFullScreen=" + portraitFullScreen);
         toggleScreen(portraitFullScreen);
     }
 
