@@ -4,17 +4,30 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.provider.Settings;
-import android.util.Log;
+import android.support.annotation.IntDef;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.video.VideoListener;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 public final class ScreenRotationHelper implements OrientationEventObserver.OnOrientationChangedListener {
 
     private static final String TAG = "ScreenRotationHelper";
 
     private static final float DEFAUT_RATE = 4f / 3f;//开启竖屏全屏模式的阈值
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({AUTO_ROTATION_MODE_NONE, AUTO_ROTATION_MODE_ONLY_LANDSCAPE, AUTO_ROTATION_MODE_SYSTEM, AUTO_ROTATION_MODE_ALWAYS})
+    @interface AutoRotation {
+    }
+
+    public static final int AUTO_ROTATION_MODE_NONE = 0;
+    public static final int AUTO_ROTATION_MODE_ONLY_LANDSCAPE = 1;
+    public static final int AUTO_ROTATION_MODE_SYSTEM = 2;
+    public static final int AUTO_ROTATION_MODE_ALWAYS = 3;
 
     private Activity activity;
     private Player player;
@@ -34,6 +47,9 @@ public final class ScreenRotationHelper implements OrientationEventObserver.OnOr
     private boolean portraitFullScreen;
 
     private float videoRate;
+
+    @AutoRotation
+    private int autoRotationMode = AUTO_ROTATION_MODE_NONE;
 
     public interface OnScreenChangedListener {
         void onScreenChanged(boolean portraitFullScreen);
@@ -86,9 +102,6 @@ public final class ScreenRotationHelper implements OrientationEventObserver.OnOr
         if (player == null) {
             return false;
         }
-//        if (stopInVideoHightBigger && (videoHeight * 3 > videoWidth * 4)) {
-//            return false;
-//        }
         if (player.getPlaybackState() == Player.STATE_READY || player.getPlaybackState() == Player.STATE_BUFFERING) {
             return true;
         }
@@ -112,7 +125,7 @@ public final class ScreenRotationHelper implements OrientationEventObserver.OnOr
             }
             return;
         }
-        if (!isInEnableState()) {
+        if (!isInEnableState() || autoRotationMode == AUTO_ROTATION_MODE_NONE) {
             orientationEventObserver.disable();
             if (toggleToPortraitInDisable) {
                 maybeToggleToPortrait();
@@ -165,6 +178,16 @@ public final class ScreenRotationHelper implements OrientationEventObserver.OnOr
         return false;
     }
 
+    public void setAutoRotationMode(@AutoRotation int autoRotationMode) {
+        this.autoRotationMode = autoRotationMode;
+        switchOrientationState();
+    }
+
+    @AutoRotation
+    public int getAutoRotationMode() {
+        return autoRotationMode;
+    }
+
     public void setEnablePortraitFullScreen(boolean enablePortraitFullScreen) {
         this.enablePortraitFullScreen = enablePortraitFullScreen;
     }
@@ -207,34 +230,31 @@ public final class ScreenRotationHelper implements OrientationEventObserver.OnOr
 
     @Override
     public void onScreenOrientationChanged(int screenOrientation) {
-        Log.d(TAG, "onScreenOrientationChanged : screenOrientation=" + screenOrientation);
         int accelerometerRotation = Settings.System.getInt(activity.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
-        if (accelerometerRotation != 1) {
-            //如果用户设置关闭自动旋转屏幕，则不进行旋转
-            return;
-        }
+
+        boolean rotationAll = (autoRotationMode != AUTO_ROTATION_MODE_ONLY_LANDSCAPE) && (accelerometerRotation == 1 || autoRotationMode == AUTO_ROTATION_MODE_ALWAYS);
+
         switch (screenOrientation) {
             case OrientationEventObserver.SCREEN_ORIENTATION_PORTRAIT:
-                if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                if (rotationAll && activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                    if (onScreenChangedListener != null) {
-                        onScreenChangedListener.onScreenChanged(false);
-                    }
                 }
                 break;
             case OrientationEventObserver.SCREEN_ORIENTATION_LANDSCAPE:
                 if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    if (onScreenChangedListener != null) {
-                        onScreenChangedListener.onScreenChanged(true);
+                    if (rotationAll) {
+                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                     }
+                    return;
                 }
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 break;
             case OrientationEventObserver.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
                 if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    if (onScreenChangedListener != null) {
-                        onScreenChangedListener.onScreenChanged(true);
+                    if (rotationAll) {
+                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
                     }
+                    return;
                 }
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
                 break;
