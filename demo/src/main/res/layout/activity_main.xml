@@ -16,13 +16,6 @@
 
 
     <Button
-        android:id="@+id/screen"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="屏幕切换" />
-
-    <Button
         android:id="@+id/btnLocalVideos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
