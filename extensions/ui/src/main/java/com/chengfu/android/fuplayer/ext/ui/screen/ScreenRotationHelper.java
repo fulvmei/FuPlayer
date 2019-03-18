@@ -51,6 +51,8 @@ public final class ScreenRotationHelper implements OrientationEventObserver.OnOr
     @AutoRotation
     private int autoRotationMode = AUTO_ROTATION_MODE_NONE;
 
+    private boolean paused;
+
     public interface OnScreenChangedListener {
         void onScreenChanged(boolean portraitFullScreen);
     }
@@ -118,6 +120,10 @@ public final class ScreenRotationHelper implements OrientationEventObserver.OnOr
     }
 
     private void switchOrientationState() {
+        if (paused) {
+            orientationEventObserver.disable();
+            return;
+        }
         if (isInPortraitFullScreenState()) {
             orientationEventObserver.disable();
             if (toggleToPortraitInDisable && !isInEnableState()) {
@@ -176,6 +182,14 @@ public final class ScreenRotationHelper implements OrientationEventObserver.OnOr
             return true;
         }
         return false;
+    }
+
+    public void pause() {
+        paused = true;
+    }
+
+    public void resume() {
+        paused = false;
     }
 
     public void setAutoRotationMode(@AutoRotation int autoRotationMode) {

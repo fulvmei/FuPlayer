@@ -1,16 +1,13 @@
 package com.chengfu.android.fuplayer.ext.ui;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -28,16 +25,33 @@ public class VideoControlView extends DefaultControlView implements GestureHelpe
     ProgressBar mBottomProgressView;
     ImageView fullScreenView;
     ImageButton backView;
+
+    View slideBrightnessView;
+    TextView slideBrightnessPercent;
+    ProgressBar slideBrightnessProgress;
+
+
+    View slideForwardView;
+    ImageView slideForwardImage;
+    TextView slideForwardPercent;
+    ProgressBar slideForwardProgress;
+
+    View slideVolumeView;
+    TextView slideVolumePercent;
+    ProgressBar slideVolumeProgress;
+
+    protected OnScreenClickListener onScreenClickListener;
+
     String title;
+
     boolean showBottomProgress;
     boolean controlViewShow;
     boolean fullScreen;
     boolean showTopOnlyFullScreen;
     boolean showPlayPauseInBuffering;
-    GestureHelper gestureHelper;
-    GestureDetector mGestureDetector;
 
-    protected OnScreenClickListener onScreenClickListener;
+    GestureHelper gestureHelper;
+    GestureDetector gestureDetector;
 
     public interface OnScreenClickListener {
         void onnScreenClick(boolean fullScreen);
@@ -61,7 +75,7 @@ public class VideoControlView extends DefaultControlView implements GestureHelpe
     public VideoControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        mGestureDetector = new GestureDetector(mContext, onGestureListener);
+        gestureDetector = new GestureDetector(mContext, onGestureListener);
 
         gestureHelper = new GestureHelper(this);
 
@@ -114,6 +128,28 @@ public class VideoControlView extends DefaultControlView implements GestureHelpe
         titleView = findViewById(R.id.controller_title);
 
         setTitle(title);
+
+        slideBrightnessView = findViewById(R.id.controller_slide_brightness);
+        slideBrightnessPercent = findViewById(R.id.controller_slide_brightness_percent);
+        slideBrightnessProgress = findViewById(R.id.controller_slide_brightness_progress);
+        if (slideBrightnessProgress != null) {
+            slideBrightnessProgress.setMax(100);
+        }
+
+        slideForwardView = findViewById(R.id.controller_slide_forward);
+        slideForwardImage = findViewById(R.id.controller_slide_forward_image);
+        slideForwardPercent = findViewById(R.id.controller_slide_forward_percent);
+        slideForwardProgress = findViewById(R.id.controller_slide_forward_progress);
+        if (slideForwardProgress != null) {
+            slideForwardProgress.setMax(100);
+        }
+
+        slideVolumeView = findViewById(R.id.controller_slide_volume);
+        slideVolumePercent = findViewById(R.id.controller_slide_volume_percent);
+        slideVolumeProgress = findViewById(R.id.controller_slide_volume_progress);
+        if (slideVolumeProgress != null) {
+            slideVolumeProgress.setMax(100);
+        }
     }
 
     @Override
@@ -160,6 +196,10 @@ public class VideoControlView extends DefaultControlView implements GestureHelpe
         updateBottomProgressView();
     }
 
+    public void setEnableGestureType(int enableGestureType) {
+        gestureHelper.setShowType(enableGestureType);
+    }
+
     public boolean isShowTopOnlyFullScreen() {
         return showTopOnlyFullScreen;
     }
@@ -183,7 +223,6 @@ public class VideoControlView extends DefaultControlView implements GestureHelpe
             controllerTop.setVisibility(View.VISIBLE);
         }
     }
-
 
     public void setTitle(String title) {
         this.title = title;
@@ -295,7 +334,7 @@ public class VideoControlView extends DefaultControlView implements GestureHelpe
             gestureHelper.onUp(ev);
         }
         if (isInShowState()) {
-            return mGestureDetector.onTouchEvent(ev);
+            return gestureDetector.onTouchEvent(ev);
         }
         return false;
     }
@@ -306,45 +345,105 @@ public class VideoControlView extends DefaultControlView implements GestureHelpe
             gestureHelper.onUp(ev);
         }
         if (isInShowState()) {
-            return mGestureDetector.onTouchEvent(ev);
+            return gestureDetector.onTouchEvent(ev);
         }
         return false;
     }
 
     @Override
     public void onStartSlide(int slideType) {
+        if (!isInShowState()) {
+            return;
+        }
         if (isShowing()) {
             hide();
         }
         switch (slideType) {
-            case GestureHelper.SLIDE_TYPE_HORIZONTAL:
-                findViewById(R.id.p).setVisibility(View.VISIBLE);
+            case GestureHelper.SLIDE_TYPE_BRIGHTNESS:
+                if (slideBrightnessView != null) {
+                    slideBrightnessView.setVisibility(View.VISIBLE);
+                }
                 break;
-            case GestureHelper.SLIDE_TYPE_LEFT_VERTICAL:
-                findViewById(R.id.b).setVisibility(View.VISIBLE);
+            case GestureHelper.SLIDE_TYPE_PROGRESS:
+                if (slideForwardView != null) {
+                    slideForwardView.setVisibility(View.VISIBLE);
+                }
+                oldPosition = mPlayer.getCurrentPosition();
+                duration = mPlayer.getDuration();
                 break;
-            case GestureHelper.SLIDE_TYPE_RIGHT_VERTICAL:
-                findViewById(R.id.v).setVisibility(View.VISIBLE);
+            case GestureHelper.SLIDE_TYPE_VOLUME:
+                if (slideVolumeView != null) {
+                    slideVolumeView.setVisibility(View.VISIBLE);
+                }
                 break;
         }
     }
 
-    @Override
-    public void onProgressChanged(int slideType, float progress) {
+    long oldPosition;
+    long newPosition;
+    long duration;
 
+    @Override
+    public void onPercentChanged(int slideType, int percent) {
+        if (!isInShowState()) {
+            return;
+        }
+        switch (slideType) {
+            case GestureHelper.SLIDE_TYPE_BRIGHTNESS:
+                if (slideBrightnessPercent != null) {
+                    slideBrightnessPercent.setText(percent + "%");
+                }
+                if (slideBrightnessProgress != null) {
+                    slideBrightnessProgress.setProgress(percent);
+                }
+                break;
+            case GestureHelper.SLIDE_TYPE_PROGRESS:
+                newPosition = (long) ((percent * duration * 1.0f / 100) + oldPosition);
+                if (newPosition > duration) {
+                    newPosition = duration;
+                } else if (newPosition < 0) {
+                    newPosition = 0;
+                }
+
+                if (slideForwardPercent != null) {
+                    slideForwardPercent.setText((int) (newPosition * 1.0f / duration * 100) + "%");
+                }
+                if (slideForwardProgress != null) {
+                    slideForwardProgress.setProgress((int) (newPosition * 1.0f / duration * 100));
+                }
+                if (slideForwardImage != null) {
+                    slideForwardImage.setImageResource(percent < 0 ? R.drawable.fpu_ic_control_slide_rewind : R.drawable.fpu_ic_control_slide_forward);
+                }
+                break;
+            case GestureHelper.SLIDE_TYPE_VOLUME:
+                if (slideVolumePercent != null) {
+                    slideVolumePercent.setText(percent + "%");
+                }
+                if (slideVolumeProgress != null) {
+                    slideVolumeProgress.setProgress(percent);
+                }
+                break;
+        }
     }
 
     @Override
     public void onStopSlide(int slideType) {
         switch (slideType) {
-            case GestureHelper.SLIDE_TYPE_HORIZONTAL:
-                findViewById(R.id.p).setVisibility(View.GONE);
+            case GestureHelper.SLIDE_TYPE_BRIGHTNESS:
+                if (slideBrightnessView != null) {
+                    slideBrightnessView.setVisibility(View.GONE);
+                }
                 break;
-            case GestureHelper.SLIDE_TYPE_LEFT_VERTICAL:
-                findViewById(R.id.b).setVisibility(View.GONE);
+            case GestureHelper.SLIDE_TYPE_PROGRESS:
+                if (slideForwardView != null) {
+                    slideForwardView.setVisibility(View.GONE);
+                }
+                seekTo(newPosition);
                 break;
-            case GestureHelper.SLIDE_TYPE_RIGHT_VERTICAL:
-                findViewById(R.id.v).setVisibility(View.GONE);
+            case GestureHelper.SLIDE_TYPE_VOLUME:
+                if (slideVolumeView != null) {
+                    slideVolumeView.setVisibility(View.GONE);
+                }
                 break;
         }
     }

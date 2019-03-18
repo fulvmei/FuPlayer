@@ -20,6 +20,7 @@ import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
 //import com.chengfu.player.extensions.pldroid.PLPlayer;
+import com.chengfu.android.fuplayer.ext.ui.gesture.GestureHelper;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -125,16 +126,11 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         controlView.setTitle(media.getName());
 
+        controlView.setEnableGestureType(GestureHelper.SHOW_TYPE_BRIGHTNESS|GestureHelper.SHOW_TYPE_PROGRESS|GestureHelper.SHOW_TYPE_VOLUME);
         controlView.setShowBottomProgress(true);
         controlView.setShowTopOnlyFullScreen(true);
 
         controlView.setOnScreenClickListener(fullScreen -> {
-//            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//
-//            } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//            }
             screenRotationHelper.manualToggleOrientation();
         });
 

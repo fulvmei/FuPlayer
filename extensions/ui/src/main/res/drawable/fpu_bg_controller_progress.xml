@@ -3,14 +3,14 @@
 
     <item android:id="@android:id/background">
         <shape>
-            <corners android:radius="1px" />
+            <corners android:radius="1dp" />
             <solid android:color="@color/fpu_color_progress_bg" />
         </shape>
     </item>
     <item android:id="@android:id/secondaryProgress">
         <clip>
             <shape>
-                <corners android:radius="1px" />
+                <corners android:radius="1dp" />
                 <solid android:color="@color/fpu_color_progress_progress2" />
             </shape>
         </clip>
@@ -18,7 +18,7 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape>
-                <corners android:radius="1px" />
+                <corners android:radius="1dp" />
                 <solid android:color="@color/fpu_color_progress_progress" />
             </shape>
         </clip>

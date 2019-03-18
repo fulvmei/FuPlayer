@@ -120,55 +120,115 @@
         </RelativeLayout>
 
         <LinearLayout
-            android:id="@+id/p"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:id="@+id/controller_slide_brightness"
+            android:layout_width="155dp"
+            android:layout_height="120dp"
             android:layout_centerInParent="true"
-            android:background="#CC000000"
-            android:gravity="center"
+            android:background="@drawable/fpu_bg_controller_slide"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
             android:visibility="gone">
 
-            <TextView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="进度"
-                android:textColor="#ffffff" />
+                android:layout_marginTop="20dp"
+                android:src="@drawable/fpu_ic_control_slide_brightness" />
+
+            <TextView
+                android:id="@+id/controller_slide_brightness_percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="0%"
+                android:textColor="#ffffff"
+                android:textSize="12sp" />
+
+            <ProgressBar
+                android:id="@+id/controller_slide_brightness_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="24dp"
+                android:progressDrawable="@drawable/fpu_bg_controller_progress" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/b"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:id="@+id/controller_slide_forward"
+            android:layout_width="155dp"
+            android:layout_height="120dp"
             android:layout_centerInParent="true"
-            android:background="#CC000000"
-            android:gravity="center"
+            android:background="@drawable/fpu_bg_controller_slide"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
             android:visibility="gone">
 
-            <TextView
+            <ImageView
+                android:id="@+id/controller_slide_forward_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="亮度"
-                android:textColor="#ffffff" />
+                android:layout_marginTop="20dp"
+                android:src="@drawable/fpu_ic_control_slide_forward" />
+
+            <TextView
+                android:id="@+id/controller_slide_forward_percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="0%"
+                android:textColor="#ffffff"
+                android:textSize="12sp" />
+
+            <ProgressBar
+                android:id="@+id/controller_slide_forward_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="24dp"
+                android:progressDrawable="@drawable/fpu_bg_controller_progress" />
+
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/v"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:id="@+id/controller_slide_volume"
+            android:layout_width="155dp"
+            android:layout_height="120dp"
             android:layout_centerInParent="true"
-            android:background="#CC000000"
-            android:gravity="center"
+            android:background="@drawable/fpu_bg_controller_slide"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
             android:visibility="gone">
 
-            <TextView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="声音"
-                android:textColor="#ffffff" />
+                android:layout_marginTop="20dp"
+                android:src="@drawable/fpu_ic_control_slide_volume_on" />
+
+            <TextView
+                android:id="@+id/controller_slide_volume_percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="0%"
+                android:textColor="#ffffff"
+                android:textSize="12sp" />
+
+            <ProgressBar
+                android:id="@+id/controller_slide_volume_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="24dp"
+                android:progressDrawable="@drawable/fpu_bg_controller_progress" />
+
         </LinearLayout>
 
         <ProgressBar
