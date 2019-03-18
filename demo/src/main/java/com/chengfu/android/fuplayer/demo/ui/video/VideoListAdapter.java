@@ -29,6 +29,7 @@ import com.chengfu.android.fuplayer.ext.ui.ListVideoPlayView;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
+import com.chengfu.android.fuplayer.ext.ui.gesture.GestureHelper;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -191,14 +192,11 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     }
 
     public boolean onBackPressed() {
-        boolean b = screenRotationHelper.maybeToggleToPortrait();
-        System.out.println("onBackPressed  return=" + b);
-        return b;
+        return screenRotationHelper.maybeToggleToPortrait();
     }
 
     @Override
     public void onScreenChanged(boolean portraitFullScreen) {
-        System.out.println("onScreenChanged  portraitFullScreen=" + portraitFullScreen);
         toggleScreen(portraitFullScreen);
     }
 
@@ -221,6 +219,8 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
                 videoFullScreenContainer.addView(currentPlayVH.videoRoot);
             }
             currentPlayVH.controlView.setFullScreen(true);
+            currentPlayVH.controlView.setEnableGestureType(GestureHelper.SHOW_TYPE_BRIGHTNESS | GestureHelper.SHOW_TYPE_PROGRESS | GestureHelper.SHOW_TYPE_VOLUME);
+
 
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         } else {
@@ -230,8 +230,16 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
                 currentPlayVH.videoContainer.addView(currentPlayVH.videoRoot);
             }
             currentPlayVH.controlView.setFullScreen(false);
+            currentPlayVH.controlView.setEnableGestureType(GestureHelper.SHOW_TYPE_NONE);
 
-            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+            if (activity != null) {
+                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+                WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
+                lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
+                activity.getWindow().setAttributes(lp);
+            }
         }
     }
 
@@ -319,19 +327,21 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             player.prepare(MediaSourceUtil.getMediaSource(APP.application, dataList.get(getAdapterPosition()).getPath()));
             player.setPlayWhenReady(true);
 
-//            screenRotationHelper.resume();
+            screenRotationHelper.resume();
         }
 
         void pausePlay() {
             if (player.getPlayWhenReady()) {
                 player.setPlayWhenReady(false);
             }
+            screenRotationHelper.pause();
         }
 
         void resumePlay() {
             if (!player.getPlayWhenReady()) {
                 player.setPlayWhenReady(true);
             }
+            screenRotationHelper.resume();
         }
 
         void stopPlay() {
@@ -340,7 +350,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             playView.setVisibility(View.VISIBLE);
             noWifiView.hide();
             player.stop();
-//            screenRotationHelper.pause();
+            screenRotationHelper.pause();
         }
     }
 }

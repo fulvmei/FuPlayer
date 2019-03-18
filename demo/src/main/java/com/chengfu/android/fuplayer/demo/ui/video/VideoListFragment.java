@@ -109,7 +109,7 @@ public class VideoListFragment extends Fragment implements IBackPressed {
             if (hidden) {
                 adapter.maybeStopPlay();
             } else {
-//                adapter.maybeStartPlay();
+                adapter.maybeStartPlay();
             }
         }
     }
@@ -121,7 +121,7 @@ public class VideoListFragment extends Fragment implements IBackPressed {
             if (!isVisibleToUser) {
                 adapter.maybeStopPlay();
             } else {
-//                adapter.maybeStartPlay();
+                adapter.maybeStartPlay();
             }
         }
     }

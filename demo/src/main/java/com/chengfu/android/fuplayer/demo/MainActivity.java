@@ -3,6 +3,7 @@ package com.chengfu.android.fuplayer.demo;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.chengfu.android.fuplayer.demo.ui.local.LocalVideosActivity;
 import com.chengfu.android.fuplayer.demo.ui.video.VideoListActivity;
@@ -15,6 +16,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         findViewById(R.id.btnLocalVideos).setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, LocalVideosActivity.class);
