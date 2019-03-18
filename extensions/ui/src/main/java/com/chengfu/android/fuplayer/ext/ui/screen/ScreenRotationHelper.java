@@ -97,7 +97,7 @@ public final class ScreenRotationHelper implements OrientationEventObserver.OnOr
     }
 
     private boolean isInPortraitFullScreenState() {
-        return enablePortraitFullScreen && (videoRate == 0f || videoRate > DEFAUT_RATE);
+        return enablePortraitFullScreen && videoRate > DEFAUT_RATE;
     }
 
     private boolean isInEnableState() {
@@ -186,10 +186,12 @@ public final class ScreenRotationHelper implements OrientationEventObserver.OnOr
 
     public void pause() {
         paused = true;
+        switchOrientationState();
     }
 
     public void resume() {
         paused = false;
+        switchOrientationState();
     }
 
     public void setAutoRotationMode(@AutoRotation int autoRotationMode) {

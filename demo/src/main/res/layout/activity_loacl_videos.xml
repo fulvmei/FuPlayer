@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
-        app:navigationIcon="@drawable/ic_arrow_back_white_24dp" />
+        app:navigationIcon="@drawable/fpu_ic_control_back_n_land" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
