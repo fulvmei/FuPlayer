@@ -17,7 +17,7 @@ public class GestureHelper {
 
     public static final String TAG = "GestureHelper";
 
-    public static final float DEFAULT_SLIP_RATE = 1f;//滑动速率
+    public static final float DEFAULT_SLIP_RATE = 0.8f;//滑动速率
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SLIDE_TYPE_PROGRESS, SLIDE_TYPE_VOLUME, SLIDE_TYPE_BRIGHTNESS})

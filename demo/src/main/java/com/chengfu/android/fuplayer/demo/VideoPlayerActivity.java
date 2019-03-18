@@ -126,7 +126,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         controlView.setTitle(media.getName());
 
-        controlView.setEnableGestureType(GestureHelper.SHOW_TYPE_BRIGHTNESS|GestureHelper.SHOW_TYPE_PROGRESS|GestureHelper.SHOW_TYPE_VOLUME);
+        controlView.setEnableGestureType(GestureHelper.SHOW_TYPE_BRIGHTNESS | GestureHelper.SHOW_TYPE_PROGRESS | GestureHelper.SHOW_TYPE_VOLUME);
         controlView.setShowBottomProgress(true);
         controlView.setShowTopOnlyFullScreen(true);
 
@@ -178,20 +178,27 @@ public class VideoPlayerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         playerView.onResume();
-//        screenRotationHelper.resume();
+        screenRotationHelper.resume();
+        if (player != null) {
+            player.setPlayWhenReady(true);
+        }
         super.onResume();
     }
 
     @Override
     protected void onPause() {
         playerView.onPause();
-//        screenRotationHelper.pause();
+        screenRotationHelper.pause();
+        if (player != null) {
+            player.setPlayWhenReady(false);
+        }
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
         player.release();
+        screenRotationHelper.pause();
         super.onDestroy();
     }
 }
