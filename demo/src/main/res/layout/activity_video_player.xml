@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <com.chengfu.android.fuplayer.SampleBufferingView
+        <com.chengfu.android.fuplayer.ext.ui.VideoBufferingView
             android:id="@+id/bufferingView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

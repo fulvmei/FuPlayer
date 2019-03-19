@@ -45,5 +45,5 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     implementation project(':library')
     implementation project(':extensions:ui')
-    implementation project(':extensions:exo')
+    //    implementation project(':extensions:exo')
 }

@@ -46,14 +46,13 @@ public class ListVideoImageView extends BaseStateView {
         } else {
             canHidden = false;
         }
-        System.out.println("onAttachedToPlayer  " + player.getPlaybackState() + ",canHidden=" + canHidden);
-        updataVisibility();
+        updateVisibility();
     }
 
     @Override
     protected void onDetachedFromPlayer() {
         canHidden = false;
-        updataVisibility();
+        updateVisibility();
     }
 
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
@@ -64,7 +63,7 @@ public class ListVideoImageView extends BaseStateView {
         return image;
     }
 
-    protected void updataVisibility() {
+    protected void updateVisibility() {
         if (isInShowState()) {
             setVisibility(VISIBLE);
         } else {
@@ -86,13 +85,12 @@ public class ListVideoImageView extends BaseStateView {
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-
-        updataVisibility();
+        updateVisibility();
     }
 
     @Override
     public void onRenderedFirstFrame() {
         canHidden = true;
-        updataVisibility();
+        updateVisibility();
     }
 }

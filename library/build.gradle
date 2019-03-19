@@ -38,5 +38,5 @@ dependencies {
     compileOnly 'org.checkerframework:checker-qual:2.5.3'
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.3'
     api 'com.google.android.exoplayer:exoplayer-core:2.9.6'
-        api 'com.google.android.exoplayer:exoplayer-ui:2.9.6'
+    api 'com.google.android.exoplayer:exoplayer-ui:2.9.6'
 }

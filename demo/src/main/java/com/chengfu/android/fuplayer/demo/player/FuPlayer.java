@@ -22,6 +22,7 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.mediasession.DefaultPlaybackController;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 
+import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class FuPlayer extends PlayerAdapter {
@@ -61,7 +62,6 @@ public class FuPlayer extends PlayerAdapter {
         mediaSessionConnector.setPlayer(player, null);
 
         player.addListener(mComponentListener);
-
     }
 
     protected FuPlayer(@NonNull ExoPlayer player) {
@@ -131,10 +131,28 @@ public class FuPlayer extends PlayerAdapter {
         }
         mStateViewsHolder.remove(stateViewHolder);
         stateView.setPlayer(null);
+        stateView.setVisibilityChangeListener(null);
+    }
+
+    public void clearStateViews() {
+        for (StateViewHolder holder : mStateViewsHolder) {
+            holder.stateView.setPlayer(null);
+            holder.stateView.setVisibilityChangeListener(null);
+        }
+        mStateViewsHolder.clear();
     }
 
     public void setScreenRotation(ScreenRotationHelper screenRotation) {
+        if (this.mScreenRotation == screenRotation) {
+            return;
+        }
+        if (this.mScreenRotation != null) {
+            this.mScreenRotation.setPlayer(null);
+        }
         this.mScreenRotation = screenRotation;
+        if (screenRotation != null) {
+            screenRotation.setPlayer(mPlayer);
+        }
     }
 
     public ScreenRotationHelper getScreenRotation() {
