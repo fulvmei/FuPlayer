@@ -29,7 +29,7 @@ import com.chengfu.android.fuplayer.ext.ui.ListVideoPlayView;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
-import com.chengfu.android.fuplayer.ext.ui.gesture.GestureHelper;
+import com.chengfu.android.fuplayer.ext.ui.gesture.GestureImpl;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -219,7 +219,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
                 videoFullScreenContainer.addView(currentPlayVH.videoRoot);
             }
             currentPlayVH.controlView.setFullScreen(true);
-            currentPlayVH.controlView.setEnableGestureType(GestureHelper.SHOW_TYPE_BRIGHTNESS | GestureHelper.SHOW_TYPE_PROGRESS | GestureHelper.SHOW_TYPE_VOLUME);
+            currentPlayVH.controlView.setEnableGestureType(VideoControlView.Gesture.SHOW_TYPE_BRIGHTNESS | VideoControlView.Gesture.SHOW_TYPE_PROGRESS | VideoControlView.Gesture.SHOW_TYPE_VOLUME);
 
 
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -230,7 +230,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
                 currentPlayVH.videoContainer.addView(currentPlayVH.videoRoot);
             }
             currentPlayVH.controlView.setFullScreen(false);
-            currentPlayVH.controlView.setEnableGestureType(GestureHelper.SHOW_TYPE_NONE);
+            currentPlayVH.controlView.setEnableGestureType(VideoControlView.Gesture.SHOW_TYPE_NONE);
 
 
             if (activity != null) {
@@ -283,10 +283,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             imageView = new ListVideoImageView(itemView.getContext());
 
 
-            playerView.addStateView(imageView);
-            playerView.addStateView(loadingView);
-            playerView.addStateView(playView);
-            playerView.addStateView(errorView);
+//            playerView.addStateView(imageView);
+//            playerView.addStateView(loadingView);
+//            playerView.addStateView(playView);
+//            playerView.addStateView(errorView);
 
             playView.setOnPlayerClickListener(v -> {
                 maybeStopPlay();

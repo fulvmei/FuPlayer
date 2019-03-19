@@ -25,9 +25,25 @@
         <com.chengfu.android.fuplayer.ext.ui.VideoControlView
             android:id="@+id/controlView"
             android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.chengfu.android.fuplayer.SampleBufferingView
+            android:id="@+id/bufferingView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+        <com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView
+            android:id="@+id/errorView"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:show_in_buffering="true"
-            app:show_in_ended="false" />
+            android:clickable="true" />
+
+        <com.chengfu.android.fuplayer.SampleEndedView
+            android:id="@+id/endedView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true" />
 
     </FrameLayout>
 

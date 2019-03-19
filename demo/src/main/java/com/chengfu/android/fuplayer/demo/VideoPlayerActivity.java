@@ -4,36 +4,40 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import com.chengfu.android.fuplayer.BaseStateView;
 import com.chengfu.android.fuplayer.FuPlayerView;
 import com.chengfu.android.fuplayer.SampleBufferingView;
 import com.chengfu.android.fuplayer.SampleEndedView;
 import com.chengfu.android.fuplayer.demo.bean.Video;
 import com.chengfu.android.fuplayer.demo.immersion.ImmersionBar;
 import com.chengfu.android.fuplayer.demo.immersion.QMUIStatusBarHelper;
+
+import com.chengfu.android.fuplayer.demo.player.FuPlayer;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
-//import com.chengfu.android.fuplayer.demo.util.ScreenRotationHelper;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
-//import com.chengfu.player.extensions.pldroid.PLPlayer;
-import com.chengfu.android.fuplayer.ext.ui.gesture.GestureHelper;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 
 
 public class VideoPlayerActivity extends AppCompatActivity {
+    public static final String TAG = "VideoPlayerActivity";
     private Video media;
     private View playerRoot;
     private FuPlayerView playerView;
     private VideoControlView controlView;
-    private Player player;
-    private ScreenRotationHelper screenRotationHelper;
+    private FuPlayer player;
+//    private ScreenRotationHelper screenRotationHelper;
 
 
     @Override
@@ -57,7 +61,11 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         initControlView();
 
-        screenRotationHelper = new ScreenRotationHelper(this);
+        initScreenRotation();
+    }
+
+    private void initScreenRotation() {
+        ScreenRotationHelper screenRotationHelper = new ScreenRotationHelper(this);
         screenRotationHelper.setPlayer(player);
         screenRotationHelper.setDisableInPlayerStateEnd(true);
         screenRotationHelper.setDisableInPlayerStateError(false);
@@ -66,97 +74,85 @@ public class VideoPlayerActivity extends AppCompatActivity {
         screenRotationHelper.setAutoRotationMode(ScreenRotationHelper.AUTO_ROTATION_MODE_SYSTEM);
 
         screenRotationHelper.setOnScreenChangedListener(portraitFullScreen -> {
-            if (portraitFullScreen) {
-
-                controlView.setFullScreen(true);
-
-                ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
-                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-//            playerRoot.setLayoutParams(layoutParams);
-
-                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            } else {
-                controlView.setFullScreen(false);
-
-                ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
-                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                layoutParams.height = 608;
-
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            }
+            changedScreen(portraitFullScreen);
         });
+
+        player.setScreenRotation(screenRotationHelper);
     }
 
     private void initPlayer() {
-        ExoPlayer exoPlayer = ExoPlayerFactory.newSimpleInstance(this);
-        exoPlayer.prepare(MediaSourceUtil.getMediaSource(this, media.getPath()));
-        player = exoPlayer;
+        player = new FuPlayer(this, ExoPlayerFactory.newSimpleInstance(this));
+        player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath()));
         player.setPlayWhenReady(true);
     }
 
     private void initPlayerView() {
         playerView = findViewById(R.id.playerView);
 
-        SampleBufferingView loadingView = new SampleBufferingView(this);
-        VideoPlayErrorView errorView = new VideoPlayErrorView(this);
-        SampleEndedView endedView = new SampleEndedView(this);
+        SampleBufferingView loadingView = findViewById(R.id.bufferingView);
+        VideoPlayErrorView errorView = findViewById(R.id.errorView);
+        SampleEndedView endedView = findViewById(R.id.endedView);
 
-        errorView.setOnReTryClickListener(v -> player.setPlayWhenReady(true));
+//        errorView.setOnReTryClickListener(v -> player.setPlayWhenReady(true));
 
-        endedView.setOnReTryClickListener(v -> {
-            if (player.getPlaybackState() == Player.STATE_ENDED) {
-                player.seekTo(0);
-            }
-            player.setPlayWhenReady(true);
-        });
+//        endedView.setOnReTryClickListener(v -> {
+//            if (player.getPlaybackState() == Player.STATE_ENDED) {
+//                player.seekTo(0);
+//            }
+//            player.setPlayWhenReady(true);
+//        });
 
-        playerView.addStateView(loadingView);
-        playerView.addStateView(errorView);
-        playerView.addStateView(endedView);
+//        player.addStateView(loadingView);
 
-        playerView.setPlayer(player);
 
+//        loadingView.setPlayer(player);
+//        errorView.setPlayer(player);
+//        endedView.setPlayer(player);
+
+//        errorView.setVisibilityChangeListener((stateView, visibility) -> maybeHideController());
+//
+//        endedView.setVisibilityChangeListener((stateView, visibility) -> maybeHideController());
+
+        player.addStateView(loadingView);
+        player.addStateView(errorView, true);
+        player.addStateView(endedView, true);
+
+
+        player.setPlayerView(playerView);
     }
 
     private void initControlView() {
         controlView = findViewById(R.id.controlView);
-
-        controlView.setPlayer(player);
-
         controlView.setTitle(media.getName());
 
-        controlView.setEnableGestureType(GestureHelper.SHOW_TYPE_BRIGHTNESS | GestureHelper.SHOW_TYPE_PROGRESS | GestureHelper.SHOW_TYPE_VOLUME);
+        controlView.setEnableGestureType(VideoControlView.Gesture.SHOW_TYPE_BRIGHTNESS | VideoControlView.Gesture.SHOW_TYPE_PROGRESS | VideoControlView.Gesture.SHOW_TYPE_VOLUME);
         controlView.setShowBottomProgress(true);
         controlView.setShowTopOnlyFullScreen(true);
+        controlView.setShowAlwaysInPaused(true);
 
         controlView.setOnScreenClickListener(fullScreen -> {
-            screenRotationHelper.manualToggleOrientation();
+            player.getScreenRotation().manualToggleOrientation();
         });
 
         controlView.setOnBackClickListener(v -> {
-            if (!screenRotationHelper.maybeToggleToPortrait()) {
+            if (!player.getScreenRotation().maybeToggleToPortrait()) {
                 finish();
             }
         });
 
+        player.setVideoControlView(controlView);
     }
 
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
+    private void changedScreen(boolean fullScreen) {
+        if (fullScreen) {
             controlView.setFullScreen(true);
 
             ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-//            playerRoot.setLayoutParams(layoutParams);
 
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+        } else {
             controlView.setFullScreen(false);
 
             ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
@@ -168,37 +164,38 @@ public class VideoPlayerActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        if (!screenRotationHelper.maybeToggleToPortrait()) {
-            finish();
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            changedScreen(true);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            changedScreen(false);
         }
     }
 
 
     @Override
     protected void onResume() {
-        playerView.onResume();
-        screenRotationHelper.resume();
-        if (player != null) {
-            player.setPlayWhenReady(true);
-        }
+        player.onResume();
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        playerView.onPause();
-        screenRotationHelper.pause();
-        if (player != null) {
-            player.setPlayWhenReady(false);
-        }
+        player.onPause();
         super.onPause();
     }
 
     @Override
+    public void onBackPressed() {
+        if (!player.onBackPressed()) {
+            finish();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
-        player.release();
-        screenRotationHelper.pause();
+        player.onDestroy();
         super.onDestroy();
     }
 }

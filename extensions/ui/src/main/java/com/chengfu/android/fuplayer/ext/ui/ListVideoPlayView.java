@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.chengfu.android.fuplayer.BaseStateView;
 import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 
 public class ListVideoPlayView extends BaseStateView {
@@ -82,7 +83,7 @@ public class ListVideoPlayView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(Player player) {
+    protected void onAttachedToPlayer(ExoPlayer player) {
         updateVisibility();
     }
 

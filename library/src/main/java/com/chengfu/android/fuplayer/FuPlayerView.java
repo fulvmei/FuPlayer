@@ -24,6 +24,7 @@ import com.chengfu.android.fuplayer.spherical.SingleTapListener;
 import com.chengfu.android.fuplayer.spherical.SphericalSurfaceView;
 import com.chengfu.android.fuplayer.util.FuLog;
 import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextOutput;
@@ -32,7 +33,6 @@ import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoListener;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 public class FuPlayerView extends FrameLayout {
 
@@ -53,11 +53,11 @@ public class FuPlayerView extends FrameLayout {
     private View mSurfaceView;
     private ImageView shutterView;
     private SubtitleView subtitleView;
-    private CopyOnWriteArraySet<BaseStateView> mStateViews = new CopyOnWriteArraySet<>();
-    private PlayerController playerController;
-    private FrameLayout overlayFrameLayout;
+    //    private CopyOnWriteArraySet<BaseStateView> mStateViews = new CopyOnWriteArraySet<>();
+//    private PlayerController playerController;
+//    private FrameLayout overlayFrameLayout;
 
-    private Player mPlayer;
+    private ExoPlayer mPlayer;
     private ComponentListener componentListener;
 
     private int mTextureViewRotation;
@@ -115,13 +115,7 @@ public class FuPlayerView extends FrameLayout {
 
         setResizeMode(resizeMode);
 
-        updateAllViews();
-
-    }
-
-    private void updateAllViews() {
         updateScreenOn();
-        updateStateViews();
     }
 
     private void updateScreenOn() {
@@ -134,15 +128,11 @@ public class FuPlayerView extends FrameLayout {
     }
 
 
-    private void updateStateViews() {
-        for (BaseStateView stateView : mStateViews) {
-            stateView.setPlayer(mPlayer);
-        }
-    }
-
-    public SubtitleView getSubtitleView() {
-        return subtitleView;
-    }
+//    private void updateStateViews() {
+//        for (BaseStateView stateView : mStateViews) {
+//            stateView.setPlayer(mPlayer);
+//        }
+//    }
 
     public void setShutterBackgroundColor(int color) {
         if (shutterView != null) {
@@ -175,7 +165,6 @@ public class FuPlayerView extends FrameLayout {
                 mSurfaceView = new TextureView(getContext());
                 break;
             case SURFACE_TYPE_MONO360_VIEW:
-                Assertions.checkState(Util.SDK_INT >= 15);
                 SphericalSurfaceView sphericalSurfaceView = new SphericalSurfaceView(getContext());
                 sphericalSurfaceView.setSurfaceListener(componentListener);
                 sphericalSurfaceView.setSingleTapListener(componentListener);
@@ -207,10 +196,6 @@ public class FuPlayerView extends FrameLayout {
         return mSurfaceType;
     }
 
-    public View getSurface() {
-        return mSurfaceView;
-    }
-
     public void setResizeMode(int resizeMode) {
         if (mResizeMode == resizeMode
                 || (resizeMode != RESIZE_MODE_FIT
@@ -231,14 +216,14 @@ public class FuPlayerView extends FrameLayout {
     }
 
     /**
-     * Switches the view targeted by a given {@link Player}.
+     * Switches the view targeted by a given {@link ExoPlayer}.
      *
      * @param player        The player whose target view is being switched.
      * @param oldPlayerView The old view to detach from the player.
      * @param newPlayerView The new view to attach to the player.
      */
     public static void switchTargetView(
-            Player player, @Nullable FuPlayerView oldPlayerView, @Nullable FuPlayerView newPlayerView) {
+            ExoPlayer player, @Nullable FuPlayerView oldPlayerView, @Nullable FuPlayerView newPlayerView) {
         if (oldPlayerView == newPlayerView) {
             return;
         }
@@ -257,24 +242,24 @@ public class FuPlayerView extends FrameLayout {
     /**
      * Returns the player currently set on this view, or null if no player is set.
      */
-    public Player getPlayer() {
+    public ExoPlayer getPlayer() {
         return mPlayer;
     }
 
     /**
-     * Set the {@link Player} to use.
+     * Set the {@link ExoPlayer} to use.
      *
-     * <p>To transition a {@link Player} from targeting one view to another, it's recommended to use
-     * {@link #switchTargetView(Player, FuPlayerView, FuPlayerView)} rather than this method. If you do
+     * <p>To transition a {@link ExoPlayer} from targeting one view to another, it's recommended to use
+     * {@link #switchTargetView(ExoPlayer, FuPlayerView, FuPlayerView)} rather than this method. If you do
      * wish to use this method directly, be sure to attach the player to the new view <em>before</em>
      * calling {@code setPlayer(null)} to detach it from the old one. This ordering is significantly
      * more efficient and may allow for more seamless transitions.
      *
-     * @param player The {@link Player} to use, or {@code null} to detach the current player. Only
+     * @param player The {@link ExoPlayer} to use, or {@code null} to detach the current player. Only
      *               players which are accessed on the main thread are supported ({@code
      *               player.getApplicationLooper() == Looper.getMainLooper()}).
      */
-    public void setPlayer(@Nullable Player player) {
+    public void setPlayer(@Nullable ExoPlayer player) {
         Assertions.checkState(Looper.myLooper() == Looper.getMainLooper());
         Assertions.checkArgument(
                 player == null || player.getApplicationLooper() == Looper.getMainLooper());
@@ -318,26 +303,26 @@ public class FuPlayerView extends FrameLayout {
             }
             player.addListener(componentListener);
         }
-        updateAllViews();
+        updateScreenOn();
     }
 
-    public void addStateView(BaseStateView stateView) {
-        if (stateView == null || mStateViews.contains(stateView)) {
-            return;
-        }
-        addView(stateView, getChildCount());
-        mStateViews.add(stateView);
-        stateView.setPlayer(mPlayer);
-    }
+//    public void addStateView(BaseStateView stateView) {
+//        if (stateView == null || mStateViews.contains(stateView)) {
+//            return;
+//        }
+//        addView(stateView, getChildCount());
+//        mStateViews.add(stateView);
+//        stateView.setPlayer(mPlayer);
+//    }
 
-    public void removeStateView(BaseStateView stateView) {
-        if (stateView == null || !mStateViews.contains(stateView)) {
-            return;
-        }
-        removeView(stateView);
-        mStateViews.remove(stateView);
-        stateView.setPlayer(null);
-    }
+//    public void removeStateView(BaseStateView stateView) {
+//        if (stateView == null || !mStateViews.contains(stateView)) {
+//            return;
+//        }
+//        removeView(stateView);
+//        mStateViews.remove(stateView);
+//        stateView.setPlayer(null);
+//    }
 
     /**
      * Should be called when the player is visible to the user and if {@code surface_type} is {@code

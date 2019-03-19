@@ -8,16 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 
 public class SampleEndedView extends BaseStateView {
 
-    protected OnReTryClickListener onReTryClickListener;
+    protected OnRetryListener onRetryListener;
 
     protected boolean showInDetachPlayer;
 
-    public interface OnReTryClickListener {
-        void onReTryClick(View v);
+    public interface OnRetryListener {
+        boolean onRetry(ExoPlayer player);
     }
 
     public SampleEndedView(@NonNull Context context) {
@@ -37,37 +38,51 @@ public class SampleEndedView extends BaseStateView {
             addView(view);
         }
 
-        updataVisibility();
+        updateVisibility();
 
         View retry = findViewById(R.id.btn_retry);
         if (retry != null) {
             retry.setOnClickListener(v -> {
-                if (onReTryClickListener != null) {
-                    onReTryClickListener.onReTryClick(v);
+                if (onRetryListener != null && onRetryListener.onRetry(player)) {
+                    return;
+                }
+                if (player != null && player.getPlaybackState() == Player.STATE_ENDED) {
+                    player.seekTo(0);
+                    player.setPlayWhenReady(true);
                 }
             });
         }
     }
 
     @Override
-    protected void onAttachedToPlayer(Player player) {
-        updataVisibility();
+    protected void onAttachedToPlayer(ExoPlayer player) {
+        updateVisibility();
     }
 
     @Override
     protected void onDetachedFromPlayer() {
-        updataVisibility();
+        updateVisibility();
     }
 
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
-        return inflater.inflate(R.layout.sample_ended_view, parent, false);
+        return inflater.inflate(getLayoutResourcesId(), parent, false);
     }
 
-    protected void updataVisibility() {
+    protected int getLayoutResourcesId() {
+        return R.layout.sample_ended_view;
+    }
+
+    protected void updateVisibility() {
         if (isInShowState()) {
-            setVisibility(VISIBLE);
+            if (getVisibility() == GONE) {
+                setVisibility(VISIBLE);
+                dispatchVisibilityChanged(true);
+            }
         } else {
-            setVisibility(GONE);
+            if (getVisibility() == VISIBLE) {
+                setVisibility(GONE);
+                dispatchVisibilityChanged(false);
+            }
         }
     }
 
@@ -87,20 +102,19 @@ public class SampleEndedView extends BaseStateView {
 
     public void setShowInDetachPlayer(boolean showInDetachPlayer) {
         this.showInDetachPlayer = showInDetachPlayer;
-        updataVisibility();
+        updateVisibility();
     }
 
-
-    public OnReTryClickListener getOnReTryClickListener() {
-        return onReTryClickListener;
+    public OnRetryListener getOnRetryListener() {
+        return onRetryListener;
     }
 
-    public void setOnReTryClickListener(OnReTryClickListener l) {
-        this.onReTryClickListener = l;
+    public void setOnRetryListener(OnRetryListener onRetryListener) {
+        this.onRetryListener = onRetryListener;
     }
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        updataVisibility();
+        updateVisibility();
     }
 }

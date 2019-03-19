@@ -3,3 +3,4 @@ include ':library'
 
 include ':extensions:pldroid'
 include ':extensions:ui'
+include ':extensions:exo'
