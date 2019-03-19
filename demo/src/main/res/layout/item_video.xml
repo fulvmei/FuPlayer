@@ -30,6 +30,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
+            <com.chengfu.android.fuplayer.ext.ui.ListVideoImageView
+                android:id="@+id/videoImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.chengfu.android.fuplayer.SampleBufferingView
+                android:id="@+id/bufferingView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+            <com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView
+                android:id="@+id/errorView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.chengfu.android.fuplayer.ext.ui.ListVideoPlayView
+                android:id="@+id/playView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
             <com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView
                 android:id="@+id/noWifiView"
                 android:layout_width="match_parent"

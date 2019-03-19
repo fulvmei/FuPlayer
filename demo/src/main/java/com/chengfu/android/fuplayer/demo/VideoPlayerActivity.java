@@ -66,7 +66,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     private void initScreenRotation() {
         ScreenRotationHelper screenRotationHelper = new ScreenRotationHelper(this);
-        screenRotationHelper.setPlayer(player);
+//        screenRotationHelper.setPlayer(player);
         screenRotationHelper.setDisableInPlayerStateEnd(true);
         screenRotationHelper.setDisableInPlayerStateError(false);
         screenRotationHelper.setToggleToPortraitInDisable(true);
@@ -176,14 +176,18 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        player.onResume();
+//        player.onResume();
         super.onResume();
+
+        player.retry();
     }
 
     @Override
     protected void onPause() {
-        player.onPause();
+//        player.onPause();
         super.onPause();
+
+        player.stop();
     }
 
     @Override
