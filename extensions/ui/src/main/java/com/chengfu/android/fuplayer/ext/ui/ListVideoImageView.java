@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.chengfu.android.fuplayer.BaseStateView;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 
 public class ListVideoImageView extends BaseStateView {
@@ -39,7 +40,7 @@ public class ListVideoImageView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(Player player) {
+    protected void onAttachedToPlayer(ExoPlayer player) {
         if (player.getPlaybackState() == Player.STATE_READY && player.getPlayWhenReady()) {
             canHidden = true;
         } else {

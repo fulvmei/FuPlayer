@@ -4,40 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.provider.Settings;
-import android.support.annotation.IntDef;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 
 
-public class GestureHelper {
+public class GestureImpl implements VideoControlView.Gesture {
 
-    public static final String TAG = "GestureHelper";
-
-    public static final float DEFAULT_SLIP_RATE = 0.8f;//滑动速率
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({SLIDE_TYPE_PROGRESS, SLIDE_TYPE_VOLUME, SLIDE_TYPE_BRIGHTNESS})
-    @interface SlideType {
-    }
-
-    public static final int SLIDE_TYPE_BRIGHTNESS = 1;
-    public static final int SLIDE_TYPE_PROGRESS = 2;
-    public static final int SLIDE_TYPE_VOLUME = 3;
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({SHOW_TYPE_NONE, SHOW_TYPE_BRIGHTNESS, SHOW_TYPE_PROGRESS, SHOW_TYPE_VOLUME})
-    @interface ShowType {
-    }
-
-    public static final int SHOW_TYPE_NONE = 1;
-    public static final int SHOW_TYPE_BRIGHTNESS = 1 << 1;
-    public static final int SHOW_TYPE_PROGRESS = 1 << 2;
-    public static final int SHOW_TYPE_VOLUME = 1 << 3;
-
+    public static final String TAG = "GestureImpl";
 
     private boolean firstTouch;
     private boolean horizontalSlide;
@@ -62,16 +38,7 @@ public class GestureHelper {
     private int oldVolume;
 
 
-    public interface OnSlideChangedListener {
-
-        void onStartSlide(@SlideType int slideType);
-
-        void onPercentChanged(@SlideType int slideType, int percent);
-
-        void onStopSlide(@SlideType int slideType);
-    }
-
-    public GestureHelper(View view) {
+    public GestureImpl(View view) {
 
         view.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             viewWidth = view.getWidth();
@@ -104,14 +71,17 @@ public class GestureHelper {
         this.onSlideChangedListener = onSlideChangedListener;
     }
 
+    @Override
     public void setShowType(@ShowType int showType) {
         this.showType = showType;
     }
 
+    @Override
     public void onDown(MotionEvent ev) {
         firstTouch = true;
     }
 
+    @Override
     public void onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
         float mOldX = e1.getX();
@@ -148,6 +118,7 @@ public class GestureHelper {
         }
     }
 
+    @Override
     public void onUp(MotionEvent ev) {
         if (scrolling) {
             scrolling = false;

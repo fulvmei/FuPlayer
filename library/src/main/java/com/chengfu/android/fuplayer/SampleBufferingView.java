@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 
 import java.lang.annotation.Documented;
@@ -61,18 +62,24 @@ public class SampleBufferingView extends BaseStateView {
             addView(view);
         }
 
-        updataVisibility();
+        updateVisibility();
     }
 
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
         return inflater.inflate(R.layout.sample_buffering_view, parent, false);
     }
 
-    protected void updataVisibility() {
+    protected void updateVisibility() {
         if (isInShowState()) {
-            setVisibility(VISIBLE);
+            if (getVisibility() == GONE) {
+                setVisibility(VISIBLE);
+                dispatchVisibilityChanged(true);
+            }
         } else {
-            setVisibility(GONE);
+            if (getVisibility() == VISIBLE) {
+                setVisibility(GONE);
+                dispatchVisibilityChanged(false);
+            }
         }
     }
 
@@ -92,13 +99,13 @@ public class SampleBufferingView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(Player player) {
-        updataVisibility();
+    protected void onAttachedToPlayer(ExoPlayer player) {
+        updateVisibility();
     }
 
     @Override
     protected void onDetachedFromPlayer() {
-        updataVisibility();
+        updateVisibility();
     }
 
     @ShowMode
@@ -108,7 +115,7 @@ public class SampleBufferingView extends BaseStateView {
 
     public void setShowMode(@ShowMode int showMode) {
         this.showMode = showMode;
-        updataVisibility();
+        updateVisibility();
     }
 
     public boolean isShowInDetachPlayer() {
@@ -117,11 +124,11 @@ public class SampleBufferingView extends BaseStateView {
 
     public void setShowInDetachPlayer(boolean showInDetachPlayer) {
         this.showInDetachPlayer = showInDetachPlayer;
-        updataVisibility();
+        updateVisibility();
     }
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        updataVisibility();
+        updateVisibility();
     }
 }

@@ -6,13 +6,20 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.video.VideoListener;
 
 
 public abstract class BaseStateView extends FrameLayout implements Player.EventListener, VideoListener {
 
-    protected Player player;
+    protected ExoPlayer player;
+
+    private VisibilityChangeListener visibilityChangeListener;
+
+    public interface VisibilityChangeListener {
+        void onVisibilityChange(BaseStateView stateView, boolean visibility);
+    }
 
     public BaseStateView(@NonNull Context context) {
         this(context, null);
@@ -26,7 +33,15 @@ public abstract class BaseStateView extends FrameLayout implements Player.EventL
         super(context, attrs, defStyleAttr);
     }
 
-    public void setPlayer(Player player) {
+    public VisibilityChangeListener getVisibilityChangeListener() {
+        return visibilityChangeListener;
+    }
+
+    public void setVisibilityChangeListener(VisibilityChangeListener l) {
+        this.visibilityChangeListener = l;
+    }
+
+    public void setPlayer(ExoPlayer player) {
         if (this.player == player) {
             return;
         }
@@ -46,11 +61,20 @@ public abstract class BaseStateView extends FrameLayout implements Player.EventL
         } else {
             onDetachedFromPlayer();
         }
-
     }
 
-    protected abstract void onAttachedToPlayer(Player player);
+    protected abstract void onAttachedToPlayer(ExoPlayer player);
 
     protected abstract void onDetachedFromPlayer();
+
+    /**
+     * Dispatch callbacks to {@link #setVisibilityChangeListener} down
+     * the view hierarchy.
+     */
+    public void dispatchVisibilityChanged(boolean visibility) {
+        if (visibilityChangeListener != null) {
+            visibilityChangeListener.onVisibilityChange(this, visibility);
+        }
+    }
 
 }

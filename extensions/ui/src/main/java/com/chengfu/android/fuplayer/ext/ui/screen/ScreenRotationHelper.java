@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.provider.Settings;
 import android.support.annotation.IntDef;
 
+import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.video.VideoListener;
@@ -13,21 +14,11 @@ import com.google.android.exoplayer2.video.VideoListener;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public final class ScreenRotationHelper implements OrientationEventObserver.OnOrientationChangedListener {
+public final class ScreenRotationHelper implements VideoControlView.Rotation, OrientationEventObserver.OnOrientationChangedListener {
 
     private static final String TAG = "ScreenRotationHelper";
 
     private static final float DEFAUT_RATE = 4f / 3f;//开启竖屏全屏模式的阈值
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({AUTO_ROTATION_MODE_NONE, AUTO_ROTATION_MODE_ONLY_LANDSCAPE, AUTO_ROTATION_MODE_SYSTEM, AUTO_ROTATION_MODE_ALWAYS})
-    @interface AutoRotation {
-    }
-
-    public static final int AUTO_ROTATION_MODE_NONE = 0;
-    public static final int AUTO_ROTATION_MODE_ONLY_LANDSCAPE = 1;
-    public static final int AUTO_ROTATION_MODE_SYSTEM = 2;
-    public static final int AUTO_ROTATION_MODE_ALWAYS = 3;
 
     private Activity activity;
     private Player player;
@@ -53,12 +44,11 @@ public final class ScreenRotationHelper implements OrientationEventObserver.OnOr
 
     private boolean paused;
 
-    public interface OnScreenChangedListener {
-        void onScreenChanged(boolean portraitFullScreen);
-    }
-
     public ScreenRotationHelper(Activity activity) {
         this.activity = activity;
+        if (activity == null) {
+            throw new IllegalArgumentException("activity is null");
+        }
 
         componentListener = new ComponentListener();
 
@@ -67,10 +57,12 @@ public final class ScreenRotationHelper implements OrientationEventObserver.OnOr
         orientationEventObserver.setOnOrientationChangedListener(this);
     }
 
+    @Override
     public void setOnScreenChangedListener(OnScreenChangedListener onScreenChangedListener) {
         this.onScreenChangedListener = onScreenChangedListener;
     }
 
+    @Override
     public OnScreenChangedListener getOnScreenChangedListener() {
         return onScreenChangedListener;
     }
@@ -194,20 +186,24 @@ public final class ScreenRotationHelper implements OrientationEventObserver.OnOr
         switchOrientationState();
     }
 
+    @Override
     public void setAutoRotationMode(@AutoRotation int autoRotationMode) {
         this.autoRotationMode = autoRotationMode;
         switchOrientationState();
     }
 
+    @Override
     @AutoRotation
     public int getAutoRotationMode() {
         return autoRotationMode;
     }
 
+    @Override
     public void setEnablePortraitFullScreen(boolean enablePortraitFullScreen) {
         this.enablePortraitFullScreen = enablePortraitFullScreen;
     }
 
+    @Override
     public boolean isEnablePortraitFullScreen() {
         return enablePortraitFullScreen;
     }

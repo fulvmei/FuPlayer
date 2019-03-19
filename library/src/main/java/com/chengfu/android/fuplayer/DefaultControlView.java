@@ -7,6 +7,7 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import com.chengfu.android.fuplayer.util.FuLog;
 import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Timeline;
@@ -30,7 +32,7 @@ import com.google.android.exoplayer2.video.VideoListener;
 import java.util.Formatter;
 import java.util.Locale;
 
-public class DefaultControlView extends BaseControlView implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, Player.EventListener, VideoListener, AudioListener {
+public class DefaultControlView extends BaseControlView {
 
     private static final String TAG = "DefaultControlView";
     /**
@@ -55,7 +57,8 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
     public static final int DEFAULT_SEEK_NUMBER = 1000;
 
     protected final Context mContext;
-    protected Player mPlayer;
+    protected ExoPlayer mPlayer;
+    protected final ComponentListener mComponentListener;
 
     protected View mContainerView;
     protected ImageButton mRepeatSwitchView;
@@ -73,11 +76,13 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
     protected int mShowTimeoutMs;
     protected int mProgressUpdateIntervalMs;
     protected int mSeekNumber;
-    protected boolean mShowInBuffering;
-    protected boolean mShowInEnded;
+    protected boolean mHideInBuffering;
+    protected boolean mHideInEnded;
+    protected boolean mHideInError;
     protected boolean mHideRepeatSwitch;
     protected boolean mHideVolumeSwitch;
     protected boolean mHideShuffleSwitch;
+    protected boolean mShowAlwaysInPaused;
 
     protected boolean mAttachedToWindow;
     protected boolean mShowing;
@@ -109,14 +114,17 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
 
         mContext = context;
 
+        mComponentListener = initComponentListener();
+
         int controllerLayoutId = R.layout.default_controller_view;
         mRewindMs = DEFAULT_REWIND_MS;
         mFastForwardMs = DEFAULT_FAST_FORWARD_MS;
         mShowTimeoutMs = DEFAULT_SHOW_TIMEOUT_MS;
         mProgressUpdateIntervalMs = DEFAULT_PROGRESS_UPDATE_INTERVAL_MS;
         mSeekNumber = DEFAULT_SEEK_NUMBER;
-        mShowInBuffering = false;
-        mShowInEnded = false;
+        mHideInBuffering = false;
+        mHideInEnded = false;
+        mHideInError = false;
         mHideRepeatSwitch = false;
         mHideVolumeSwitch = false;
         mHideShuffleSwitch = false;
@@ -132,8 +140,9 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
                 mShowTimeoutMs = a.getInt(R.styleable.PlayerControlView_show_timeout, DEFAULT_SHOW_TIMEOUT_MS);
                 mProgressUpdateIntervalMs = a.getInt(R.styleable.PlayerControlView_progress_update_interval, DEFAULT_PROGRESS_UPDATE_INTERVAL_MS);
                 mSeekNumber = a.getInt(R.styleable.PlayerControlView_seek_number, DEFAULT_SEEK_NUMBER);
-                mShowInBuffering = a.getBoolean(R.styleable.PlayerControlView_show_in_buffering, mShowInBuffering);
-                mShowInEnded = a.getBoolean(R.styleable.PlayerControlView_show_in_ended, mShowInEnded);
+                mHideInBuffering = a.getBoolean(R.styleable.PlayerControlView_hide_in_buffering, mHideInBuffering);
+                mHideInEnded = a.getBoolean(R.styleable.PlayerControlView_hide_in_ended, mHideInEnded);
+                mHideInError = a.getBoolean(R.styleable.PlayerControlView_hide_in_ended, mHideInError);
                 mHideRepeatSwitch = a.getBoolean(R.styleable.PlayerControlView_hide_repeat_switch, mHideRepeatSwitch);
                 mHideVolumeSwitch = a.getBoolean(R.styleable.PlayerControlView_hide_volume_switch, mHideVolumeSwitch);
                 mHideShuffleSwitch = a.getBoolean(R.styleable.PlayerControlView_hide_volume_switch, mHideShuffleSwitch);
@@ -152,6 +161,10 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
 
     }
 
+    protected ComponentListener initComponentListener() {
+        return new ComponentListener();
+    }
+
     protected int getLayoutResourcesId(int layoutId) {
         return layoutId;
     }
@@ -167,31 +180,31 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         mSeekView = findViewById(R.id.controller_seek);
         if (mSeekView != null) {
             mSeekView.setMax(mSeekNumber);
-            mSeekView.setOnSeekBarChangeListener(this);
+            mSeekView.setOnSeekBarChangeListener(mComponentListener);
         }
         mPlayPauseSwitchView = findViewById(R.id.controller_play_pause_switch);
         if (mPlayPauseSwitchView != null) {
-            mPlayPauseSwitchView.setOnClickListener(this);
+            mPlayPauseSwitchView.setOnClickListener(mComponentListener);
         }
         mFastRewindView = findViewById(R.id.controller_rewind);
         if (mFastRewindView != null) {
-            mFastRewindView.setOnClickListener(this);
+            mFastRewindView.setOnClickListener(mComponentListener);
         }
         mFastForwardView = findViewById(R.id.controller_fast_forward);
         if (mFastForwardView != null) {
-            mFastForwardView.setOnClickListener(this);
+            mFastForwardView.setOnClickListener(mComponentListener);
         }
         mRepeatSwitchView = findViewById(R.id.controller_repeat_switch);
         if (mRepeatSwitchView != null) {
-            mRepeatSwitchView.setOnClickListener(this);
+            mRepeatSwitchView.setOnClickListener(mComponentListener);
         }
         mVolumeSwitchView = findViewById(R.id.controller_volume_switch);
         if (mVolumeSwitchView != null) {
-            mVolumeSwitchView.setOnClickListener(this);
+            mVolumeSwitchView.setOnClickListener(mComponentListener);
         }
         mShuffleSwitchView = findViewById(R.id.controller_shuffle_switch);
         if (mShuffleSwitchView != null) {
-            mShuffleSwitchView.setOnClickListener(this);
+            mShuffleSwitchView.setOnClickListener(mComponentListener);
         }
     }
 
@@ -220,12 +233,36 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         removeCallbacks(mHideAction);
     }
 
+    public boolean isHideInBuffering() {
+        return mHideInBuffering;
+    }
+
+    public void setHideInBuffering(boolean hideInBuffering) {
+        this.mHideInBuffering = hideInBuffering;
+    }
+
+    public boolean isHideInEnded() {
+        return mHideInEnded;
+    }
+
+    public void setHideInEnded(boolean hideInEnded) {
+        this.mHideInEnded = hideInEnded;
+    }
+
+    public boolean isHideInError() {
+        return mHideInError;
+    }
+
+    public void setHideInError(boolean hideInError) {
+        this.mHideInError = hideInError;
+    }
+
     public boolean isHideRepeatSwitch() {
         return mHideRepeatSwitch;
     }
 
-    public void setHideRepeatSwitch(boolean hide) {
-        mHideRepeatSwitch = hide;
+    public void setHideRepeatSwitch(boolean hideRepeatSwitch) {
+        this.mHideRepeatSwitch = hideRepeatSwitch;
         updateRepeatView();
     }
 
@@ -233,8 +270,8 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         return mHideVolumeSwitch;
     }
 
-    public void setHideVolumeSwitch(boolean hide) {
-        mHideVolumeSwitch = hide;
+    public void setHideVolumeSwitch(boolean hideVolumeSwitch) {
+        this.mHideVolumeSwitch = hideVolumeSwitch;
         updateVolumeView();
     }
 
@@ -242,28 +279,36 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         return mHideShuffleSwitch;
     }
 
-    public void setHideShuffleSwitch(boolean hide) {
-        mHideShuffleSwitch = hide;
+    public void setHideShuffleSwitch(boolean hideShuffleSwitch) {
+        this.mHideShuffleSwitch = hideShuffleSwitch;
         updateVolumeView();
     }
 
+    public boolean isShowAlwaysInPaused() {
+        return mShowAlwaysInPaused;
+    }
+
+    public void setShowAlwaysInPaused(boolean showAlwaysInPaused) {
+        this.mShowAlwaysInPaused = showAlwaysInPaused;
+    }
+
     @Override
-    public Player getPlayer() {
+    public ExoPlayer getPlayer() {
         return mPlayer;
     }
 
     @Override
-    public void setPlayer(Player player) {
+    public void setPlayer(ExoPlayer player) {
         if (mPlayer == player) {
             return;
         }
         if (mPlayer != null) {
-            mPlayer.removeListener(this);
+            mPlayer.removeListener(mComponentListener);
             if (mPlayer.getVideoComponent() != null) {
-                mPlayer.getVideoComponent().removeVideoListener(this);
+                mPlayer.getVideoComponent().removeVideoListener(mComponentListener);
             }
             if (mPlayer.getAudioComponent() != null) {
-                mPlayer.getAudioComponent().removeAudioListener(this);
+                mPlayer.getAudioComponent().removeAudioListener(mComponentListener);
             }
         }
         mSeekable = false;
@@ -271,12 +316,12 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
         mVolume = 1.0f;
         mPlayer = player;
         if (player != null) {
-            player.addListener(this);
+            player.addListener(mComponentListener);
             if (player.getVideoComponent() != null) {
-                player.getVideoComponent().addVideoListener(this);
+                player.getVideoComponent().addVideoListener(mComponentListener);
             }
             if (player.getAudioComponent() != null) {
-                player.getAudioComponent().addAudioListener(this);
+                player.getAudioComponent().addAudioListener(mComponentListener);
             }
         }
         updateAll();
@@ -472,7 +517,7 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
 
     @Override
     public void setShowTimeoutMs(int showTimeoutMs) {
-
+        mShowTimeoutMs = showTimeoutMs;
     }
 
     @Override
@@ -493,8 +538,11 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
             onHideChanged(false);
         }
 
-        hideAfterTimeout();
+        if (!mShowAlwaysInPaused||!isInShowAlwaysInPausedState()) {
+            hideAfterTimeout();
+        }
     }
+
 
     @Override
     public void hide() {
@@ -513,25 +561,38 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
 
     }
 
+    protected boolean isInShowAlwaysInPausedState() {
+        if (!isInShowState()) {
+            return false;
+        }
+        if (mPlayer.getPlaybackState() == Player.STATE_READY && !mPlayer.getPlayWhenReady()) {
+            return true;
+        }
+        return false;
+    }
+
     protected boolean isInShowState() {
         if (mPlayer == null || !mAttachedToWindow) {
             return false;
         }
         switch (mPlayer.getPlaybackState()) {
+            case Player.STATE_IDLE:
+                if (!mHideInError && mPlayer.getPlaybackError() != null) {
+                    return true;
+                }
+                return false;
             case Player.STATE_BUFFERING:
-                if (mShowInBuffering) {
+                if (!mHideInBuffering) {
                     return true;
-                } else {
-                    return false;
                 }
-            case Player.STATE_ENDED:
-                if (mShowInEnded) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return false;
             case Player.STATE_READY:
                 return true;
+            case Player.STATE_ENDED:
+                if (!mHideInEnded) {
+                    return true;
+                }
+                return false;
             default:
                 return false;
         }
@@ -704,179 +765,125 @@ public class DefaultControlView extends BaseControlView implements View.OnClickL
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS;
     }
 
-    @Override
-    public void onClick(View v) {
-        if (mPlayer == null) {
-            return;
-        }
-        if (mPlayPauseSwitchView == v) {
-            togglePlayWhenReady();
-        } else if (mFastRewindView == v) {
-            rewind();
-        } else if (mFastForwardView == v) {
-            fastForward();
-        } else if (mRepeatSwitchView == v) {
+    class ComponentListener implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, Player.EventListener, VideoListener, AudioListener {
+
+        @Override
+        public void onClick(View v) {
             if (mPlayer == null) {
                 return;
             }
-            switch (mPlayer.getRepeatMode()) {
-                case Player.REPEAT_MODE_OFF:
-                    mPlayer.setRepeatMode(Player.REPEAT_MODE_ONE);
-                    break;
-                case Player.REPEAT_MODE_ONE:
-                    mPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
-                    break;
-                case Player.REPEAT_MODE_ALL:
-                    mPlayer.setRepeatMode(Player.REPEAT_MODE_OFF);
-                    break;
+            if (mPlayPauseSwitchView == v) {
+                togglePlayWhenReady();
+            } else if (mFastRewindView == v) {
+                rewind();
+            } else if (mFastForwardView == v) {
+                fastForward();
+            } else if (mRepeatSwitchView == v) {
+                if (mPlayer == null) {
+                    return;
+                }
+                switch (mPlayer.getRepeatMode()) {
+                    case Player.REPEAT_MODE_OFF:
+                        mPlayer.setRepeatMode(Player.REPEAT_MODE_ONE);
+                        break;
+                    case Player.REPEAT_MODE_ONE:
+                        mPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
+                        break;
+                    case Player.REPEAT_MODE_ALL:
+                        mPlayer.setRepeatMode(Player.REPEAT_MODE_OFF);
+                        break;
+                }
+            } else if (mVolumeSwitchView == v) {
+                if (mPlayer == null || mPlayer.getAudioComponent() == null) {
+                    return;
+                }
+                if (mPlayer.getAudioComponent().getVolume() > 0) {
+                    mPlayer.getAudioComponent().setVolume(0.0f);
+                } else {
+                    mPlayer.getAudioComponent().setVolume(1.0f);
+                }
+            } else if (mShuffleSwitchView == v) {
+                if (mPlayer == null) {
+                    return;
+                }
+                if (mPlayer.getShuffleModeEnabled()) {
+                    mPlayer.setShuffleModeEnabled(false);
+                } else {
+                    mPlayer.setShuffleModeEnabled(true);
+                }
             }
-        } else if (mVolumeSwitchView == v) {
-            if (mPlayer == null || mPlayer.getAudioComponent() == null) {
+            hideAfterTimeout();
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar bar) {
+            removeCallbacks(mHideAction);
+            mTracking = true;
+        }
+
+        @Override
+        public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
+            if (!fromuser) {
                 return;
             }
-            if (mPlayer.getAudioComponent().getVolume() > 0) {
-                mPlayer.getAudioComponent().setVolume(0.0f);
-            } else {
-                mPlayer.getAudioComponent().setVolume(1.0f);
-            }
-        } else if (mShuffleSwitchView == v) {
-            if (mPlayer == null) {
+            mCurrentSeekProgress = progress;
+            if (!isInShowState()) {
                 return;
             }
-            if (mPlayer.getShuffleModeEnabled()) {
-                mPlayer.setShuffleModeEnabled(false);
-            } else {
-                mPlayer.setShuffleModeEnabled(true);
+            long duration = mPlayer.getDuration();
+            long newPosition = (duration * progress) / mSeekNumber;
+            if (mPositionView != null) {
+                mPositionView.setText(stringForTime(newPosition));
             }
         }
-        hideAfterTimeout();
-    }
 
+        @Override
+        public void onStopTrackingTouch(SeekBar bar) {
+            mTracking = false;
+            long duration = mPlayer.getDuration();
+            long newPosition = duration * mCurrentSeekProgress / mSeekNumber;
+            seekTo(newPosition);
 
-    @Override
-    public void onStartTrackingTouch(SeekBar bar) {
-        removeCallbacks(mHideAction);
-        mTracking = true;
-    }
-
-    @Override
-    public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
-        if (!fromuser) {
-            return;
+            hideAfterTimeout();
         }
-        mCurrentSeekProgress = progress;
-        if (!isInShowState()) {
-            return;
+
+        @Override
+        public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
+            FuLog.d(TAG, "onTimelineChanged : timeline=" + timeline + ",manifest=" + manifest + ",reason=" + reason);
+            boolean haveNonEmptyTimeline = timeline != null && !timeline.isEmpty();
+            if (haveNonEmptyTimeline && !mPlayer.isPlayingAd()) {
+                int windowIndex = mPlayer.getCurrentWindowIndex();
+                Timeline.Window window = new Timeline.Window();
+                timeline.getWindow(windowIndex, window);
+                mSeekable = window.isSeekable;
+                mDynamic = window.isDynamic;
+            }
+            updateSeekView();
         }
-        long duration = mPlayer.getDuration();
-        long newPosition = (duration * progress) / mSeekNumber;
-        if (mPositionView != null) {
-            mPositionView.setText(stringForTime(newPosition));
+
+        @Override
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            FuLog.d(TAG, "onPlayerStateChanged : playWhenReady=" + playWhenReady + ",playbackState=" + playbackState);
+            updateAll();
         }
-    }
 
-    @Override
-    public void onStopTrackingTouch(SeekBar bar) {
-        mTracking = false;
-        long duration = mPlayer.getDuration();
-        long newPosition = duration * mCurrentSeekProgress / mSeekNumber;
-        seekTo(newPosition);
-
-        hideAfterTimeout();
-    }
-
-    @Override
-    public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
-        FuLog.d(TAG, "onTimelineChanged : timeline=" + timeline + ",manifest=" + manifest + ",reason=" + reason);
-        boolean haveNonEmptyTimeline = timeline != null && !timeline.isEmpty();
-        if (haveNonEmptyTimeline && !mPlayer.isPlayingAd()) {
-            int windowIndex = mPlayer.getCurrentWindowIndex();
-            Timeline.Window window = new Timeline.Window();
-            timeline.getWindow(windowIndex, window);
-            mSeekable = window.isSeekable;
-            mDynamic = window.isDynamic;
+        @Override
+        public void onRepeatModeChanged(int repeatMode) {
+            FuLog.d(TAG, "onRepeatModeChanged : repeatMode=" + repeatMode);
+            updateRepeatView();
         }
-        updateSeekView();
-    }
 
-    @Override
-    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-        FuLog.d(TAG, "onTracksChanged : trackGroups=" + trackGroups + ",trackSelections=" + trackSelections);
-    }
+        @Override
+        public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+            FuLog.d(TAG, "onShuffleModeEnabledChanged : shuffleModeEnabled=" + shuffleModeEnabled);
+            updateShuffleView();
+        }
 
-    @Override
-    public void onLoadingChanged(boolean isLoading) {
-        FuLog.d(TAG, "onLoadingChanged : isLoading=" + isLoading);
-    }
-
-
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        FuLog.d(TAG, "onPlayerStateChanged : playWhenReady=" + playWhenReady + ",playbackState=" + playbackState);
-        updateAll();
-    }
-
-    @Override
-    public void onRepeatModeChanged(int repeatMode) {
-        FuLog.d(TAG, "onRepeatModeChanged : repeatMode=" + repeatMode);
-        updateRepeatView();
-    }
-
-    @Override
-    public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
-        FuLog.d(TAG, "onShuffleModeEnabledChanged : shuffleModeEnabled=" + shuffleModeEnabled);
-        updateShuffleView();
-    }
-
-    @Override
-    public void onPlayerError(ExoPlaybackException error) {
-        FuLog.d(TAG, "onPlayerError : error=" + error);
-    }
-
-    @Override
-    public void onPositionDiscontinuity(int reason) {
-        FuLog.d(TAG, "onPositionDiscontinuity : reason=" + reason);
-    }
-
-    @Override
-    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-        FuLog.d(TAG, "onPlaybackParametersChanged : playbackParameters=" + playbackParameters);
-    }
-
-    @Override
-    public void onSeekProcessed() {
-        FuLog.d(TAG, "onSeekProcessed : ");
-    }
-
-    @Override
-    public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
-        FuLog.d(TAG, "onVideoSizeChanged : width=" + width + ",height=" + height + ",unappliedRotationDegrees=" + unappliedRotationDegrees + ",pixelWidthHeightRatio=" + pixelWidthHeightRatio);
-    }
-
-    @Override
-    public void onSurfaceSizeChanged(int width, int height) {
-        FuLog.d(TAG, "onSurfaceSizeChanged : width=" + width + ",height=" + height);
-    }
-
-    @Override
-    public void onRenderedFirstFrame() {
-        FuLog.d(TAG, "onRenderedFirstFrame : ");
-    }
-
-    @Override
-    public void onAudioSessionId(int audioSessionId) {
-        FuLog.d(TAG, "onAudioSessionId : audioSessionId=" + audioSessionId);
-    }
-
-    @Override
-    public void onAudioAttributesChanged(AudioAttributes audioAttributes) {
-        FuLog.d(TAG, "onAudioAttributesChanged : audioAttributes=" + audioAttributes);
-    }
-
-    @Override
-    public void onVolumeChanged(float volume) {
-        FuLog.d(TAG, "onVolumeChanged : volume=" + volume);
-        mVolume = volume;
-        updateVolumeView();
+        @Override
+        public void onVolumeChanged(float volume) {
+            FuLog.d(TAG, "onVolumeChanged : volume=" + volume);
+            mVolume = volume;
+            updateVolumeView();
+        }
     }
 }

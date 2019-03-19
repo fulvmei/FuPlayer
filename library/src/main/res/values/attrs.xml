@@ -40,8 +40,9 @@
         <attr name="show_timeout" format="integer" />
         <attr name="progress_update_interval" format="integer" />
         <attr name="seek_number" format="integer" />
-        <attr name="show_in_buffering" format="boolean" />
-        <attr name="show_in_ended" format="boolean" />
+        <attr name="hide_in_buffering" format="boolean" />
+        <attr name="hide_in_ended" format="boolean" />
+        <attr name="hide_in_error" format="boolean" />
         <attr name="hide_repeat_switch" format="boolean" />
         <attr name="hide_volume_switch" format="boolean" />
         <attr name="hide_shuffle_switch" format="boolean" />
