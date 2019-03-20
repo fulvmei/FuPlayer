@@ -27,6 +27,7 @@ import com.chengfu.android.fuplayer.demo.util.NetworkUtil;
 //import com.chengfu.android.fuplayer.demo.util.ScreenRotationHelper;
 import com.chengfu.android.fuplayer.ext.ui.ListVideoImageView;
 import com.chengfu.android.fuplayer.ext.ui.ListVideoPlayView;
+import com.chengfu.android.fuplayer.ext.ui.VideoBufferingView;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
@@ -218,6 +219,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             if (currentPlayVH.videoRoot.getParent() == null) {
                 videoFullScreenContainer.addView(currentPlayVH.videoRoot);
             }
+            currentPlayVH.bufferingView.setFullScreen(true);
             currentPlayVH.controlView.setFullScreen(true);
             currentPlayVH.controlView.setEnableGestureType(VideoControlView.Gesture.SHOW_TYPE_BRIGHTNESS | VideoControlView.Gesture.SHOW_TYPE_PROGRESS | VideoControlView.Gesture.SHOW_TYPE_VOLUME);
 
@@ -229,6 +231,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             if (currentPlayVH.videoRoot.getParent() == null) {
                 currentPlayVH.videoContainer.addView(currentPlayVH.videoRoot);
             }
+            currentPlayVH.bufferingView.setFullScreen(false);
             currentPlayVH.controlView.setFullScreen(false);
             currentPlayVH.controlView.setEnableGestureType(VideoControlView.Gesture.SHOW_TYPE_NONE);
 
@@ -251,7 +254,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         FuPlayerView playerView;
         VideoControlView controlView;
         TextView title;
-        SampleBufferingView bufferingView;
+        VideoBufferingView bufferingView;
         VideoPlayErrorView errorView;
         ListVideoPlayView playView;
         ListVideoImageView videoImageView;
@@ -269,8 +272,8 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
 
             bufferingView = itemView.findViewById(R.id.bufferingView);
             errorView = itemView.findViewById(R.id.errorView);
-            playView = itemView.findViewById(R.id.playView);
-            videoImageView = itemView.findViewById(R.id.videoImageView);
+            playView = itemView.findViewById(R.id.playView1);
+            videoImageView = itemView.findViewById(R.id.videoImageView1);
             noWifiView = itemView.findViewById(R.id.noWifiView);
 
             controlView.setShowBottomProgress(true);

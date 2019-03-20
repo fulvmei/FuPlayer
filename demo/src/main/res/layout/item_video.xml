@@ -31,11 +31,11 @@
                 android:layout_height="match_parent" />
 
             <com.chengfu.android.fuplayer.ext.ui.ListVideoImageView
-                android:id="@+id/videoImageView"
+                android:id="@+id/videoImageView1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <com.chengfu.android.fuplayer.SampleBufferingView
+            <com.chengfu.android.fuplayer.ext.ui.VideoBufferingView
                 android:id="@+id/bufferingView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
                 android:layout_height="match_parent" />
 
             <com.chengfu.android.fuplayer.ext.ui.ListVideoPlayView
-                android:id="@+id/playView"
+                android:id="@+id/playView1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 

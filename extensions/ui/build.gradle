@@ -32,4 +32,5 @@ dependencies {
     implementation project(':library')
     api 'com.google.android.exoplayer:extension-mediasession:2.9.6'
     implementation project(':extensions:exo')
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 }

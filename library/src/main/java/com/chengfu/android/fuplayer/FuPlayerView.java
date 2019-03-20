@@ -29,12 +29,11 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextOutput;
 import com.google.android.exoplayer2.util.Assertions;
-import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoListener;
 
 import java.util.List;
 
-public class FuPlayerView extends FrameLayout {
+public class FuPlayerView extends FrameLayout implements PlayerView {
 
     public static final String TAG = "FuPlayerView";
 
@@ -242,6 +241,7 @@ public class FuPlayerView extends FrameLayout {
     /**
      * Returns the player currently set on this view, or null if no player is set.
      */
+    @Override
     public ExoPlayer getPlayer() {
         return mPlayer;
     }
@@ -259,7 +259,8 @@ public class FuPlayerView extends FrameLayout {
      *               players which are accessed on the main thread are supported ({@code
      *               player.getApplicationLooper() == Looper.getMainLooper()}).
      */
-    public void setPlayer(@Nullable ExoPlayer player) {
+    @Override
+    public void setPlayer(ExoPlayer player) {
         Assertions.checkState(Looper.myLooper() == Looper.getMainLooper());
         Assertions.checkArgument(
                 player == null || player.getApplicationLooper() == Looper.getMainLooper());

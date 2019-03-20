@@ -15,6 +15,8 @@ import com.google.android.exoplayer2.Player;
 
 public class ListVideoPlayView extends BaseStateView {
 
+    protected final ComponentListener componentListener;
+
     protected OnPlayerClickListener onPlayerClickListener;
 
     public interface OnPlayerClickListener {
@@ -38,6 +40,8 @@ public class ListVideoPlayView extends BaseStateView {
         if (view != null) {
             addView(view);
         }
+
+        componentListener = new ComponentListener();
 
         updateVisibility();
 
@@ -83,21 +87,23 @@ public class ListVideoPlayView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(ExoPlayer player) {
+    protected void onAttachedToPlayer(@NonNull ExoPlayer player) {
         updateVisibility();
+
+        player.addListener(componentListener);
     }
 
     @Override
-    protected void onDetachedFromPlayer() {
+    protected void onDetachedFromPlayer(@NonNull ExoPlayer player) {
         updateVisibility();
+        player.removeListener(componentListener);
     }
 
-    @Override
-    public void onPlayerError(ExoPlaybackException error) {
-    }
 
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        updateVisibility();
+    private final class ComponentListener implements Player.EventListener {
+        @Override
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            updateVisibility();
+        }
     }
 }

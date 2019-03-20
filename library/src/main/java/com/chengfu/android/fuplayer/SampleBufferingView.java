@@ -41,6 +41,8 @@ public class SampleBufferingView extends BaseStateView {
      */
     public static final int SHOW_MODE_NEVER = 2;
 
+    protected final ComponentListener componentListener;
+
     private int showMode;
 
     private boolean showInDetachPlayer;
@@ -61,6 +63,8 @@ public class SampleBufferingView extends BaseStateView {
         if (view != null) {
             addView(view);
         }
+
+        componentListener = new ComponentListener();
 
         updateVisibility();
     }
@@ -99,12 +103,14 @@ public class SampleBufferingView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(ExoPlayer player) {
+    protected void onAttachedToPlayer(@NonNull ExoPlayer player) {
+        player.addListener(componentListener);
         updateVisibility();
     }
 
     @Override
-    protected void onDetachedFromPlayer() {
+    protected void onDetachedFromPlayer(@NonNull ExoPlayer player) {
+        player.removeListener(componentListener);
         updateVisibility();
     }
 
@@ -127,8 +133,11 @@ public class SampleBufferingView extends BaseStateView {
         updateVisibility();
     }
 
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        updateVisibility();
+    private final class ComponentListener implements Player.EventListener {
+
+        @Override
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            updateVisibility();
+        }
     }
 }

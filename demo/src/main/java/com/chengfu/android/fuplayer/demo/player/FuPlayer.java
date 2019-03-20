@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
+import android.view.View;
 
 import com.chengfu.android.fuplayer.BaseStateView;
 import com.chengfu.android.fuplayer.FuPlayerView;
@@ -93,10 +94,14 @@ public class FuPlayer extends PlayerAdapter {
         }
         if (this.mVideoControlView != null) {
             this.mVideoControlView.setPlayer(null);
+            this.mVideoControlView.setOnScreenClickListener(null);
+            this.mVideoControlView.setOnBackClickListener(null);
         }
         this.mVideoControlView = controlView;
         if (controlView != null) {
             mVideoControlView.setPlayer(mPlayer);
+            this.mVideoControlView.setOnScreenClickListener(mComponentListener);
+            this.mVideoControlView.setOnBackClickListener(mComponentListener);
         }
     }
 
@@ -229,7 +234,7 @@ public class FuPlayer extends PlayerAdapter {
         mPlayer.release();
     }
 
-    private final class ComponentListener implements BaseStateView.VisibilityChangeListener, Player.EventListener {
+    private final class ComponentListener implements BaseStateView.VisibilityChangeListener, Player.EventListener, VideoControlView.OnScreenClickListener, VideoControlView.OnBackClickListener {
 
         @Override
         public void onVisibilityChange(BaseStateView stateView, boolean visibility) {
@@ -246,6 +251,16 @@ public class FuPlayer extends PlayerAdapter {
             } else {
                 mMediaSession.setActive(false);
             }
+        }
+
+        @Override
+        public void onScreenClick(boolean fullScreen) {
+
+        }
+
+        @Override
+        public void onBackClick(View v) {
+
         }
     }
 

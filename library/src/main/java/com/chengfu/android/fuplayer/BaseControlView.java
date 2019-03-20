@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
 
-public abstract class BaseControlView extends FrameLayout implements PlayerController {
+public abstract class BaseControlView extends FrameLayout implements PlayerControllerView {
     public BaseControlView(@NonNull Context context) {
         super(context);
     }
