@@ -39,8 +39,14 @@
             android:layout_height="match_parent"
             android:clickable="true" />
 
-        <com.chengfu.android.fuplayer.SampleEndedView
+        <com.chengfu.android.fuplayer.ext.ui.ListVideoPlayView
             android:id="@+id/endedView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true" />
+
+        <com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView
+            android:id="@+id/noWifiView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="true" />
