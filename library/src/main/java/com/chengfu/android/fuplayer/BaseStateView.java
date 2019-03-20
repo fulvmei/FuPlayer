@@ -7,11 +7,9 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.video.VideoListener;
 
 
-public abstract class BaseStateView extends FrameLayout implements Player.EventListener, VideoListener {
+public abstract class BaseStateView extends FrameLayout implements StateView {
 
     protected ExoPlayer player;
 
@@ -41,37 +39,44 @@ public abstract class BaseStateView extends FrameLayout implements Player.EventL
         this.visibilityChangeListener = l;
     }
 
+    @Override
     public void setPlayer(ExoPlayer player) {
         if (this.player == player) {
             return;
         }
         if (this.player != null) {
-            this.player.removeListener(this);
-            if (this.player.getVideoComponent() != null) {
-                this.player.getVideoComponent().removeVideoListener(this);
-            }
+            onDetachedFromPlayer(this.player);
+//            this.player.removeListener(this);
+//            if (this.player.getVideoComponent() != null) {
+//                this.player.getVideoComponent().removeVideoListener(this);
+//            }
         }
         this.player = player;
         if (player != null) {
-            player.addListener(this);
-            if (player.getVideoComponent() != null) {
-                player.getVideoComponent().addVideoListener(this);
-            }
+//            player.addListener(this);
+//            if (player.getVideoComponent() != null) {
+//                player.getVideoComponent().addVideoListener(this);
+//            }
             onAttachedToPlayer(player);
         } else {
-            onDetachedFromPlayer();
+//            onDetachedFromPlayer();
         }
     }
 
-    protected abstract void onAttachedToPlayer(ExoPlayer player);
+    @Override
+    public ExoPlayer getPlayer() {
+        return player;
+    }
 
-    protected abstract void onDetachedFromPlayer();
+    protected abstract void onAttachedToPlayer(@NonNull ExoPlayer player);
+
+    protected abstract void onDetachedFromPlayer(@NonNull ExoPlayer player);
 
     /**
      * Dispatch callbacks to {@link #setVisibilityChangeListener} down
      * the view hierarchy.
      */
-    public void dispatchVisibilityChanged(boolean visibility) {
+    protected void dispatchVisibilityChanged(boolean visibility) {
         if (visibilityChangeListener != null) {
             visibilityChangeListener.onVisibilityChange(this, visibility);
         }

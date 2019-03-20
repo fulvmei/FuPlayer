@@ -13,6 +13,8 @@ import com.google.android.exoplayer2.Player;
 
 public class SampleEndedView extends BaseStateView {
 
+    protected final ComponentListener componentListener;
+
     protected OnRetryListener onRetryListener;
 
     protected boolean showInDetachPlayer;
@@ -38,6 +40,8 @@ public class SampleEndedView extends BaseStateView {
             addView(view);
         }
 
+        componentListener = new ComponentListener();
+
         updateVisibility();
 
         View retry = findViewById(R.id.btn_retry);
@@ -55,12 +59,14 @@ public class SampleEndedView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(ExoPlayer player) {
+    protected void onAttachedToPlayer(@NonNull ExoPlayer player) {
+        player.addListener(componentListener);
         updateVisibility();
     }
 
     @Override
-    protected void onDetachedFromPlayer() {
+    protected void onDetachedFromPlayer(@NonNull ExoPlayer player) {
+        player.removeListener(componentListener);
         updateVisibility();
     }
 
@@ -113,8 +119,11 @@ public class SampleEndedView extends BaseStateView {
         this.onRetryListener = onRetryListener;
     }
 
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        updateVisibility();
+    private final class ComponentListener implements Player.EventListener {
+
+        @Override
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            updateVisibility();
+        }
     }
 }

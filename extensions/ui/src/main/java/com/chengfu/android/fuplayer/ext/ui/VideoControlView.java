@@ -65,7 +65,7 @@ public class VideoControlView extends DefaultControlView {
     Rotation rotation;
 
     public interface OnScreenClickListener {
-        void onnScreenClick(boolean fullScreen);
+        void onScreenClick(boolean fullScreen);
     }
 
     protected OnBackClickListener onBackClickListener;
@@ -119,7 +119,7 @@ public class VideoControlView extends DefaultControlView {
         if (fullScreenView != null) {
             fullScreenView.setOnClickListener(v -> {
                 if (onScreenClickListener != null) {
-                    onScreenClickListener.onnScreenClick(fullScreen);
+                    onScreenClickListener.onScreenClick(fullScreen);
                 }
             });
             updateFullScreenViewResource(fullScreenView, fullScreen);

@@ -1,21 +1,6 @@
 package com.chengfu.android.fuplayer;
 
-import com.google.android.exoplayer2.ExoPlayer;
-
-public interface PlayerController {
-
-    /**
-     * Returns the {@link ExoPlayer} currently being controlled by this view, or null if no player is
-     * set.
-     */
-    ExoPlayer getPlayer();
-
-    /**
-     * Sets the {@link ExoPlayer} to control.
-     *
-     * @param player The {@link ExoPlayer} to control.
-     */
-    void setPlayer(ExoPlayer player);
+public interface PlayerControllerView extends PlayerView {
 
     /**
      * Returns the playback controls timeout. The playback controls are automatically hidden after

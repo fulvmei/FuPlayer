@@ -13,6 +13,8 @@ import com.google.android.exoplayer2.Player;
 
 public class SampleErrorView extends BaseStateView {
 
+    protected final ComponentListener componentListener;
+
     protected OnRetryListener onRetryListener;
 
     protected boolean showInDetachPlayer;
@@ -37,6 +39,8 @@ public class SampleErrorView extends BaseStateView {
         if (view != null) {
             addView(view);
         }
+
+        componentListener = new ComponentListener();
 
         updateVisibility();
 
@@ -82,12 +86,14 @@ public class SampleErrorView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(ExoPlayer player) {
+    protected void onAttachedToPlayer(@NonNull ExoPlayer player) {
+        player.addListener(componentListener);
         updateVisibility();
     }
 
     @Override
-    protected void onDetachedFromPlayer() {
+    protected void onDetachedFromPlayer(@NonNull ExoPlayer player) {
+        player.removeListener(componentListener);
         updateVisibility();
     }
 
@@ -103,8 +109,11 @@ public class SampleErrorView extends BaseStateView {
         this.onRetryListener = onRetryListener;
     }
 
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        updateVisibility();
+    private final class ComponentListener implements Player.EventListener {
+
+        @Override
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            updateVisibility();
+        }
     }
 }

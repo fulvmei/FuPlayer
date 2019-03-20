@@ -13,9 +13,11 @@ import android.widget.ImageView;
 import com.chengfu.android.fuplayer.BaseStateView;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.video.VideoListener;
 
 public class ListVideoImageView extends BaseStateView {
 
+    protected final ComponentListener componentListener;
     private ImageView image;
     private boolean canHidden;
 
@@ -37,22 +39,34 @@ public class ListVideoImageView extends BaseStateView {
         }
 
         image = findViewById(R.id.image);
+
+        componentListener = new ComponentListener();
     }
 
     @Override
-    protected void onAttachedToPlayer(ExoPlayer player) {
+    protected void onAttachedToPlayer(@NonNull ExoPlayer player) {
         if (player.getPlaybackState() == Player.STATE_READY && player.getPlayWhenReady()) {
             canHidden = true;
         } else {
             canHidden = false;
         }
         updateVisibility();
+
+        player.addListener(componentListener);
+        if (player.getVideoComponent() != null) {
+            player.getVideoComponent().addVideoListener(componentListener);
+        }
     }
 
     @Override
-    protected void onDetachedFromPlayer() {
+    protected void onDetachedFromPlayer(@NonNull ExoPlayer player) {
         canHidden = false;
         updateVisibility();
+
+        player.removeListener(componentListener);
+        if (player.getVideoComponent() != null) {
+            player.getVideoComponent().removeVideoListener(componentListener);
+        }
     }
 
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
@@ -83,14 +97,17 @@ public class ListVideoImageView extends BaseStateView {
         return true;
     }
 
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        updateVisibility();
-    }
+    private final class ComponentListener implements Player.EventListener, VideoListener {
 
-    @Override
-    public void onRenderedFirstFrame() {
-        canHidden = true;
-        updateVisibility();
+        @Override
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            updateVisibility();
+        }
+
+        @Override
+        public void onRenderedFirstFrame() {
+            canHidden = true;
+            updateVisibility();
+        }
     }
 }

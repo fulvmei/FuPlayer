@@ -21,6 +21,7 @@ import com.chengfu.android.fuplayer.demo.immersion.QMUIStatusBarHelper;
 
 import com.chengfu.android.fuplayer.demo.player.FuPlayer;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
+import com.chengfu.android.fuplayer.ext.ui.VideoBufferingView;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
@@ -37,7 +38,10 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private FuPlayerView playerView;
     private VideoControlView controlView;
     private FuPlayer player;
-//    private ScreenRotationHelper screenRotationHelper;
+    //    private ScreenRotationHelper screenRotationHelper;
+   VideoBufferingView loadingView;
+    VideoPlayErrorView errorView;
+    SampleEndedView endedView;
 
 
     @Override
@@ -89,9 +93,9 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private void initPlayerView() {
         playerView = findViewById(R.id.playerView);
 
-        SampleBufferingView loadingView = findViewById(R.id.bufferingView);
-        VideoPlayErrorView errorView = findViewById(R.id.errorView);
-        SampleEndedView endedView = findViewById(R.id.endedView);
+         loadingView = findViewById(R.id.bufferingView);
+         errorView = findViewById(R.id.errorView);
+         endedView = findViewById(R.id.endedView);
 
 //        errorView.setOnReTryClickListener(v -> player.setPlayWhenReady(true));
 
@@ -146,7 +150,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private void changedScreen(boolean fullScreen) {
         if (fullScreen) {
             controlView.setFullScreen(true);
-
+            loadingView.setFullScreen(true);
             ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -154,7 +158,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         } else {
             controlView.setFullScreen(false);
-
+            loadingView.setFullScreen(false);
             ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             layoutParams.height = 608;

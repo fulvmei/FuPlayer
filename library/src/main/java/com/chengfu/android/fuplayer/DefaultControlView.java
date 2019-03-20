@@ -538,7 +538,7 @@ public class DefaultControlView extends BaseControlView {
             onHideChanged(false);
         }
 
-        if (!mShowAlwaysInPaused||!isInShowAlwaysInPausedState()) {
+        if (!mShowAlwaysInPaused || !isInShowAlwaysInPausedState()) {
             hideAfterTimeout();
         }
     }
@@ -765,7 +765,7 @@ public class DefaultControlView extends BaseControlView {
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS;
     }
 
-    class ComponentListener implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, Player.EventListener, VideoListener, AudioListener {
+    private final class ComponentListener implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, Player.EventListener, VideoListener, AudioListener {
 
         @Override
         public void onClick(View v) {
