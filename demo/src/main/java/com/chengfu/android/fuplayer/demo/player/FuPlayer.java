@@ -255,12 +255,16 @@ public class FuPlayer extends PlayerAdapter {
 
         @Override
         public void onScreenClick(boolean fullScreen) {
-
+            if (mScreenRotation != null) {
+                mScreenRotation.manualToggleOrientation();
+            }
         }
 
         @Override
         public void onBackClick(View v) {
-
+            if (mScreenRotation != null) {
+                mScreenRotation.maybeToggleToPortrait();
+            }
         }
     }
 

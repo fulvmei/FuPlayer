@@ -21,9 +21,11 @@ import com.chengfu.android.fuplayer.demo.immersion.QMUIStatusBarHelper;
 
 import com.chengfu.android.fuplayer.demo.player.FuPlayer;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
+import com.chengfu.android.fuplayer.ext.ui.ListVideoPlayView;
 import com.chengfu.android.fuplayer.ext.ui.VideoBufferingView;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
+import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -39,9 +41,10 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private VideoControlView controlView;
     private FuPlayer player;
     //    private ScreenRotationHelper screenRotationHelper;
-   VideoBufferingView loadingView;
+    VideoBufferingView loadingView;
     VideoPlayErrorView errorView;
-    SampleEndedView endedView;
+    ListVideoPlayView endedView;
+    VideoPlayWithoutWifiView noWifiView;
 
 
     @Override
@@ -86,16 +89,24 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     private void initPlayer() {
         player = new FuPlayer(this, ExoPlayerFactory.newSimpleInstance(this));
-        player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath()));
-        player.setPlayWhenReady(true);
+
     }
 
     private void initPlayerView() {
         playerView = findViewById(R.id.playerView);
 
-         loadingView = findViewById(R.id.bufferingView);
-         errorView = findViewById(R.id.errorView);
-         endedView = findViewById(R.id.endedView);
+        loadingView = findViewById(R.id.bufferingView);
+        errorView = findViewById(R.id.errorView);
+        endedView = findViewById(R.id.endedView);
+        noWifiView = findViewById(R.id.noWifiView);
+
+        noWifiView.show();
+        noWifiView.setOnPlayClickListener(v -> {
+            StaticConfig.PLAY_VIDEO_NO_WIFI = true;
+            player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath()));
+            player.setPlayWhenReady(true);
+            noWifiView.hide();
+        });
 
 //        errorView.setOnReTryClickListener(v -> player.setPlayWhenReady(true));
 
