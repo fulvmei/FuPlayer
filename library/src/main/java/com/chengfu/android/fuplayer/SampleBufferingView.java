@@ -69,6 +69,11 @@ public class SampleBufferingView extends BaseStateView {
         updateVisibility();
     }
 
+    @Override
+    protected void onFullScreenChanged(boolean fullScreen) {
+
+    }
+
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
         return inflater.inflate(R.layout.sample_buffering_view, parent, false);
     }

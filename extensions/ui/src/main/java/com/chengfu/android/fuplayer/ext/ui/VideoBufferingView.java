@@ -15,7 +15,6 @@ import com.chengfu.android.fuplayer.SampleBufferingView;
 public class VideoBufferingView extends SampleBufferingView {
 
     ProgressBar progressBar;
-    boolean fullScreen;
 
     public VideoBufferingView(@NonNull Context context) {
         this(context, null);
@@ -30,25 +29,20 @@ public class VideoBufferingView extends SampleBufferingView {
 
         progressBar = findViewById(R.id.progressBar);
 
-        updateProgressBarView();
+        updateProgressBarView(fullScreen);
     }
 
     @Override
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
-        return inflater.inflate(R.layout.fpu_view_video_buffering, parent, false);
+        return inflater.inflate(R.layout.fpu_view_video_state_buffering, parent, false);
     }
 
-    public void setFullScreen(boolean fullScreen) {
-        if (this.fullScreen == fullScreen) {
-            return;
-        }
-        this.fullScreen = fullScreen;
-
-        updateProgressBarView();
+    @Override
+    protected void onFullScreenChanged(boolean fullScreen) {
+        updateProgressBarView(fullScreen);
     }
 
-
-    protected void updateProgressBarView() {
+    protected void updateProgressBarView(boolean fullScreen) {
         if (progressBar == null) {
             return;
         }

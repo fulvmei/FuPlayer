@@ -1,7 +1,5 @@
 package com.chengfu.android.fuplayer.demo.ui.video;
 
-import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import com.chengfu.android.fuplayer.demo.R;
 import com.chengfu.android.fuplayer.demo.bean.Video;

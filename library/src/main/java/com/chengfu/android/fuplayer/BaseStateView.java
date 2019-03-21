@@ -14,6 +14,7 @@ public abstract class BaseStateView extends FrameLayout implements StateView {
     protected ExoPlayer player;
 
     private VisibilityChangeListener visibilityChangeListener;
+    protected boolean fullScreen;
 
     public interface VisibilityChangeListener {
         void onVisibilityChange(BaseStateView stateView, boolean visibility);
@@ -39,34 +40,39 @@ public abstract class BaseStateView extends FrameLayout implements StateView {
         this.visibilityChangeListener = l;
     }
 
+    public boolean isFullScreen() {
+        return fullScreen;
+    }
+
+    public void setFullScreen(boolean fullScreen) {
+        if (this.fullScreen == fullScreen) {
+            return;
+        }
+        this.fullScreen = fullScreen;
+        onFullScreenChanged(fullScreen);
+    }
+
     @Override
     public void setPlayer(ExoPlayer player) {
         if (this.player == player) {
             return;
         }
-        if (this.player != null) {
-            onDetachedFromPlayer(this.player);
-//            this.player.removeListener(this);
-//            if (this.player.getVideoComponent() != null) {
-//                this.player.getVideoComponent().removeVideoListener(this);
-//            }
+        ExoPlayer tempPlayer = this.player;
+        if (player == null) {
+            this.player = null;
+            onDetachedFromPlayer(tempPlayer);
+            return;
         }
         this.player = player;
-        if (player != null) {
-//            player.addListener(this);
-//            if (player.getVideoComponent() != null) {
-//                player.getVideoComponent().addVideoListener(this);
-//            }
-            onAttachedToPlayer(player);
-        } else {
-//            onDetachedFromPlayer();
-        }
+        onAttachedToPlayer(player);
     }
 
     @Override
     public ExoPlayer getPlayer() {
         return player;
     }
+
+    protected abstract void onFullScreenChanged(boolean fullScreen);
 
     protected abstract void onAttachedToPlayer(@NonNull ExoPlayer player);
 

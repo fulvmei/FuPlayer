@@ -57,6 +57,11 @@ public class SampleErrorView extends BaseStateView {
         }
     }
 
+    @Override
+    protected void onFullScreenChanged(boolean fullScreen) {
+
+    }
+
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
         return inflater.inflate(R.layout.sample_error_view, parent, false);
     }

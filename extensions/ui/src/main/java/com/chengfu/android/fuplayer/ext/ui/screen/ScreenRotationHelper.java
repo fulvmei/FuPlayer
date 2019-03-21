@@ -89,7 +89,7 @@ public final class ScreenRotationHelper implements VideoControlView.Rotation, Or
     }
 
     private boolean isInPortraitFullScreenState() {
-        return enablePortraitFullScreen && videoRate > DEFAUT_RATE;
+        return enablePortraitFullScreen && (videoRate == 0.0f || videoRate > DEFAUT_RATE);
     }
 
     private boolean isInEnableState() {

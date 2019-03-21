@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.chengfu.android.fuplayer.util.FuLog;
@@ -97,7 +98,11 @@ public class DefaultControlView extends BaseControlView {
     protected boolean mDynamic = false;
     protected float mVolume = 1.0f;
 
-    private final Runnable mHideAction = () -> hide();
+    private final Runnable mHideAction = () -> {
+        if (!mShowAlwaysInPaused || !isInShowAlwaysInPausedState()) {
+            hide();
+        }
+    };
 
     private final Runnable mUpdateProgressAction = () -> updateProgress();
 
@@ -331,6 +336,10 @@ public class DefaultControlView extends BaseControlView {
         if (!isInShowState()) {
             hide();
             return;
+        }
+        if (mShowAlwaysInPaused && isInShowAlwaysInPausedState()) {
+            removeCallbacks(mHideAction);
+            show();
         }
         updatePlayPauseView();
         updateRepeatView();

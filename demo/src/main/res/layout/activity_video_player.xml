@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,10 +8,11 @@
     android:orientation="vertical"
     tools:context=".MediaChooseActivity">
 
-    <FrameLayout
+    <com.chengfu.android.fuplayer.demo.widget.DodoMoveView
         android:id="@+id/playerRoot"
         android:layout_width="match_parent"
-        android:layout_height="202.5dp">
+        android:layout_height="202.5dp"
+        app:layout_behavior="com.chengfu.android.fuplayer.demo.widget.DodoBelowBehavior1">
 
         <com.chengfu.android.fuplayer.FuPlayerView
             android:id="@+id/playerView"
@@ -39,7 +40,7 @@
             android:layout_height="match_parent"
             android:clickable="true" />
 
-        <com.chengfu.android.fuplayer.ext.ui.ListVideoPlayView
+        <com.chengfu.android.fuplayer.ext.ui.VideoEndedView
             android:id="@+id/endedView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -51,6 +52,13 @@
             android:layout_height="match_parent"
             android:clickable="true" />
 
-    </FrameLayout>
+    </com.chengfu.android.fuplayer.demo.widget.DodoMoveView>
 
-</RelativeLayout>
+    <FrameLayout
+        app:layout_behavior="com.chengfu.android.fuplayer.demo.widget.DodoBelowBehavior"
+        android:layout_marginTop="202.5dp"
+        android:id="@+id/fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</android.support.design.widget.CoordinatorLayout>

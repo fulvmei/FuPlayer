@@ -16,25 +16,25 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.chengfu.android.fuplayer.FuPlayerView;
-import com.chengfu.android.fuplayer.SampleBufferingView;
 import com.chengfu.android.fuplayer.demo.APP;
 import com.chengfu.android.fuplayer.demo.R;
 import com.chengfu.android.fuplayer.demo.StaticConfig;
 import com.chengfu.android.fuplayer.demo.bean.Video;
+import com.chengfu.android.fuplayer.demo.player.PlayerAnalytics;
 import com.chengfu.android.fuplayer.demo.player.FuPlayer;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
 import com.chengfu.android.fuplayer.demo.util.NetworkUtil;
 //import com.chengfu.android.fuplayer.demo.util.ScreenRotationHelper;
-import com.chengfu.android.fuplayer.ext.ui.ListVideoImageView;
-import com.chengfu.android.fuplayer.ext.ui.ListVideoPlayView;
+import com.chengfu.android.fuplayer.ext.ui.VideoEndedView;
+import com.chengfu.android.fuplayer.ext.ui.VideoImageView;
+import com.chengfu.android.fuplayer.ext.ui.VideoIdleView;
 import com.chengfu.android.fuplayer.ext.ui.VideoBufferingView;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
-import com.chengfu.android.fuplayer.ext.ui.gesture.GestureImpl;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 
 import java.util.List;
 
@@ -133,7 +133,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
 
-        player = new FuPlayer(activity, ExoPlayerFactory.newSimpleInstance(recyclerView.getContext()));
+        SimpleExoPlayer simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(recyclerView.getContext());
+        simpleExoPlayer.addAnalyticsListener(new PlayerAnalytics());
+        player = new FuPlayer(activity, simpleExoPlayer);
 
 
         ScreenRotationHelper screenRotationHelper = new ScreenRotationHelper(activity);
@@ -256,9 +258,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         TextView title;
         VideoBufferingView bufferingView;
         VideoPlayErrorView errorView;
-        ListVideoPlayView playView;
-        ListVideoImageView videoImageView;
+        VideoIdleView playView;
+        VideoImageView videoImageView;
         VideoPlayWithoutWifiView noWifiView;
+        VideoEndedView endedView;
 
 
         ViewHolder(@NonNull View itemView) {
@@ -275,13 +278,19 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             playView = itemView.findViewById(R.id.playView1);
             videoImageView = itemView.findViewById(R.id.videoImageView1);
             noWifiView = itemView.findViewById(R.id.noWifiView);
+            endedView = itemView.findViewById(R.id.endedView);
 
+            controlView.setShowAlwaysInPaused(true);
             controlView.setShowBottomProgress(true);
             controlView.setShowTopOnlyFullScreen(true);
-            controlView.setOnScreenClickListener(fullScreen ->
-                    player.getScreenRotation().manualToggleOrientation()
-            );
-            controlView.setOnBackClickListener(v -> player.getScreenRotation().maybeToggleToPortrait());
+            controlView.setHideInBuffering(true);
+            controlView.setHideInEnded(true);
+            controlView.setHideInError(true);
+            controlView.setShowAlwaysInPaused(true);
+//            controlView.setOnScreenClickListener(fullScreen ->
+//                    player.getScreenRotation().manualToggleOrientation()
+//            );
+//            controlView.setOnBackClickListener(v -> player.getScreenRotation().maybeToggleToPortrait());
 
             playView.setOnPlayerClickListener(v -> {
                 maybeStopPlay();
@@ -325,6 +334,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             player.addStateView(bufferingView, true);
             player.addStateView(playView, true);
             player.addStateView(errorView, true);
+            player.addStateView(endedView, true);
 
 //            videoImageView.setPlayer(player);
 //            videoImageView.setPlayer(player);

@@ -27,7 +27,7 @@ public class VideoPlayWithoutWifiView extends FrameLayout {
     public VideoPlayWithoutWifiView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        LayoutInflater.from(context).inflate(R.layout.fpu_view_video_play_without_wifi, this, true);
+        LayoutInflater.from(context).inflate(R.layout.fpu_view_video_state_without_wifi, this, true);
 
         findViewById(R.id.btnPlayWithoutWifi).setOnClickListener(v -> {
             if (onPlayClickListener != null) {

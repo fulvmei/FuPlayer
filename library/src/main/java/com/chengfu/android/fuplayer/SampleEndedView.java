@@ -59,6 +59,11 @@ public class SampleEndedView extends BaseStateView {
     }
 
     @Override
+    protected void onFullScreenChanged(boolean fullScreen) {
+
+    }
+
+    @Override
     protected void onAttachedToPlayer(@NonNull ExoPlayer player) {
         player.addListener(componentListener);
         updateVisibility();

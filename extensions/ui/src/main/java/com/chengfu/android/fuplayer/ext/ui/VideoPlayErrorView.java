@@ -26,6 +26,6 @@ public class VideoPlayErrorView extends SampleErrorView {
 
     @Override
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
-        return inflater.inflate(R.layout.fpu_view_video_play_error, parent, false);
+        return inflater.inflate(R.layout.fpu_view_video_state_error, parent, false);
     }
 }
