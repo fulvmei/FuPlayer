@@ -9,11 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.chengfu.android.fuplayer.BaseStateView;
-import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 
-public class ListVideoPlayView extends BaseStateView {
+public class VideoIdleView extends BaseStateView {
 
     protected final ComponentListener componentListener;
 
@@ -24,15 +23,15 @@ public class ListVideoPlayView extends BaseStateView {
     }
 
 
-    public ListVideoPlayView(@NonNull Context context) {
+    public VideoIdleView(@NonNull Context context) {
         this(context, null);
     }
 
-    public ListVideoPlayView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public VideoIdleView(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ListVideoPlayView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public VideoIdleView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         View view = onCreateView(LayoutInflater.from(context), this);
@@ -55,8 +54,13 @@ public class ListVideoPlayView extends BaseStateView {
         }
     }
 
+    @Override
+    protected void onFullScreenChanged(boolean fullScreen) {
+
+    }
+
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
-        return inflater.inflate(R.layout.fpu_view_list_video_play, parent, false);
+        return inflater.inflate(R.layout.fpu_view_video_state_idel, parent, false);
     }
 
     protected void updateVisibility() {
@@ -71,8 +75,7 @@ public class ListVideoPlayView extends BaseStateView {
         if (player == null) {
             return true;
         }
-        if ((player.getPlaybackState() == Player.STATE_ENDED)
-                || (player.getPlaybackState() == Player.STATE_IDLE && player.getPlaybackError() == null)) {
+        if (player.getPlaybackState() == Player.STATE_IDLE && player.getPlaybackError() == null) {
             return true;
         }
         return false;

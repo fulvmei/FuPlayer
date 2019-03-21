@@ -4,32 +4,35 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.chengfu.android.fuplayer.BaseStateView;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.video.VideoListener;
 
-public class ListVideoImageView extends BaseStateView {
+public class VideoImageView extends BaseStateView {
 
     protected final ComponentListener componentListener;
     private ImageView image;
-    private boolean canHidden;
+    private boolean hasFirstFrame;
 
-    public ListVideoImageView(@NonNull Context context) {
+    private boolean showInError;
+    private boolean showInEnded;
+
+    public VideoImageView(@NonNull Context context) {
         this(context, null);
     }
 
-    public ListVideoImageView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public VideoImageView(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ListVideoImageView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public VideoImageView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         View view = onCreateView(LayoutInflater.from(context), this);
@@ -44,11 +47,16 @@ public class ListVideoImageView extends BaseStateView {
     }
 
     @Override
+    protected void onFullScreenChanged(boolean fullScreen) {
+
+    }
+
+    @Override
     protected void onAttachedToPlayer(@NonNull ExoPlayer player) {
         if (player.getPlaybackState() == Player.STATE_READY && player.getPlayWhenReady()) {
-            canHidden = true;
+            hasFirstFrame = true;
         } else {
-            canHidden = false;
+            hasFirstFrame = false;
         }
         updateVisibility();
 
@@ -60,7 +68,7 @@ public class ListVideoImageView extends BaseStateView {
 
     @Override
     protected void onDetachedFromPlayer(@NonNull ExoPlayer player) {
-        canHidden = false;
+        hasFirstFrame = false;
         updateVisibility();
 
         player.removeListener(componentListener);
@@ -70,11 +78,29 @@ public class ListVideoImageView extends BaseStateView {
     }
 
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
-        return inflater.inflate(R.layout.fpu_view_list_video_image, parent, false);
+        return inflater.inflate(R.layout.fpu_view_video_image, parent, false);
     }
 
     public ImageView getImage() {
         return image;
+    }
+
+    public boolean isShowInError() {
+        return showInError;
+    }
+
+    public void setShowInError(boolean showInError) {
+        this.showInError = showInError;
+        updateVisibility();
+    }
+
+    public boolean isShowInEnded() {
+        return showInEnded;
+    }
+
+    public void setShowInEnded(boolean showInEnded) {
+        this.showInEnded = showInEnded;
+        updateVisibility();
     }
 
     protected void updateVisibility() {
@@ -89,15 +115,39 @@ public class ListVideoImageView extends BaseStateView {
         if (player == null) {
             return true;
         }
-        if (player.getPlaybackState() == Player.STATE_READY) {
-            return false;
-        } else if (player.getPlaybackState() == Player.STATE_BUFFERING && canHidden) {
-            return false;
+        switch (player.getPlaybackState()) {
+            case Player.STATE_IDLE:
+                if (player.getPlaybackError() != null) {
+                    if (showInError || !hasFirstFrame) {
+                        return true;
+                    }
+                }
+                return false;
+            case Player.STATE_READY:
+                return false;
+            case Player.STATE_BUFFERING:
+                if (!hasFirstFrame) {
+                    return true;
+                }
+                return false;
+            case Player.STATE_ENDED:
+                if (showInEnded) {
+                    return true;
+                } else if (!hasFirstFrame) {
+                    return true;
+                }
+                return false;
+            default:
+                return false;
         }
-        return true;
     }
 
     private final class ComponentListener implements Player.EventListener, VideoListener {
+
+        @Override
+        public void onPlayerError(ExoPlaybackException error) {
+            updateVisibility();
+        }
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
@@ -105,8 +155,20 @@ public class ListVideoImageView extends BaseStateView {
         }
 
         @Override
+        public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
+            hasFirstFrame = false;
+            updateVisibility();
+        }
+
+        @Override
+        public void onSurfaceSizeChanged(int width, int height) {
+            hasFirstFrame = false;
+            updateVisibility();
+        }
+
+        @Override
         public void onRenderedFirstFrame() {
-            canHidden = true;
+            hasFirstFrame = true;
             updateVisibility();
         }
     }

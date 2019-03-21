@@ -46,4 +46,6 @@ dependencies {
     implementation project(':library')
     implementation project(':extensions:ui')
     //    implementation project(':extensions:exo')
+
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 }

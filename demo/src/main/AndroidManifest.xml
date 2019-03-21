@@ -32,7 +32,7 @@
 
         <activity android:name=".MediaChooseActivity" />
         <activity
-            android:name=".VideoPlayerActivity"
+            android:name=".ui.video.VideoPlayerActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|navigation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"

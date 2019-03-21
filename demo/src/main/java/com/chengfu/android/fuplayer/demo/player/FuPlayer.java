@@ -63,6 +63,7 @@ public class FuPlayer extends PlayerAdapter {
         mediaSessionConnector.setPlayer(player, null);
 
         player.addListener(mComponentListener);
+
     }
 
     protected FuPlayer(@NonNull ExoPlayer player) {

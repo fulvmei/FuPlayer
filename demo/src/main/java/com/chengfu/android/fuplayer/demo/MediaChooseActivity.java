@@ -11,6 +11,7 @@ import android.widget.ExpandableListView;
 import com.chengfu.android.fuplayer.demo.adapter.MediaGroupListAdapter;
 import com.chengfu.android.fuplayer.demo.bean.Video;
 import com.chengfu.android.fuplayer.demo.bean.MediaGroup;
+import com.chengfu.android.fuplayer.demo.ui.video.VideoPlayerActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;

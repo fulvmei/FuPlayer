@@ -1,36 +1,30 @@
-package com.chengfu.android.fuplayer.demo;
+package com.chengfu.android.fuplayer.demo.ui.video;
 
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import com.chengfu.android.fuplayer.BaseStateView;
 import com.chengfu.android.fuplayer.FuPlayerView;
-import com.chengfu.android.fuplayer.SampleBufferingView;
-import com.chengfu.android.fuplayer.SampleEndedView;
+import com.chengfu.android.fuplayer.demo.R;
+import com.chengfu.android.fuplayer.demo.StaticConfig;
 import com.chengfu.android.fuplayer.demo.bean.Video;
 import com.chengfu.android.fuplayer.demo.immersion.ImmersionBar;
 import com.chengfu.android.fuplayer.demo.immersion.QMUIStatusBarHelper;
 
 import com.chengfu.android.fuplayer.demo.player.FuPlayer;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
-import com.chengfu.android.fuplayer.ext.ui.ListVideoPlayView;
 import com.chengfu.android.fuplayer.ext.ui.VideoBufferingView;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
+import com.chengfu.android.fuplayer.ext.ui.VideoEndedView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 
 
 public class VideoPlayerActivity extends AppCompatActivity {
@@ -40,11 +34,10 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private FuPlayerView playerView;
     private VideoControlView controlView;
     private FuPlayer player;
-    //    private ScreenRotationHelper screenRotationHelper;
-    VideoBufferingView loadingView;
-    VideoPlayErrorView errorView;
-    ListVideoPlayView endedView;
-    VideoPlayWithoutWifiView noWifiView;
+    private VideoBufferingView loadingView;
+    private VideoPlayErrorView errorView;
+    private VideoEndedView endedView;
+    private VideoPlayWithoutWifiView noWifiView;
 
 
     @Override
@@ -69,6 +62,13 @@ public class VideoPlayerActivity extends AppCompatActivity {
         initControlView();
 
         initScreenRotation();
+
+        initFragment();
+
+    }
+
+    private void initFragment() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment,new VideoDetailsFragment()).commitAllowingStateLoss();
     }
 
     private void initScreenRotation() {

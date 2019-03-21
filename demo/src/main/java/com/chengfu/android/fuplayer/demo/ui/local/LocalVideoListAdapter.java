@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.chengfu.android.fuplayer.demo.R;
-import com.chengfu.android.fuplayer.demo.VideoPlayerActivity;
+import com.chengfu.android.fuplayer.demo.ui.video.VideoPlayerActivity;
 import com.chengfu.android.fuplayer.demo.bean.Video;
 
 import java.util.List;

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Toast;
 
 import com.chengfu.android.fuplayer.demo.ui.local.LocalVideosActivity;
 import com.chengfu.android.fuplayer.demo.ui.video.VideoListActivity;
