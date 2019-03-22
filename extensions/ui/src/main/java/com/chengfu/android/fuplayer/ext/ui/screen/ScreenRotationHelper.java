@@ -84,12 +84,12 @@ public final class ScreenRotationHelper implements VideoControlView.Rotation, Or
                 this.player.getVideoComponent().addVideoListener(componentListener);
             }
         }
-        videoRate = 0f;
+        videoRate = 0.0f;
         switchOrientationState();
     }
 
     private boolean isInPortraitFullScreenState() {
-        return enablePortraitFullScreen && (videoRate == 0.0f || videoRate > DEFAUT_RATE);
+        return enablePortraitFullScreen && videoRate > DEFAUT_RATE;
     }
 
     private boolean isInEnableState() {
@@ -277,15 +277,15 @@ public final class ScreenRotationHelper implements VideoControlView.Rotation, Or
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            if (playbackState == Player.STATE_IDLE) {
-                videoRate = 0f;
-            }
+//            if (playbackState == Player.STATE_IDLE) {
+//                videoRate = 0f;
+//            }
             switchOrientationState();
         }
 
         @Override
         public void onPlayerError(ExoPlaybackException error) {
-            videoRate = 0f;
+//            videoRate = 0f;
             switchOrientationState();
         }
 

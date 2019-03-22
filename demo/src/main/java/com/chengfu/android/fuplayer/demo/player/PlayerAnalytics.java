@@ -3,7 +3,6 @@ package com.chengfu.android.fuplayer.demo.player;
 import android.support.annotation.Nullable;
 import android.view.Surface;
 
-import com.chengfu.android.fuplayer.util.FuLog;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -123,7 +122,7 @@ public class PlayerAnalytics implements AnalyticsListener {
 
     @Override
     public void onLoadStarted(EventTime eventTime, MediaSourceEventListener.LoadEventInfo loadEventInfo, MediaSourceEventListener.MediaLoadData mediaLoadData) {
-
+        Timber.d("onLoadStarted loadEventInfo=" + loadEventInfo+",mediaLoadData="+mediaLoadData);
     }
 
     @Override
@@ -138,7 +137,7 @@ public class PlayerAnalytics implements AnalyticsListener {
 
     @Override
     public void onMetadata(EventTime eventTime, Metadata metadata) {
-
+        Timber.d("onPlayerError ： metadata=%s", metadata);
     }
 
     @Override
@@ -148,7 +147,7 @@ public class PlayerAnalytics implements AnalyticsListener {
 
     @Override
     public void onPlayerError(EventTime eventTime, ExoPlaybackException error) {
-        Timber.d("onPlayerError ： error=" + error);
+        Timber.d("onPlayerError ： error=%s", error);
     }
 
     @Override
