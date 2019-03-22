@@ -17,6 +17,7 @@ import com.chengfu.android.fuplayer.demo.immersion.ImmersionBar;
 import com.chengfu.android.fuplayer.demo.immersion.QMUIStatusBarHelper;
 
 import com.chengfu.android.fuplayer.demo.player.FuPlayer;
+import com.chengfu.android.fuplayer.demo.player.PlayerAnalytics;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
 import com.chengfu.android.fuplayer.ext.ui.VideoBufferingView;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
@@ -25,6 +26,7 @@ import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 
 
 public class VideoPlayerActivity extends AppCompatActivity {
@@ -68,13 +70,13 @@ public class VideoPlayerActivity extends AppCompatActivity {
     }
 
     private void initFragment() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment,new VideoDetailsFragment()).commitAllowingStateLoss();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, new VideoDetailsFragment()).commitAllowingStateLoss();
     }
 
     private void initScreenRotation() {
         ScreenRotationHelper screenRotationHelper = new ScreenRotationHelper(this);
 //        screenRotationHelper.setPlayer(player);
-        screenRotationHelper.setDisableInPlayerStateEnd(true);
+        screenRotationHelper.setDisableInPlayerStateEnd(false);
         screenRotationHelper.setDisableInPlayerStateError(false);
         screenRotationHelper.setToggleToPortraitInDisable(true);
         screenRotationHelper.setEnablePortraitFullScreen(true);
@@ -88,7 +90,12 @@ public class VideoPlayerActivity extends AppCompatActivity {
     }
 
     private void initPlayer() {
-        player = new FuPlayer(this, ExoPlayerFactory.newSimpleInstance(this));
+        SimpleExoPlayer simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(this);
+        simpleExoPlayer.addAnalyticsListener(new PlayerAnalytics());
+        player = new FuPlayer(this, simpleExoPlayer);
+
+        player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath()));
+        player.setPlayWhenReady(true);
 
     }
 
@@ -100,13 +107,17 @@ public class VideoPlayerActivity extends AppCompatActivity {
         endedView = findViewById(R.id.endedView);
         noWifiView = findViewById(R.id.noWifiView);
 
-        noWifiView.show();
-        noWifiView.setOnPlayClickListener(v -> {
-            StaticConfig.PLAY_VIDEO_NO_WIFI = true;
-            player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath()));
-            player.setPlayWhenReady(true);
-            noWifiView.hide();
-        });
+        noWifiView.setAllowPlayInNoWifi(StaticConfig.PLAY_VIDEO_NO_WIFI);
+
+//        noWifiView.setOnAllowPlayInNoWifiChangeListener(allowPlayInNoWifi -> StaticConfig.PLAY_VIDEO_NO_WIFI=allowPlayInNoWifi);
+
+//        noWifiView.show();
+//        noWifiView.setOnPlayClickListener(v -> {
+//            StaticConfig.PLAY_VIDEO_NO_WIFI = true;
+//            player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath()));
+//            player.setPlayWhenReady(true);
+//            noWifiView.hide();
+//        });
 
 //        errorView.setOnReTryClickListener(v -> player.setPlayWhenReady(true));
 
@@ -128,6 +139,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
 //
 //        endedView.setVisibilityChangeListener((stateView, visibility) -> maybeHideController());
 
+        player.addStateView(noWifiView, true);
         player.addStateView(loadingView);
         player.addStateView(errorView, true);
         player.addStateView(endedView, true);

@@ -17,11 +17,13 @@ import android.view.View;
 import com.chengfu.android.fuplayer.BaseStateView;
 import com.chengfu.android.fuplayer.FuPlayerView;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
+import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.mediasession.DefaultPlaybackController;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
+import com.google.android.exoplayer2.source.MediaSource;
 
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -38,6 +40,15 @@ public class FuPlayer extends PlayerAdapter {
     private ScreenRotationHelper mScreenRotation;
     private CopyOnWriteArraySet<StateViewHolder> mStateViewsHolder = new CopyOnWriteArraySet<>();
     private boolean needPlayOnResume;
+    private VideoPlayWithoutWifiView noWifiView;
+
+    public VideoPlayWithoutWifiView getNoWifiView() {
+        return noWifiView;
+    }
+
+    public void setNoWifiView(VideoPlayWithoutWifiView noWifiView) {
+        this.noWifiView = noWifiView;
+    }
 
     public FuPlayer(@NonNull Activity activity, @NonNull ExoPlayer player) {
         this(player);

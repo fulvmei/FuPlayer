@@ -1,2 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.chengfu.android.fuplayer.ext.ui" />
+    package="com.chengfu.android.fuplayer.ext.ui" >
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+</manifest>

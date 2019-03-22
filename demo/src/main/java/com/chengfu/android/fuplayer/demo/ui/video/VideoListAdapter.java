@@ -297,11 +297,11 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
                 startPlay();
             });
 
-            noWifiView.setOnPlayClickListener(v -> {
-                StaticConfig.PLAY_VIDEO_NO_WIFI = true;
-                maybeStopPlay();
-                startPlay();
-            });
+//            noWifiView.setOnPlayClickListener(v -> {
+//                StaticConfig.PLAY_VIDEO_NO_WIFI = true;
+//                maybeStopPlay();
+//                startPlay();
+//            });
         }
 
         boolean canPlay() {
@@ -311,7 +311,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             }
             if (NetworkUtil.getNetWorkType(APP.application) != NetworkUtil.NETWORK_WIFI && !StaticConfig.PLAY_VIDEO_NO_WIFI) {
                 playView.setVisibility(View.GONE);
-                noWifiView.show();
+//                noWifiView.show();
                 return false;
             }
             return true;
@@ -366,7 +366,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             player.setPlayerView(null);
             player.setVideoControlView(null);
             player.clearStateViews();
-            noWifiView.hide();
+//            noWifiView.hide();
             player.stop();
             player.getScreenRotation().pause();
         }
