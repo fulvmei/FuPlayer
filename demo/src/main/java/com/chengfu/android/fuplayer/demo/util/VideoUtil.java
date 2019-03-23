@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
+import com.chengfu.android.fuplayer.demo.APP;
 import com.chengfu.android.fuplayer.demo.bean.Video;
 
 
@@ -19,58 +20,69 @@ public class VideoUtil {
                 "你欠缺的也许并不是能力",
                 "https://mov.bn.netease.com/open-movie/nos/mp4/2016/06/22/SBP8G92E3_hd.mp4",
                 "http://open-image.nosdn.127.net/image/snapshot_movie/2016/11/b/a/c36e048e284c459686133e66a79e2eba.jpg",
-                null,
-                null));
+                "1",
+                "1"));
 
         list.add(new Video(
                 "坚持与放弃",
                 "https://mov.bn.netease.com/open-movie/nos/mp4/2015/08/27/SB13F5AGJ_sd.mp4",
                 "http://open-image.nosdn.127.net/image/snapshot_movie/2016/11/0/4/e4c8836bfe154d76a808da38d0733304.jpg",
-                null,
-                null));
+                "1",
+                "2"));
 
         list.add(new Video(
                 "不想从被子里出来",
                 "https://mov.bn.netease.com/open-movie/nos/mp4/2018/01/12/SD70VQJ74_sd.mp4",
                 "http://open-image.nosdn.127.net/57baaaeaad4e4fda8bdaceafdb9d45c2.jpg",
-                null,
-                null));
+                "1",
+                "3"));
 
         list.add(new Video(
                 "不耐烦的中国人?",
                 "https://mov.bn.netease.com/open-movie/nos/mp4/2017/05/31/SCKR8V6E9_hd.mp4",
                 "http://open-image.nosdn.127.net/image/snapshot_movie/2016/11/e/9/ac655948c705413b8a63a7aaefd4cde9.jpg",
-                null,
-                null));
+                "1",
+                "4"));
 
         list.add(new Video(
                 "神奇的珊瑚",
                 "https://mov.bn.netease.com/open-movie/nos/mp4/2016/01/11/SBC46Q9DV_hd.mp4",
                 "http://open-image.nosdn.127.net/image/snapshot_movie/2016/11/e/4/75bc6c5227314e63bbfd5d9f0c5c28e4.jpg",
-                null,
-                null));
+                "1",
+                "5"));
 
         list.add(new Video(
                 "怎样经营你的人脉",
                 "https://mov.bn.netease.com/open-movie/nos/mp4/2018/04/19/SDEQS1GO6_hd.mp4",
                 "http://open-image.nosdn.127.net/image/snapshot_movie/2018/3/b/c/9d451a2da3cf42b0a049ba3e249222bc.jpg",
-                null,
-                null));
+                "1",
+                "6"));
 
         list.add(new Video(
                 "怎么才能不畏将来",
                 "https://mov.bn.netease.com/open-movie/nos/mp4/2018/01/25/SD82Q0AQE_hd.mp4",
                 "http://open-image.nosdn.127.net/image/snapshot_movie/2018/1/c/8/1aec3637270f465faae52713a7c191c8.jpg",
-                null,
-                null));
+                "2",
+                "7"));
 
         list.add(new Video(
                 "音乐和艺术如何改变世界",
                 "https://mov.bn.netease.com/open-movie/nos/mp4/2017/12/04/SD3SUEFFQ_hd.mp4",
                 "http://open-image.nosdn.127.net/image/snapshot_movie/2017/12/2/8/f30dd5f2f09c405c98e7eb6c06c89928.jpg",
-                null,
-                null));
+                "2",
+                "8"));
         return list;
+    }
+
+    public static Video getVideo( String id) {
+        List<Video> list = getVideoList();
+        list.addAll(getLocalVideoList(APP.application));
+        for (Video video : list) {
+            if (video.getTag().equals(id)) {
+                return video;
+            }
+        }
+        return null;
     }
 
 
@@ -170,6 +182,7 @@ public class VideoUtil {
                         .DATA)));
                 info.setName(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video
                         .Media.DISPLAY_NAME)));
+                info.setTag(info.getName());
                 videoList.add(info);
             } while (cursor.moveToNext());
         }

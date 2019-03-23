@@ -264,10 +264,12 @@ public class VideoControlView extends DefaultControlView {
         this.onBackClickListener = onBackClickListener;
     }
 
+    @Override
     public boolean isFullScreen() {
         return fullScreen;
     }
 
+    @Override
     public void setFullScreen(boolean fullScreen) {
         if (this.fullScreen == fullScreen) {
             return;

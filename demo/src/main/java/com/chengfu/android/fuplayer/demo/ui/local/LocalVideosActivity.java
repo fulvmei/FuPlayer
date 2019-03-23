@@ -8,7 +8,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.chengfu.android.fuplayer.demo.R;
+import com.chengfu.android.fuplayer.demo.bean.Video;
 import com.chengfu.android.fuplayer.demo.util.VideoUtil;
+
+import java.util.List;
 
 
 public class LocalVideosActivity extends AppCompatActivity {
@@ -30,7 +33,13 @@ public class LocalVideosActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(adapter);
 
-        adapter.setData(VideoUtil.getLocalVideoList(this));
+        List<Video> list = VideoUtil.getLocalVideoList(this);
+
+        list.addAll(VideoUtil.getVideoList());
+
+        list.addAll(VideoUtil.getAudiooList());
+
+        adapter.setData(list);
     }
 
     @Override

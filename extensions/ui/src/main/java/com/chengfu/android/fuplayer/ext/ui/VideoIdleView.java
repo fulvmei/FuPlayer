@@ -18,6 +18,8 @@ public class VideoIdleView extends BaseStateView {
 
     protected OnPlayerClickListener onPlayerClickListener;
 
+    private boolean disable;
+
     public interface OnPlayerClickListener {
         void onPlayClick(View v);
     }
@@ -30,6 +32,7 @@ public class VideoIdleView extends BaseStateView {
     public VideoIdleView(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
+
 
     public VideoIdleView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -59,19 +62,35 @@ public class VideoIdleView extends BaseStateView {
 
     }
 
+
+    public void setDisable(boolean disable) {
+        if (this.disable == disable) {
+            return;
+        }
+        this.disable = disable;
+        updateVisibility();
+    }
+
+    public boolean isDisable() {
+        return disable;
+    }
+
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
         return inflater.inflate(R.layout.fpu_view_video_state_idel, parent, false);
     }
 
     protected void updateVisibility() {
         if (isInShowState()) {
-            setVisibility(VISIBLE);
+            show();
         } else {
-            setVisibility(GONE);
+            hide();
         }
     }
 
     protected boolean isInShowState() {
+        if (disable) {
+            return false;
+        }
         if (player == null) {
             return true;
         }

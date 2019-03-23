@@ -65,7 +65,7 @@ public class LocalVideoListAdapter extends RecyclerView.Adapter<LocalVideoListAd
         public void onClick(View view) {
             Video media = mediaList.get(getAdapterPosition());
             Intent intent = new Intent(itemView.getContext(), VideoPlayerActivity.class);
-            intent.putExtra("media", media);
+            intent.putExtra("id", media.getTag());
             itemView.getContext().startActivity(intent);
         }
     }

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.chengfu.android.fuplayer.BaseStateView;
 import com.chengfu.android.fuplayer.FuPlayerView;
 import com.chengfu.android.fuplayer.demo.APP;
 import com.chengfu.android.fuplayer.demo.R;
@@ -25,6 +27,7 @@ import com.chengfu.android.fuplayer.demo.player.FuPlayer;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
 import com.chengfu.android.fuplayer.demo.util.NetworkUtil;
 //import com.chengfu.android.fuplayer.demo.util.ScreenRotationHelper;
+import com.chengfu.android.fuplayer.ext.exo.FuExoPlayerFactory;
 import com.chengfu.android.fuplayer.ext.ui.VideoEndedView;
 import com.chengfu.android.fuplayer.ext.ui.VideoImageView;
 import com.chengfu.android.fuplayer.ext.ui.VideoIdleView;
@@ -48,7 +51,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     private boolean autoPlayWhenItemVisible;
     private ViewGroup videoFullScreenContainer;
     private Activity activity;
-//    private ScreenRotationHelper screenRotationHelper;
 
     public final OnScrollListener scrollListener = new OnScrollListener() {
         @Override
@@ -107,25 +109,25 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     }
 
 
-    public void maybePausePlay() {
+    public void onPause() {
         if (currentPlayVH == null) {
             return;
         }
-        currentPlayVH.pausePlay();
+        player.onPause();
     }
 
-    public void maybeResumePlay() {
+    public void onResume() {
         if (currentPlayVH == null) {
             return;
         }
-        currentPlayVH.resumePlay();
+        player.onResume();
     }
 
     public void maybeStopPlay() {
         if (currentPlayVH == null) {
             return;
         }
-        currentPlayVH.stopPlay();
+        player.stopPlay();
         currentPlayVH = null;
     }
 
@@ -135,7 +137,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
 
         SimpleExoPlayer simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(recyclerView.getContext());
         simpleExoPlayer.addAnalyticsListener(new PlayerAnalytics());
-        player = new FuPlayer(activity, simpleExoPlayer);
+        player = new FuPlayer(activity, new FuExoPlayerFactory(recyclerView.getContext()));
 
 
         ScreenRotationHelper screenRotationHelper = new ScreenRotationHelper(activity);
@@ -250,7 +252,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
-
         FrameLayout videoContainer;
         FrameLayout videoRoot;
         FuPlayerView playerView;
@@ -275,10 +276,14 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
 
             bufferingView = itemView.findViewById(R.id.bufferingView);
             errorView = itemView.findViewById(R.id.errorView);
-            playView = itemView.findViewById(R.id.playView1);
-            videoImageView = itemView.findViewById(R.id.videoImageView1);
+            playView = itemView.findViewById(R.id.playView);
+            videoImageView = itemView.findViewById(R.id.videoImageView);
             noWifiView = itemView.findViewById(R.id.noWifiView);
             endedView = itemView.findViewById(R.id.endedView);
+
+            noWifiView.addVisibilityChangeListener((stateView, visibility) -> {
+                playView.setDisable(visibility);
+            });
 
             controlView.setShowAlwaysInPaused(true);
             controlView.setShowBottomProgress(true);
@@ -287,31 +292,17 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             controlView.setHideInEnded(true);
             controlView.setHideInError(true);
             controlView.setShowAlwaysInPaused(true);
-//            controlView.setOnScreenClickListener(fullScreen ->
-//                    player.getScreenRotation().manualToggleOrientation()
-//            );
-//            controlView.setOnBackClickListener(v -> player.getScreenRotation().maybeToggleToPortrait());
 
             playView.setOnPlayerClickListener(v -> {
                 maybeStopPlay();
                 startPlay();
             });
 
-//            noWifiView.setOnPlayClickListener(v -> {
-//                StaticConfig.PLAY_VIDEO_NO_WIFI = true;
-//                maybeStopPlay();
-//                startPlay();
-//            });
         }
 
         boolean canPlay() {
             if (!NetworkUtil.isConnected(APP.application)) {
                 Toast.makeText(APP.application, "网络不可用", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-            if (NetworkUtil.getNetWorkType(APP.application) != NetworkUtil.NETWORK_WIFI && !StaticConfig.PLAY_VIDEO_NO_WIFI) {
-                playView.setVisibility(View.GONE);
-//                noWifiView.show();
                 return false;
             }
             return true;
@@ -335,40 +326,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             player.addStateView(playView, true);
             player.addStateView(errorView, true);
             player.addStateView(endedView, true);
+            player.addStateView(noWifiView, true);
 
-//            videoImageView.setPlayer(player);
-//            videoImageView.setPlayer(player);
-//            bufferingView.setPlayer(player);
-//            playView.setPlayer(player);
-//            errorView.setPlayer(player);
-
-            player.prepare(MediaSourceUtil.getMediaSource(APP.application, dataList.get(getAdapterPosition()).getPath()));
-            player.setPlayWhenReady(true);
-
-            player.getScreenRotation().resume();
-        }
-
-        void pausePlay() {
-            if (player.getPlayWhenReady()) {
-                player.setPlayWhenReady(false);
-            }
-            player.getScreenRotation().pause();
-        }
-
-        void resumePlay() {
-            if (!player.getPlayWhenReady()) {
-                player.setPlayWhenReady(true);
-            }
-            player.getScreenRotation().resume();
-        }
-
-        void stopPlay() {
-            player.setPlayerView(null);
-            player.setVideoControlView(null);
-            player.clearStateViews();
-//            noWifiView.hide();
-            player.stop();
-            player.getScreenRotation().pause();
+            player.prepare(dataList.get(getAdapterPosition()).getMediaSource());
         }
     }
 }

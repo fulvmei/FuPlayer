@@ -1,17 +1,23 @@
 package com.chengfu.android.fuplayer.demo.ui.video;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.chengfu.android.fuplayer.FuPlayerView;
+import com.chengfu.android.fuplayer.SampleErrorView;
 import com.chengfu.android.fuplayer.demo.R;
 import com.chengfu.android.fuplayer.demo.StaticConfig;
+import com.chengfu.android.fuplayer.demo.bean.Resource;
 import com.chengfu.android.fuplayer.demo.bean.Video;
 import com.chengfu.android.fuplayer.demo.immersion.ImmersionBar;
 import com.chengfu.android.fuplayer.demo.immersion.QMUIStatusBarHelper;
@@ -19,19 +25,22 @@ import com.chengfu.android.fuplayer.demo.immersion.QMUIStatusBarHelper;
 import com.chengfu.android.fuplayer.demo.player.FuPlayer;
 import com.chengfu.android.fuplayer.demo.player.PlayerAnalytics;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
+import com.chengfu.android.fuplayer.ext.exo.FuExoPlayerFactory;
 import com.chengfu.android.fuplayer.ext.ui.VideoBufferingView;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.chengfu.android.fuplayer.ext.ui.VideoEndedView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 
 
 public class VideoPlayerActivity extends AppCompatActivity {
     public static final String TAG = "VideoPlayerActivity";
-    private Video media;
+    private Video video;
+    private String id;
     private View playerRoot;
     private FuPlayerView playerView;
     private VideoControlView controlView;
@@ -41,6 +50,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private VideoEndedView endedView;
     private VideoPlayWithoutWifiView noWifiView;
 
+    private VideoDetailsViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,23 +60,104 @@ public class VideoPlayerActivity extends AppCompatActivity {
         QMUIStatusBarHelper.setStatusBarDarkMode(this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
+        id = getIntent().getStringExtra("id");
 
         setContentView(R.layout.activity_video_player);
 
-        playerRoot = findViewById(R.id.playerRoot);
 
-        media = (Video) getIntent().getSerializableExtra("media");
+        player = new FuPlayer(this, new FuExoPlayerFactory(this));
 
-        initPlayer();
-
-        initPlayerView();
-
-        initControlView();
+        initViews();
 
         initScreenRotation();
 
         initFragment();
 
+        viewModel = ViewModelProviders.of(this).get(VideoDetailsViewModel.class);
+
+        viewModel.getVideoResource().observe(this, new Observer<Resource<Video>>() {
+            @Override
+            public void onChanged(@Nullable Resource<Video> videoResource) {
+                video = videoResource.data;
+                if (videoResource.status == Resource.Status.LOADING) {
+                    loadingView.show();
+                    errorView.hide();
+                } else if (videoResource.status == Resource.Status.ERROR) {
+                    loadingView.hide();
+                    errorView.show();
+                } else if (videoResource.status == Resource.Status.SUCCESS) {
+                    loadingView.hide();
+                    errorView.hide();
+
+                    controlView.setTitle(video.getName());
+
+                    player.prepare(MediaSourceUtil.getMediaSource(VideoPlayerActivity.this, video.getPath()));
+//                    initializePlayer();
+                }
+            }
+        });
+
+        viewModel.setParams(id);
+        viewModel.refreshVideo();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        id = getIntent().getStringExtra("id");
+
+        viewModel.setParams(id);
+        viewModel.refreshVideo();
+    }
+
+    private void initViews() {
+        playerRoot = findViewById(R.id.playerRoot);
+
+        playerView = findViewById(R.id.playerView);
+
+        loadingView = findViewById(R.id.bufferingView);
+        errorView = findViewById(R.id.errorView);
+        endedView = findViewById(R.id.endedView);
+        noWifiView = findViewById(R.id.noWifiView);
+
+        noWifiView.setAllowPlayInNoWifi(StaticConfig.PLAY_VIDEO_NO_WIFI);
+
+        errorView.setOnRetryListener(player -> {
+            if (video == null) {
+                viewModel.refreshVideo();
+                return true;
+            }
+            return false;
+        });
+
+
+        controlView = findViewById(R.id.controlView);
+//        controlView.setTitle(media.getName());
+
+        controlView.setEnableGestureType(VideoControlView.Gesture.SHOW_TYPE_BRIGHTNESS | VideoControlView.Gesture.SHOW_TYPE_PROGRESS | VideoControlView.Gesture.SHOW_TYPE_VOLUME);
+        controlView.setShowBottomProgress(true);
+        controlView.setShowTopOnlyFullScreen(true);
+        controlView.setShowAlwaysInPaused(true);
+
+//        controlView.setOnScreenClickListener(fullScreen -> {
+//            player.getScreenRotation().manualToggleOrientation();
+//        });
+//
+//        controlView.setOnBackClickListener(v -> {
+//            if (!player.getScreenRotation().maybeToggleToPortrait()) {
+//                finish();
+//            }
+//        });
+
+        player.addStateView(noWifiView, true);
+        player.addStateView(loadingView);
+        player.addStateView(errorView, true);
+        player.addStateView(endedView, true);
+
+        player.setPlayerView(playerView);
+
+        player.setVideoControlView(controlView);
     }
 
     private void initFragment() {
@@ -89,99 +180,16 @@ public class VideoPlayerActivity extends AppCompatActivity {
         player.setScreenRotation(screenRotationHelper);
     }
 
-    private void initPlayer() {
-        SimpleExoPlayer simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(this);
-        simpleExoPlayer.addAnalyticsListener(new PlayerAnalytics());
-        player = new FuPlayer(this, simpleExoPlayer);
-
-        player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath()));
-        player.setPlayWhenReady(true);
-
-    }
-
-    private void initPlayerView() {
-        playerView = findViewById(R.id.playerView);
-
-        loadingView = findViewById(R.id.bufferingView);
-        errorView = findViewById(R.id.errorView);
-        endedView = findViewById(R.id.endedView);
-        noWifiView = findViewById(R.id.noWifiView);
-
-        noWifiView.setAllowPlayInNoWifi(StaticConfig.PLAY_VIDEO_NO_WIFI);
-
-//        noWifiView.setOnAllowPlayInNoWifiChangeListener(allowPlayInNoWifi -> StaticConfig.PLAY_VIDEO_NO_WIFI=allowPlayInNoWifi);
-
-//        noWifiView.show();
-//        noWifiView.setOnPlayClickListener(v -> {
-//            StaticConfig.PLAY_VIDEO_NO_WIFI = true;
-//            player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath()));
-//            player.setPlayWhenReady(true);
-//            noWifiView.hide();
-//        });
-
-//        errorView.setOnReTryClickListener(v -> player.setPlayWhenReady(true));
-
-//        endedView.setOnReTryClickListener(v -> {
-//            if (player.getPlaybackState() == Player.STATE_ENDED) {
-//                player.seekTo(0);
-//            }
-//            player.setPlayWhenReady(true);
-//        });
-
-//        player.addStateView(loadingView);
-
-
-//        loadingView.setPlayer(player);
-//        errorView.setPlayer(player);
-//        endedView.setPlayer(player);
-
-//        errorView.setVisibilityChangeListener((stateView, visibility) -> maybeHideController());
-//
-//        endedView.setVisibilityChangeListener((stateView, visibility) -> maybeHideController());
-
-        player.addStateView(noWifiView, true);
-        player.addStateView(loadingView);
-        player.addStateView(errorView, true);
-        player.addStateView(endedView, true);
-
-
-        player.setPlayerView(playerView);
-    }
-
-    private void initControlView() {
-        controlView = findViewById(R.id.controlView);
-        controlView.setTitle(media.getName());
-
-        controlView.setEnableGestureType(VideoControlView.Gesture.SHOW_TYPE_BRIGHTNESS | VideoControlView.Gesture.SHOW_TYPE_PROGRESS | VideoControlView.Gesture.SHOW_TYPE_VOLUME);
-        controlView.setShowBottomProgress(true);
-        controlView.setShowTopOnlyFullScreen(true);
-        controlView.setShowAlwaysInPaused(true);
-
-        controlView.setOnScreenClickListener(fullScreen -> {
-            player.getScreenRotation().manualToggleOrientation();
-        });
-
-        controlView.setOnBackClickListener(v -> {
-            if (!player.getScreenRotation().maybeToggleToPortrait()) {
-                finish();
-            }
-        });
-
-        player.setVideoControlView(controlView);
-    }
-
     private void changedScreen(boolean fullScreen) {
+        player.setFullScreen(fullScreen);
         if (fullScreen) {
-            controlView.setFullScreen(true);
-            loadingView.setFullScreen(true);
             ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
 
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         } else {
-            controlView.setFullScreen(false);
-            loadingView.setFullScreen(false);
+
             ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             layoutParams.height = 608;
@@ -203,18 +211,14 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-//        player.onResume();
         super.onResume();
-
-        player.retry();
+        player.onResume();
     }
 
     @Override
     protected void onPause() {
-//        player.onPause();
         super.onPause();
-
-        player.stop();
+        player.onPause();
     }
 
     @Override
