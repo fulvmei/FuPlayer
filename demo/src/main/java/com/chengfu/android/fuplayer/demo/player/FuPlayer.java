@@ -16,6 +16,8 @@ import android.view.View;
 
 import com.chengfu.android.fuplayer.BaseStateView;
 import com.chengfu.android.fuplayer.FuPlayerView;
+import com.chengfu.android.fuplayer.PlayerFactory;
+import com.chengfu.android.fuplayer.StateView;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
@@ -28,33 +30,31 @@ import com.google.android.exoplayer2.source.MediaSource;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public class FuPlayer extends PlayerAdapter {
+public class FuPlayer implements StateView {
 
     private static final String TAG = "FuPlayer";
 
-    private Activity mActivity;
+    private static final String TAG_HIDE_CONTROLLER_WITH_STATE_VIEW_SHOW = "tag_hide_controller_with_state_view_show";
+
+    private Context mContext;
     private final ComponentListener mComponentListener;
     private MediaSessionCompat mMediaSession;
+    PlayerFactory mPlayerFactory;
+    private ExoPlayer mPlayer;
     private FuPlayerView mPlayerView;
     private VideoControlView mVideoControlView;
     private ScreenRotationHelper mScreenRotation;
-    private CopyOnWriteArraySet<StateViewHolder> mStateViewsHolder = new CopyOnWriteArraySet<>();
-    private boolean needPlayOnResume;
-    private VideoPlayWithoutWifiView noWifiView;
+    private CopyOnWriteArraySet<BaseStateView> mStateViews = new CopyOnWriteArraySet<>();
 
-    public VideoPlayWithoutWifiView getNoWifiView() {
-        return noWifiView;
-    }
+    public FuPlayer(@NonNull Context context, @NonNull PlayerFactory playerFactory) {
 
-    public void setNoWifiView(VideoPlayWithoutWifiView noWifiView) {
-        this.noWifiView = noWifiView;
-    }
+        this.mContext = context;
+        this.mPlayerFactory = playerFactory;
+        mComponentListener = new ComponentListener();
 
-    public FuPlayer(@NonNull Activity activity, @NonNull ExoPlayer player) {
-        this(player);
-        this.mActivity = activity;
+        mPlayer = mPlayerFactory.create();
 
-        mMediaSession = new MediaSessionCompat(activity, TAG);
+        mMediaSession = new MediaSessionCompat(mContext, TAG);
         mMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 
         MediaSessionConnector mediaSessionConnector = new MediaSessionConnector(mMediaSession, new DefaultPlaybackController() {
@@ -71,16 +71,29 @@ public class FuPlayer extends PlayerAdapter {
 
             }
         });
-        mediaSessionConnector.setPlayer(player, null);
+        mediaSessionConnector.setPlayer(mPlayer, null);
 
-        player.addListener(mComponentListener);
+        mPlayer.addListener(mComponentListener);
+    }
+
+    @Override
+    public ExoPlayer getPlayer() {
+        return mPlayer;
+    }
+
+    @Override
+    public void setPlayer(ExoPlayer player) {
 
     }
 
-    protected FuPlayer(@NonNull ExoPlayer player) {
-        super(player);
-        mComponentListener = new ComponentListener();
-
+    @Override
+    public void setFullScreen(boolean fullScreen) {
+        if (mVideoControlView != null) {
+            mVideoControlView.setFullScreen(fullScreen);
+        }
+        for (BaseStateView stateView : mStateViews) {
+            stateView.setFullScreen(fullScreen);
+        }
     }
 
     public FuPlayerView getPlayerView() {
@@ -129,12 +142,11 @@ public class FuPlayer extends PlayerAdapter {
         if (stateView == null) {
             return;
         }
-        StateViewHolder stateViewHolder = new StateViewHolder(stateView, hideController);
-        if (mStateViewsHolder.contains(stateViewHolder)) {
-            return;
+        if (hideController) {
+            stateView.setTag(TAG_HIDE_CONTROLLER_WITH_STATE_VIEW_SHOW);
         }
-        mStateViewsHolder.add(stateViewHolder);
-        stateView.setVisibilityChangeListener(mComponentListener);
+        mStateViews.add(stateView);
+        stateView.addVisibilityChangeListener(mComponentListener);
         stateView.setPlayer(mPlayer);
     }
 
@@ -142,21 +154,17 @@ public class FuPlayer extends PlayerAdapter {
         if (stateView == null) {
             return;
         }
-        StateViewHolder stateViewHolder = new StateViewHolder(stateView, false);
-        if (!mStateViewsHolder.contains(stateViewHolder)) {
-            return;
-        }
-        mStateViewsHolder.remove(stateViewHolder);
+        mStateViews.remove(stateView);
         stateView.setPlayer(null);
-        stateView.setVisibilityChangeListener(null);
+        stateView.removeVisibilityChangeListener(mComponentListener);
     }
 
     public void clearStateViews() {
-        for (StateViewHolder holder : mStateViewsHolder) {
-            holder.stateView.setPlayer(null);
-            holder.stateView.setVisibilityChangeListener(null);
+        for (BaseStateView stateView : mStateViews) {
+            stateView.setPlayer(null);
+            stateView.removeVisibilityChangeListener(mComponentListener);
         }
-        mStateViewsHolder.clear();
+        mStateViews.clear();
     }
 
     public void setScreenRotation(ScreenRotationHelper screenRotation) {
@@ -192,15 +200,22 @@ public class FuPlayer extends PlayerAdapter {
         }
     }
 
-    private StateViewHolder getStateViewHolder(BaseStateView stateView) {
-        for (StateViewHolder stateViewHolder : mStateViewsHolder) {
-            if (stateViewHolder.stateView == stateView) {
-                return stateViewHolder;
-            }
-        }
-        return null;
+    public void prepare(MediaSource mediaSource) {
+        mPlayer.prepare(mediaSource, true, true);
+        mPlayer.setPlayWhenReady(true);
+
+        onResume();
     }
 
+    public void stopPlay() {
+        if (mPlayerView != null) {
+            mPlayerView.onPause();
+        }
+        if (mScreenRotation != null) {
+            mScreenRotation.pause();
+        }
+        mPlayer.stop(true);
+    }
 
     public void onResume() {
         if (mPlayerView != null) {
@@ -209,9 +224,9 @@ public class FuPlayer extends PlayerAdapter {
         if (mScreenRotation != null) {
             mScreenRotation.resume();
         }
-        if (!mPlayer.getPlayWhenReady() && needPlayOnResume) {
-            mPlayer.setPlayWhenReady(true);
-            needPlayOnResume = false;
+        if (mPlayer != null && mPlayer.getPlaybackState() == Player.STATE_IDLE
+                && mPlayer.getPlaybackError() == null) {
+            mPlayer.retry();
         }
     }
 
@@ -223,11 +238,12 @@ public class FuPlayer extends PlayerAdapter {
         if (mScreenRotation != null) {
             mScreenRotation.pause();
         }
-        if (mPlayer.getPlayWhenReady()) {
-            needPlayOnResume = true;
-            mPlayer.setPlayWhenReady(false);
+        if (mPlayer.getPlaybackState() == Player.STATE_BUFFERING
+                || mPlayer.getPlaybackState() == Player.STATE_READY) {
+            mPlayer.stop();
         }
     }
+
 
     public boolean onBackPressed() {
         if (mScreenRotation != null) {
@@ -249,10 +265,13 @@ public class FuPlayer extends PlayerAdapter {
     private final class ComponentListener implements BaseStateView.VisibilityChangeListener, Player.EventListener, VideoControlView.OnScreenClickListener, VideoControlView.OnBackClickListener {
 
         @Override
-        public void onVisibilityChange(BaseStateView stateView, boolean visibility) {
-            StateViewHolder holder = getStateViewHolder(stateView);
-            if (holder != null && holder.hideController && visibility) {
-                maybeHideController();
+        public void onVisibilityChange(StateView stateView, boolean visibility) {
+            if (stateView instanceof BaseStateView && visibility) {
+                BaseStateView baseStateView = (BaseStateView) stateView;
+                if (baseStateView.getTag() != null
+                        && baseStateView.getTag().equals(TAG_HIDE_CONTROLLER_WITH_STATE_VIEW_SHOW)) {
+                    maybeHideController();
+                }
             }
         }
 
@@ -280,27 +299,4 @@ public class FuPlayer extends PlayerAdapter {
         }
     }
 
-    private class StateViewHolder {
-        BaseStateView stateView;
-        boolean hideController;
-
-        public StateViewHolder(BaseStateView stateView) {
-            this.stateView = stateView;
-        }
-
-        public StateViewHolder(BaseStateView stateView, boolean hideController) {
-            this.stateView = stateView;
-            this.hideController = hideController;
-        }
-
-        @Override
-        public boolean equals(@Nullable Object obj) {
-            if (obj instanceof StateViewHolder) {
-                StateViewHolder stateViewHolder = (StateViewHolder) obj;
-                return stateView == stateViewHolder.stateView;
-            } else {
-                return false;
-            }
-        }
-    }
 }

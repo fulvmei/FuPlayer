@@ -85,9 +85,8 @@ public class VideoListFragment extends Fragment implements IBackPressed {
     @Override
     public void onPause() {
         super.onPause();
-
         if (adapter != null) {
-            adapter.maybePausePlay();
+            adapter.onPause();
         }
     }
 
@@ -95,7 +94,7 @@ public class VideoListFragment extends Fragment implements IBackPressed {
     public void onResume() {
         super.onResume();
         if (adapter != null) {
-            adapter.maybeResumePlay();
+            adapter.onResume();
         }
     }
 

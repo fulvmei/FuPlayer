@@ -89,21 +89,15 @@ public class VideoPlayWithoutWifiView extends BaseStateView {
     protected void maybeShow() {
         if (isInShowState()) {
             player.stop();
-            setVisibility(VISIBLE);
-            dispatchVisibilityChanged(true);
+            show();
         }
-    }
-
-    protected void hide() {
-        setVisibility(GONE);
-        dispatchVisibilityChanged(false);
     }
 
     protected boolean isInShowState() {
         if (player != null
                 && !allowPlayInNoWifi
                 && NetworkUtil.getNetWorkType(context) != NetworkUtil.NETWORK_WIFI
-                &&player.isLoading()) {
+                && player.isLoading()) {
             return true;
         }
         return false;

@@ -105,9 +105,9 @@ public class VideoImageView extends BaseStateView {
 
     protected void updateVisibility() {
         if (isInShowState()) {
-            setVisibility(VISIBLE);
+            show();
         } else {
-            setVisibility(GONE);
+            hide();
         }
     }
 
@@ -120,9 +120,11 @@ public class VideoImageView extends BaseStateView {
                 if (player.getPlaybackError() != null) {
                     if (showInError || !hasFirstFrame) {
                         return true;
+                    } else {
+                        return false;
                     }
                 }
-                return false;
+                return true;
             case Player.STATE_READY:
                 return false;
             case Player.STATE_BUFFERING:

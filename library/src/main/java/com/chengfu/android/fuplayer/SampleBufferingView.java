@@ -80,15 +80,9 @@ public class SampleBufferingView extends BaseStateView {
 
     protected void updateVisibility() {
         if (isInShowState()) {
-            if (getVisibility() == GONE) {
-                setVisibility(VISIBLE);
-                dispatchVisibilityChanged(true);
-            }
+            show();
         } else {
-            if (getVisibility() == VISIBLE) {
-                setVisibility(GONE);
-                dispatchVisibilityChanged(false);
-            }
+            hide();
         }
     }
 

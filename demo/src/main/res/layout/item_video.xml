@@ -31,7 +31,7 @@
                 android:layout_height="match_parent" />
 
             <com.chengfu.android.fuplayer.ext.ui.VideoImageView
-                android:id="@+id/videoImageView1"
+                android:id="@+id/videoImageView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
@@ -52,7 +52,7 @@
                 android:layout_height="match_parent" />
 
             <com.chengfu.android.fuplayer.ext.ui.VideoIdleView
-                android:id="@+id/playView1"
+                android:id="@+id/playView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 

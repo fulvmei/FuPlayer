@@ -154,7 +154,7 @@ public class MediaChooseActivity extends AppCompatActivity implements Expandable
                                 int childPosition, long id) {
         Video media = mediaGroupList.get(groupPosition).getMediaList().get(childPosition);
         Intent intent = new Intent(this, VideoPlayerActivity.class);
-        intent.putExtra("media", media);
+        intent.putExtra("id", media.getTag());
         startActivity(intent);
         return true;
     }

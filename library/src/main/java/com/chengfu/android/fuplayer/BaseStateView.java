@@ -8,17 +8,16 @@ import android.widget.FrameLayout;
 
 import com.google.android.exoplayer2.ExoPlayer;
 
+import java.util.concurrent.CopyOnWriteArraySet;
+
 
 public abstract class BaseStateView extends FrameLayout implements StateView {
 
     protected ExoPlayer player;
 
-    private VisibilityChangeListener visibilityChangeListener;
-    protected boolean fullScreen;
+    private final CopyOnWriteArraySet<VisibilityChangeListener> visibilityChangeListeners;
 
-    public interface VisibilityChangeListener {
-        void onVisibilityChange(BaseStateView stateView, boolean visibility);
-    }
+    protected boolean fullScreen;
 
     public BaseStateView(@NonNull Context context) {
         this(context, null);
@@ -30,26 +29,53 @@ public abstract class BaseStateView extends FrameLayout implements StateView {
 
     public BaseStateView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        visibilityChangeListeners = new CopyOnWriteArraySet<>();
     }
 
-    public VisibilityChangeListener getVisibilityChangeListener() {
-        return visibilityChangeListener;
+    @Override
+    public void addVisibilityChangeListener(VisibilityChangeListener l) {
+        visibilityChangeListeners.add(l);
     }
 
-    public void setVisibilityChangeListener(VisibilityChangeListener l) {
-        this.visibilityChangeListener = l;
+    @Override
+    public void removeVisibilityChangeListener(VisibilityChangeListener l) {
+        visibilityChangeListeners.remove(l);
     }
 
+    @Override
     public boolean isFullScreen() {
         return fullScreen;
     }
 
+    @Override
     public void setFullScreen(boolean fullScreen) {
         if (this.fullScreen == fullScreen) {
             return;
         }
         this.fullScreen = fullScreen;
         onFullScreenChanged(fullScreen);
+    }
+
+    @Override
+    public boolean isShowing() {
+        return getVisibility() == VISIBLE;
+    }
+
+    @Override
+    public void show() {
+        if (!isShowing()) {
+            setVisibility(VISIBLE);
+            dispatchVisibilityChanged(true);
+        }
+    }
+
+    @Override
+    public void hide() {
+        if (isShowing()) {
+            setVisibility(GONE);
+            dispatchVisibilityChanged(false);
+        }
     }
 
     @Override
@@ -79,12 +105,14 @@ public abstract class BaseStateView extends FrameLayout implements StateView {
     protected abstract void onDetachedFromPlayer(@NonNull ExoPlayer player);
 
     /**
-     * Dispatch callbacks to {@link #setVisibilityChangeListener} down
+     * Dispatch callbacks to {@link #addVisibilityChangeListener} down
      * the view hierarchy.
      */
     protected void dispatchVisibilityChanged(boolean visibility) {
-        if (visibilityChangeListener != null) {
-            visibilityChangeListener.onVisibilityChange(this, visibility);
+        for (VisibilityChangeListener listener : visibilityChangeListeners) {
+            if (listener != null) {
+                listener.onVisibilityChange(this, visibility);
+            }
         }
     }
 
