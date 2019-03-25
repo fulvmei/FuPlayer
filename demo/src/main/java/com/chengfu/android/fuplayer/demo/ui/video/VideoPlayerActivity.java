@@ -14,16 +14,12 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.chengfu.android.fuplayer.FuPlayerView;
-import com.chengfu.android.fuplayer.SampleErrorView;
 import com.chengfu.android.fuplayer.demo.R;
 import com.chengfu.android.fuplayer.demo.StaticConfig;
 import com.chengfu.android.fuplayer.demo.bean.Resource;
 import com.chengfu.android.fuplayer.demo.bean.Video;
-import com.chengfu.android.fuplayer.demo.immersion.ImmersionBar;
-import com.chengfu.android.fuplayer.demo.immersion.QMUIStatusBarHelper;
 
 import com.chengfu.android.fuplayer.demo.player.FuPlayer;
-import com.chengfu.android.fuplayer.demo.player.PlayerAnalytics;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
 import com.chengfu.android.fuplayer.ext.exo.FuExoPlayerFactory;
 import com.chengfu.android.fuplayer.ext.ui.VideoBufferingView;
@@ -32,9 +28,8 @@ import com.chengfu.android.fuplayer.ext.ui.VideoEndedView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayErrorView;
 import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.gyf.barlibrary.BarHide;
+import com.gyf.barlibrary.ImmersionBar;
 
 
 public class VideoPlayerActivity extends AppCompatActivity {
@@ -56,14 +51,18 @@ public class VideoPlayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ImmersionBar.with(this).statusBarColorInt(Color.BLACK).init();
-        QMUIStatusBarHelper.setStatusBarDarkMode(this);
+//        QMUIStatusBarHelper.setStatusBarDarkMode(this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         id = getIntent().getStringExtra("id");
 
         setContentView(R.layout.activity_video_player);
 
+        ImmersionBar.with(this)
+                .statusBarColorInt(Color.BLACK)
+                .fitsSystemWindows(true)
+                .hideBar(BarHide.FLAG_SHOW_BAR)
+                .init();
 
         player = new FuPlayer(this, new FuExoPlayerFactory(this));
 
@@ -187,14 +186,23 @@ public class VideoPlayerActivity extends AppCompatActivity {
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
 
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            ImmersionBar.with(this)
+                    .fitsSystemWindows(false)
+                    .hideBar(BarHide.FLAG_HIDE_BAR)
+                    .init();
         } else {
 
             ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             layoutParams.height = 608;
 
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            ImmersionBar.with(this)
+                    .statusBarColorInt(Color.BLACK)
+                    .fitsSystemWindows(true)
+                    .hideBar(BarHide.FLAG_SHOW_BAR)
+                    .init();
+//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
     }
 
