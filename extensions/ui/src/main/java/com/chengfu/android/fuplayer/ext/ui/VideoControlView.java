@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.chengfu.android.fuplayer.DefaultControlView;
 import com.chengfu.android.fuplayer.ext.ui.gesture.GestureImpl;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
+import com.google.android.exoplayer2.util.Util;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -39,7 +40,8 @@ public class VideoControlView extends DefaultControlView {
 
     View slideForwardView;
     ImageView slideForwardImage;
-    TextView slideForwardPercent;
+    TextView slideForwardDuration;
+    TextView slideForwardPosition;
     ProgressBar slideForwardProgress;
 
     View slideVolumeView;
@@ -151,7 +153,8 @@ public class VideoControlView extends DefaultControlView {
 
         slideForwardView = findViewById(R.id.controller_slide_forward);
         slideForwardImage = findViewById(R.id.controller_slide_forward_image);
-        slideForwardPercent = findViewById(R.id.controller_slide_forward_percent);
+        slideForwardPosition = findViewById(R.id.controller_slide_forward_position);
+        slideForwardDuration = findViewById(R.id.controller_slide_forward_duration);
         slideForwardProgress = findViewById(R.id.controller_slide_forward_progress);
         if (slideForwardProgress != null) {
             slideForwardProgress.setMax(100);
@@ -386,6 +389,9 @@ public class VideoControlView extends DefaultControlView {
                     }
                     oldPosition = mPlayer.getCurrentPosition();
                     duration = mPlayer.getDuration();
+                    if (slideForwardDuration != null) {
+                        slideForwardDuration.setText(stringForTime(duration));
+                    }
                     break;
                 case Gesture.SLIDE_TYPE_VOLUME:
                     if (slideVolumeView != null) {
@@ -417,8 +423,8 @@ public class VideoControlView extends DefaultControlView {
                         newPosition = 0;
                     }
 
-                    if (slideForwardPercent != null) {
-                        slideForwardPercent.setText((int) (newPosition * 1.0f / duration * 100) + "%");
+                    if (slideForwardPosition != null) {
+                        slideForwardPosition.setText(stringForTime(newPosition));
                     }
                     if (slideForwardProgress != null) {
                         slideForwardProgress.setProgress((int) (newPosition * 1.0f / duration * 100));

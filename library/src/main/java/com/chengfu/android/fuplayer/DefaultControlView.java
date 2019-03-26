@@ -619,7 +619,7 @@ public class DefaultControlView extends BaseControlView {
         }
     }
 
-    private String stringForTime(long timeMs) {
+    protected String stringForTime(long timeMs) {
         if (timeMs <= 0) {
             timeMs = 0;
         }
