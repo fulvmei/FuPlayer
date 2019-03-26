@@ -197,14 +197,14 @@ public class GestureImpl implements VideoControlView.Gesture {
             scrolling = true;
             return;
         }
-        int index = (int) (percent * maxVolume) + oldVolume;
-        if (index > maxVolume) {
-            index = maxVolume;
+        int index = (int) (percent * maxVolume * 100) + oldVolume * 100;
+        if (index > maxVolume * 100) {
+            index = maxVolume * 100;
         } else if (index < 0) {
             index = 0;
         }
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, index, 0);
-        int indexPercent = (int) (index * 1.0 / maxVolume * 100);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, index / 100, 0);
+        int indexPercent = (int) (index * 1.0 / maxVolume);
         if (onSlideChangedListener != null) {
             onSlideChangedListener.onPercentChanged(SLIDE_TYPE_VOLUME, indexPercent);
         }
