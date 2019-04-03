@@ -1,2 +1,2 @@
-# FuExoPlayer2
+# FuPlayer
 An extensible media player for Android

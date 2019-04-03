@@ -1,25 +1,15 @@
 package com.chengfu.android.fuplayer.demo.player;
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.os.RemoteException;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.util.Log;
 import android.view.View;
 
-import com.chengfu.android.fuplayer.BaseStateView;
-import com.chengfu.android.fuplayer.FuPlayerView;
-import com.chengfu.android.fuplayer.PlayerFactory;
-import com.chengfu.android.fuplayer.StateView;
+import com.chengfu.android.fuplayer.core.PlayerFactory;
+import com.chengfu.android.fuplayer.video.BaseStateView;
+import com.chengfu.android.fuplayer.video.FuPlayerView;
+import com.chengfu.android.fuplayer.video.StateView;
 import com.chengfu.android.fuplayer.ext.ui.VideoControlView;
-import com.chengfu.android.fuplayer.ext.ui.VideoPlayWithoutWifiView;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
@@ -27,7 +17,6 @@ import com.google.android.exoplayer2.ext.mediasession.DefaultPlaybackController;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.source.MediaSource;
 
-import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class FuPlayer implements StateView {

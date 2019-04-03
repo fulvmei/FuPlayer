@@ -13,7 +13,7 @@
         android:layout_height="202.5dp"
         app:layout_behavior="com.chengfu.android.fuplayer.demo.widget.DodoBelowBehavior1">
 
-        <com.chengfu.android.fuplayer.FuPlayerView
+        <com.chengfu.android.fuplayer.video.FuPlayerView
             android:id="@+id/playerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

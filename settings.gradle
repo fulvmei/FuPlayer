@@ -1,6 +1,10 @@
 include ':demo'
-include ':library'
 
 include ':extensions:pldroid'
 include ':extensions:ui'
 include ':extensions:exo'
+
+include ':library:core'
+include ':library:video'
+include ':library:audio'
+

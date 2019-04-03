@@ -15,10 +15,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.chengfu.android.fuplayer.DefaultControlView;
+import com.chengfu.android.fuplayer.video.DefaultControlView;
 import com.chengfu.android.fuplayer.ext.ui.gesture.GestureImpl;
 import com.chengfu.android.fuplayer.ext.ui.screen.ScreenRotationHelper;
-import com.google.android.exoplayer2.util.Util;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

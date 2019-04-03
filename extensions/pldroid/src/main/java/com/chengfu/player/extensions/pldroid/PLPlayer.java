@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Surface;
 
-import com.chengfu.android.fuplayer.util.FuLog;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -363,7 +362,6 @@ public class PLPlayer extends PLPlayerBase {
 
     @Override
     protected void setSurface(Surface surface) {
-        FuLog.d(TAG, "setSurface : surface=" + surface);
         plMediaPlayer.setSurface(surface);
     }
 

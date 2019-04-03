@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 
-import com.chengfu.android.fuplayer.BaseStateView;
+import com.chengfu.android.fuplayer.video.BaseStateView;
 import com.chengfu.android.fuplayer.ext.ui.util.NetworkUtil;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;

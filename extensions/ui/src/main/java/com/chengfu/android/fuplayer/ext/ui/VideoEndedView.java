@@ -9,8 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.chengfu.android.fuplayer.SampleEndedView;
-import com.google.android.exoplayer2.Player;
+import com.chengfu.android.fuplayer.video.SampleEndedView;
 
 public class VideoEndedView extends SampleEndedView {
 
