@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,17 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.chengfu.android.fuplayer.BaseStateView;
-import com.chengfu.android.fuplayer.FuPlayerView;
+import com.chengfu.android.fuplayer.video.FuPlayerView;
 import com.chengfu.android.fuplayer.demo.APP;
 import com.chengfu.android.fuplayer.demo.R;
-import com.chengfu.android.fuplayer.demo.StaticConfig;
 import com.chengfu.android.fuplayer.demo.bean.Video;
 import com.chengfu.android.fuplayer.demo.player.PlayerAnalytics;
 import com.chengfu.android.fuplayer.demo.player.FuPlayer;
-import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
 import com.chengfu.android.fuplayer.demo.util.NetworkUtil;
-//import com.chengfu.android.fuplayer.demo.util.ScreenRotationHelper;
 import com.chengfu.android.fuplayer.ext.exo.FuExoPlayerFactory;
 import com.chengfu.android.fuplayer.ext.ui.VideoEndedView;
 import com.chengfu.android.fuplayer.ext.ui.VideoImageView;
@@ -137,7 +132,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
 
         SimpleExoPlayer simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(recyclerView.getContext());
         simpleExoPlayer.addAnalyticsListener(new PlayerAnalytics());
-        player = new FuPlayer(activity, new FuExoPlayerFactory(recyclerView.getContext()));
+        player = new FuPlayer(activity,  new FuExoPlayerFactory(recyclerView.getContext()));
 
 
         ScreenRotationHelper screenRotationHelper = new ScreenRotationHelper(activity);

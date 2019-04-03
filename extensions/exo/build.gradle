@@ -1,9 +1,8 @@
 apply plugin: 'com.android.library'
+apply from: '../../constants.gradle'
 
 android {
     compileSdkVersion 28
-
-
 
     defaultConfig {
         minSdkVersion 16
@@ -22,14 +21,16 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    //    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    //    implementation 'com.android.support:appcompat-v7:28.0.0'
-    //    testImplementation 'junit:junit:4.12'
-    //    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    //    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation project(':library')
-    api 'com.google.android.exoplayer:extension-mediasession:2.9.6'
+    implementation project(':library:core')
+    api ('com.google.android.exoplayer:extension-mediasession:2.9.6'){
+        exclude group: 'com.android.support'
+    }
+    api 'com.android.support:support-media-compat:' +  project.ext.supportLibraryVersion
 }

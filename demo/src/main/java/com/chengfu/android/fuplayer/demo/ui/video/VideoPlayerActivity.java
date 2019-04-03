@@ -11,9 +11,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
-import com.chengfu.android.fuplayer.FuPlayerView;
+import com.chengfu.android.fuplayer.video.FuPlayerView;
 import com.chengfu.android.fuplayer.demo.R;
 import com.chengfu.android.fuplayer.demo.StaticConfig;
 import com.chengfu.android.fuplayer.demo.bean.Resource;

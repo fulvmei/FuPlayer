@@ -3,7 +3,7 @@ package com.chengfu.android.fuplayer.ext.exo;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.chengfu.android.fuplayer.PlayerFactory;
+import com.chengfu.android.fuplayer.core.PlayerFactory;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 

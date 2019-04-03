@@ -8,8 +8,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
 
-
-import com.chengfu.android.fuplayer.util.FuLog;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.video.VideoListener;
 
@@ -142,7 +140,6 @@ public abstract class PLPlayerBase implements Player, Player.VideoComponent {
     private void removeSurfaceCallbacks() {
         if (mTextureView != null) {
             if (mTextureView.getSurfaceTextureListener() != mComponentListener) {
-                FuLog.w(TAG, "SurfaceTextureListener already unset or replaced.");
             } else {
                 mTextureView.setSurfaceTextureListener(null);
             }
@@ -159,7 +156,6 @@ public abstract class PLPlayerBase implements Player, Player.VideoComponent {
 
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
-            FuLog.d(TAG, "surfaceCreated");
             setVideoSurface(holder.getSurface());
         }
 
@@ -170,13 +166,11 @@ public abstract class PLPlayerBase implements Player, Player.VideoComponent {
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
-            FuLog.d(TAG, "surfaceDestroyed");
             setVideoSurface(null);
         }
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
-            FuLog.d(TAG, "onSurfaceTextureAvailable");
             setVideoSurface(new Surface(surfaceTexture));
         }
 
@@ -187,7 +181,6 @@ public abstract class PLPlayerBase implements Player, Player.VideoComponent {
 
         @Override
         public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-            FuLog.d(TAG, "onSurfaceTextureDestroyed");
             setVideoSurface(null);
             return true;
         }
