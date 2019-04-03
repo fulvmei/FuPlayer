@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">音乐播放器</string>
+    <string name="app_name_plain" translatable="false">音乐播放器</string>
+
+    <string name="songs">单曲</string>
+    <string name="genres">歌手</string>
+    <string name="albums">专辑</string>
+    <string name="category">歌单</string>
+    <string name="online">在线</string>
+    <string name="artist">艺术家</string>
+
+
+</resources>
