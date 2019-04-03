@@ -2,13 +2,17 @@ apply plugin: 'com.android.library'
 apply from: '../../constants.gradle'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion project.ext.compileSdkVersion
+    buildToolsVersion project.ext.buildToolsVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion project.ext.minSdkVersion
+        targetSdkVersion project.ext.targetSdkVersion
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -21,16 +25,21 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    lintOptions {
+        abortOnError false
     }
 }
 
 dependencies {
     implementation project(':library:core')
-    api ('com.google.android.exoplayer:extension-mediasession:2.9.6'){
+    api('com.google.android.exoplayer:extension-mediasession:2.9.6') {
         exclude group: 'com.android.support'
     }
-    api 'com.android.support:support-media-compat:' +  project.ext.supportLibraryVersion
+    api 'com.android.support:support-media-compat:' + project.ext.supportLibraryVersion
 }
+
+ext {
+    releaseArtifact = 'extension-exo'
+    releaseDescription = 'Exo extension for FuPlayer.'
+}
+apply from: '../../publish.gradle'

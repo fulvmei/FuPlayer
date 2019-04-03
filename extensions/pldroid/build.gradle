@@ -1,18 +1,25 @@
 apply plugin: 'com.android.library'
+apply from: '../../constants.gradle'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion project.ext.compileSdkVersion
+    buildToolsVersion project.ext.buildToolsVersion
 
-
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion project.ext.minSdkVersion
+        targetSdkVersion project.ext.targetSdkVersion
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+    }
+
+    lintOptions {
+        abortOnError false
     }
 
     buildTypes {
@@ -31,12 +38,12 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-//    implementation('com.android.support:appcompat-v7:28.0.0') {
-//        exclude module: 'support-media-compat'
-//    }
-    //    testImplementation 'junit:junit:4.12'
-    //    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    //    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(':library:core')
+    implementation files('libs/pldroid-player-2.1.7.jar')
 }
+
+ext {
+    releaseArtifact = 'extension-pldroid'
+    releaseDescription = 'Pldroid extension for FuPlayer.'
+}
+apply from: '../../publish.gradle'
