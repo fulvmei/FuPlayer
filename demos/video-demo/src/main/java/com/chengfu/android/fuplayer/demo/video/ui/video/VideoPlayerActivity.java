@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.chengfu.android.fuplayer.demo.video.R;
+import com.chengfu.android.fuplayer.demo.video.player.FuPlayerManager;
 import com.chengfu.android.fuplayer.video.FuPlayerView;
 import com.chengfu.android.fuplayer.demo.video.StaticConfig;
 import com.chengfu.android.fuplayer.demo.video.bean.Resource;
@@ -20,7 +21,6 @@ import com.chengfu.android.fuplayer.demo.video.bean.Video;
 
 import com.chengfu.android.fuplayer.demo.video.immersion.BarHide;
 import com.chengfu.android.fuplayer.demo.video.immersion.ImmersionBar;
-import com.chengfu.android.fuplayer.demo.video.player.FuPlayer;
 import com.chengfu.android.fuplayer.demo.video.util.MediaSourceUtil;
 import com.chengfu.android.fuplayer.ext.exo.FuExoPlayerFactory;
 import com.chengfu.android.fuplayer.ext.video_plus.VideoBufferingView;
@@ -38,7 +38,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private View playerRoot;
     private FuPlayerView playerView;
     private VideoControlView controlView;
-    private FuPlayer player;
+    private FuPlayerManager player;
     private VideoBufferingView loadingView;
     private VideoPlayErrorView errorView;
     private VideoEndedView endedView;
@@ -63,7 +63,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 .hideBar(BarHide.FLAG_SHOW_BAR)
                 .init();
 
-        player = new FuPlayer(this, new FuExoPlayerFactory(this));
+        player = new FuPlayerManager(this, new FuExoPlayerFactory(this));
 
         initViews();
 

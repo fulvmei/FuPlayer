@@ -1,9 +1,10 @@
-package com.chengfu.android.fuplayer.demo.video.player;
+package com.chengfu.android.fuplayer.ext.exo;
 
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.chengfu.android.fuplayer.core.FuPlayer;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -15,11 +16,11 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 
-public class PlayerAdapter implements ExoPlayer {
+public class FuExoPlayer implements FuPlayer {
 
     protected ExoPlayer mPlayer;
 
-    public PlayerAdapter(@NonNull ExoPlayer player) {
+    public FuExoPlayer(@NonNull ExoPlayer player) {
         mPlayer = player;
     }
 

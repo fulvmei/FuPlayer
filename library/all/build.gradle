@@ -12,6 +12,7 @@ android {
     defaultConfig {
         minSdkVersion project.ext.minSdkVersion
         targetSdkVersion project.ext.targetSdkVersion
+
     }
 
     buildTypes {
@@ -27,11 +28,14 @@ android {
 }
 
 dependencies {
-    api 'com.google.android.exoplayer:exoplayer-core:'+exolayerVersion
+    api project(':library:core')
+    api project(':library:video')
+    api project(':library:audio')
 }
 
+
 ext {
-    releaseArtifact = 'fuplayer-core'
-    releaseDescription = 'The FuPlayer library core module.'
+    releaseArtifact = 'fuplayer'
+    releaseDescription = 'The FuPlayer library (all modules).'
 }
 apply from: '../../publish.gradle'

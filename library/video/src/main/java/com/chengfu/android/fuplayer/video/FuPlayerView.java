@@ -19,12 +19,11 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.chengfu.android.fuplayer.core.FuPlayer;
 import com.chengfu.android.fuplayer.video.spherical.SingleTapListener;
 import com.chengfu.android.fuplayer.video.spherical.SphericalSurfaceView;
 import com.chengfu.android.fuplayer.video.util.FuLog;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextOutput;
 import com.google.android.exoplayer2.util.Assertions;
@@ -55,7 +54,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
 //    private PlayerController playerController;
 //    private FrameLayout overlayFrameLayout;
 
-    private ExoPlayer mPlayer;
+    private FuPlayer mPlayer;
     private ComponentListener componentListener;
 
     private int mTextureViewRotation;
@@ -118,8 +117,8 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
 
     private void updateScreenOn() {
         boolean keepScreenOn = false;
-        if (mPlayer != null && mPlayer.getPlaybackState() != Player.STATE_IDLE
-                && mPlayer.getPlaybackState() != Player.STATE_ENDED && mPlayer.getPlayWhenReady()) {
+        if (mPlayer != null && mPlayer.getPlaybackState() != FuPlayer.STATE_IDLE
+                && mPlayer.getPlaybackState() != FuPlayer.STATE_ENDED && mPlayer.getPlayWhenReady()) {
             keepScreenOn = true;
         }
         setKeepScreenOn(keepScreenOn);
@@ -214,14 +213,14 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
     }
 
     /**
-     * Switches the view targeted by a given {@link ExoPlayer}.
+     * Switches the view targeted by a given {@link FuPlayer}.
      *
      * @param player        The player whose target view is being switched.
      * @param oldPlayerView The old view to detach from the player.
      * @param newPlayerView The new view to attach to the player.
      */
     public static void switchTargetView(
-            ExoPlayer player, @Nullable FuPlayerView oldPlayerView, @Nullable FuPlayerView newPlayerView) {
+            FuPlayer player, @Nullable FuPlayerView oldPlayerView, @Nullable FuPlayerView newPlayerView) {
         if (oldPlayerView == newPlayerView) {
             return;
         }
@@ -241,25 +240,25 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
      * Returns the player currently set on this view, or null if no player is set.
      */
     @Override
-    public ExoPlayer getPlayer() {
+    public FuPlayer getPlayer() {
         return mPlayer;
     }
 
     /**
-     * Set the {@link ExoPlayer} to use.
+     * Set the {@link FuPlayer} to use.
      *
-     * <p>To transition a {@link ExoPlayer} from targeting one view to another, it's recommended to use
-     * {@link #switchTargetView(ExoPlayer, FuPlayerView, FuPlayerView)} rather than this method. If you do
+     * <p>To transition a {@link FuPlayer} from targeting one view to another, it's recommended to use
+     * {@link #switchTargetView(FuPlayer, FuPlayerView, FuPlayerView)} rather than this method. If you do
      * wish to use this method directly, be sure to attach the player to the new view <em>before</em>
      * calling {@code setPlayer(null)} to detach it from the old one. This ordering is significantly
      * more efficient and may allow for more seamless transitions.
      *
-     * @param player The {@link ExoPlayer} to use, or {@code null} to detach the current player. Only
+     * @param player The {@link FuPlayer} to use, or {@code null} to detach the current player. Only
      *               players which are accessed on the main thread are supported ({@code
      *               player.getApplicationLooper() == Looper.getMainLooper()}).
      */
     @Override
-    public void setPlayer(ExoPlayer player) {
+    public void setPlayer(FuPlayer player) {
         Assertions.checkState(Looper.myLooper() == Looper.getMainLooper());
         Assertions.checkArgument(
                 player == null || player.getApplicationLooper() == Looper.getMainLooper());
@@ -268,7 +267,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         }
         if (mPlayer != null) {
             mPlayer.addListener(componentListener);
-            Player.VideoComponent oldVideoComponent = mPlayer.getVideoComponent();
+            FuPlayer.VideoComponent oldVideoComponent = mPlayer.getVideoComponent();
             if (oldVideoComponent != null) {
                 oldVideoComponent.removeVideoListener(componentListener);
                 if (mSurfaceView instanceof TextureView) {
@@ -277,7 +276,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
                     oldVideoComponent.setVideoSurfaceView(null);
                 }
             }
-            Player.TextComponent oldTextComponent = mPlayer.getTextComponent();
+            FuPlayer.TextComponent oldTextComponent = mPlayer.getTextComponent();
             if (oldTextComponent != null) {
                 oldTextComponent.removeTextOutput(componentListener);
             }
@@ -288,7 +287,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         mPlayer = player;
 
         if (player != null) {
-            Player.VideoComponent newVideoComponent = player.getVideoComponent();
+            FuPlayer.VideoComponent newVideoComponent = player.getVideoComponent();
             if (newVideoComponent != null) {
                 if (mSurfaceView instanceof TextureView) {
                     newVideoComponent.setVideoTextureView((TextureView) mSurfaceView);
@@ -297,7 +296,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
                 }
                 newVideoComponent.addVideoListener(componentListener);
             }
-            Player.TextComponent newTextComponent = player.getTextComponent();
+            FuPlayer.TextComponent newTextComponent = player.getTextComponent();
             if (newTextComponent != null) {
                 newTextComponent.addTextOutput(componentListener);
             }
@@ -377,7 +376,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         }
     }
 
-    private final class ComponentListener implements Player.EventListener, VideoListener, TextOutput, OnLayoutChangeListener, SphericalSurfaceView.SurfaceListener, SingleTapListener {
+    private final class ComponentListener implements FuPlayer.EventListener, VideoListener, TextOutput, OnLayoutChangeListener, SphericalSurfaceView.SurfaceListener, SingleTapListener {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
@@ -468,7 +467,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         @Override
         public void surfaceChanged(@Nullable Surface surface) {
             if (mPlayer != null) {
-                Player.VideoComponent videoComponent = mPlayer.getVideoComponent();
+                FuPlayer.VideoComponent videoComponent = mPlayer.getVideoComponent();
                 if (videoComponent != null) {
                     videoComponent.setVideoSurface(surface);
                 }

@@ -16,11 +16,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.chengfu.android.fuplayer.demo.video.R;
+import com.chengfu.android.fuplayer.demo.video.player.FuPlayerManager;
 import com.chengfu.android.fuplayer.video.FuPlayerView;
 import com.chengfu.android.fuplayer.demo.video.APP;
 import com.chengfu.android.fuplayer.demo.video.bean.Video;
 import com.chengfu.android.fuplayer.demo.video.player.PlayerAnalytics;
-import com.chengfu.android.fuplayer.demo.video.player.FuPlayer;
 import com.chengfu.android.fuplayer.demo.video.util.NetworkUtil;
 import com.chengfu.android.fuplayer.ext.exo.FuExoPlayerFactory;
 import com.chengfu.android.fuplayer.ext.video_plus.VideoEndedView;
@@ -40,7 +40,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
 
     private static final Integer PLAY_VH_PAYLOAD_ID = 1;
     private List<Video> dataList;
-    private FuPlayer player;
+    private FuPlayerManager player;
     private int lastPlayPosition = -1;
     private ViewHolder currentPlayVH;
     private boolean autoPlayWhenItemVisible;
@@ -132,7 +132,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
 
         SimpleExoPlayer simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(recyclerView.getContext());
         simpleExoPlayer.addAnalyticsListener(new PlayerAnalytics());
-        player = new FuPlayer(activity,  new FuExoPlayerFactory(recyclerView.getContext()));
+        player = new FuPlayerManager(activity,  new FuExoPlayerFactory(recyclerView.getContext()));
 
 
         ScreenRotationHelper screenRotationHelper = new ScreenRotationHelper(activity);

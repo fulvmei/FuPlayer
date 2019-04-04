@@ -3,8 +3,8 @@ package com.chengfu.android.fuplayer.ext.exo;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.chengfu.android.fuplayer.core.FuPlayer;
 import com.chengfu.android.fuplayer.core.PlayerFactory;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 
 public class FuExoPlayerFactory implements PlayerFactory {
@@ -17,7 +17,7 @@ public class FuExoPlayerFactory implements PlayerFactory {
 
     @NonNull
     @Override
-    public ExoPlayer create() {
-        return ExoPlayerFactory.newSimpleInstance(mContext);
+    public FuPlayer create() {
+        return new FuExoPlayer(ExoPlayerFactory.newSimpleInstance(mContext));
     }
 }

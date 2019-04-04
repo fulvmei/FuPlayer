@@ -8,9 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.chengfu.android.fuplayer.core.FuPlayer;
 import com.chengfu.android.fuplayer.video.BaseStateView;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Player;
 
 public class VideoIdleView extends BaseStateView {
 
@@ -94,7 +93,7 @@ public class VideoIdleView extends BaseStateView {
         if (player == null) {
             return true;
         }
-        if (player.getPlaybackState() == Player.STATE_IDLE && player.getPlaybackError() == null) {
+        if (player.getPlaybackState() == FuPlayer.STATE_IDLE && player.getPlaybackError() == null) {
             return true;
         }
         return false;
@@ -109,20 +108,20 @@ public class VideoIdleView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(@NonNull ExoPlayer player) {
+    protected void onAttachedToPlayer(@NonNull FuPlayer player) {
         updateVisibility();
 
         player.addListener(componentListener);
     }
 
     @Override
-    protected void onDetachedFromPlayer(@NonNull ExoPlayer player) {
+    protected void onDetachedFromPlayer(@NonNull FuPlayer player) {
         updateVisibility();
         player.removeListener(componentListener);
     }
 
 
-    private final class ComponentListener implements Player.EventListener {
+    private final class ComponentListener implements FuPlayer.EventListener {
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             updateVisibility();

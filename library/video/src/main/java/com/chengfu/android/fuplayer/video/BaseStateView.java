@@ -6,14 +6,15 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-import com.google.android.exoplayer2.ExoPlayer;
+
+import com.chengfu.android.fuplayer.core.FuPlayer;
 
 import java.util.concurrent.CopyOnWriteArraySet;
 
 
 public abstract class BaseStateView extends FrameLayout implements StateView {
 
-    protected ExoPlayer player;
+    protected FuPlayer player;
 
     private final CopyOnWriteArraySet<VisibilityChangeListener> visibilityChangeListeners;
 
@@ -79,11 +80,11 @@ public abstract class BaseStateView extends FrameLayout implements StateView {
     }
 
     @Override
-    public void setPlayer(ExoPlayer player) {
+    public void setPlayer(FuPlayer player) {
         if (this.player == player) {
             return;
         }
-        ExoPlayer tempPlayer = this.player;
+        FuPlayer tempPlayer = this.player;
         if (player == null) {
             this.player = null;
             onDetachedFromPlayer(tempPlayer);
@@ -94,15 +95,15 @@ public abstract class BaseStateView extends FrameLayout implements StateView {
     }
 
     @Override
-    public ExoPlayer getPlayer() {
+    public FuPlayer getPlayer() {
         return player;
     }
 
     protected abstract void onFullScreenChanged(boolean fullScreen);
 
-    protected abstract void onAttachedToPlayer(@NonNull ExoPlayer player);
+    protected abstract void onAttachedToPlayer(@NonNull FuPlayer player);
 
-    protected abstract void onDetachedFromPlayer(@NonNull ExoPlayer player);
+    protected abstract void onDetachedFromPlayer(@NonNull FuPlayer player);
 
     /**
      * Dispatch callbacks to {@link #addVisibilityChangeListener} down
