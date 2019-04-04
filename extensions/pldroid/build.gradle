@@ -3,7 +3,6 @@ apply from: '../../constants.gradle'
 
 android {
     compileSdkVersion project.ext.compileSdkVersion
-    buildToolsVersion project.ext.buildToolsVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -13,9 +12,6 @@ android {
     defaultConfig {
         minSdkVersion project.ext.minSdkVersion
         targetSdkVersion project.ext.targetSdkVersion
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     lintOptions {
@@ -40,6 +36,7 @@ android {
 dependencies {
     implementation project(':library:core')
     implementation files('libs/pldroid-player-2.1.7.jar')
+//    implementation 'com.google.android.exoplayer:exoplayer-core:'+exolayerVersion
 }
 
 ext {

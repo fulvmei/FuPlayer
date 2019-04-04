@@ -15,8 +15,8 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.chengfu.android.fuplayer.core.FuPlayer;
 import com.chengfu.android.fuplayer.video.util.FuLog;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioListener;
@@ -50,7 +50,7 @@ public class DefaultControlView extends BaseControlView {
     public static final int DEFAULT_SEEK_NUMBER = 1000;
 
     protected final Context mContext;
-    protected ExoPlayer mPlayer;
+    protected FuPlayer mPlayer;
     protected final ComponentListener mComponentListener;
 
     protected View mContainerView;
@@ -290,12 +290,12 @@ public class DefaultControlView extends BaseControlView {
     }
 
     @Override
-    public ExoPlayer getPlayer() {
+    public FuPlayer getPlayer() {
         return mPlayer;
     }
 
     @Override
-    public void setPlayer(ExoPlayer player) {
+    public void setPlayer(FuPlayer player) {
         if (mPlayer == player) {
             return;
         }

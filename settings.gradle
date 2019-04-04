@@ -5,6 +5,7 @@ include ':extensions:pldroid'
 include ':extensions:video-plus'
 include ':extensions:exo'
 
+include ':library:all'
 include ':library:core'
 include ':library:video'
 include ':library:audio'
