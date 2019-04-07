@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-    implementation project(':library:core')
+    compileOnly project(':library:core')
 //    implementation 'com.google.android.exoplayer:exoplayer-core:'+exolayerVersion
 }
 
