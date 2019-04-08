@@ -30,7 +30,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 
-public class MusicPlayView extends FrameLayout {
+public class AudioPlayView extends FrameLayout {
 
     private static final int TIME_UNIT = 1000;
 
@@ -63,15 +63,15 @@ public class MusicPlayView extends FrameLayout {
 
     long duration_ms;
 
-    public MusicPlayView(@NonNull Context context) {
+    public AudioPlayView(@NonNull Context context) {
         this(context, null);
     }
 
-    public MusicPlayView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public AudioPlayView(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public MusicPlayView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public AudioPlayView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.context = context;
 
@@ -146,7 +146,7 @@ public class MusicPlayView extends FrameLayout {
 
 
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
-        return inflater.inflate(R.layout.defaut_music_view, parent, false);
+        return inflater.inflate(R.layout.defaut_audio_view, parent, false);
     }
 
     public void setSessionToken(MediaSessionCompat.Token sessionToken) {

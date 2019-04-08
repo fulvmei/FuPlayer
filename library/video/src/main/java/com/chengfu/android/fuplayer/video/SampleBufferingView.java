@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.chengfu.android.fuplayer.core.FuPlayer;
+import com.google.android.exoplayer2.ExoPlayer;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -24,14 +24,14 @@ public class SampleBufferingView extends BaseStateView {
     }
 
     /**
-     * The buffering view is always shown when the player is in the {@link FuPlayer#STATE_BUFFERING
+     * The buffering view is always shown when the player is in the {@link ExoPlayer#STATE_BUFFERING
      * buffering} state.
      */
     public static final int SHOW_MODE_ALWAYS = 0;
 
     /**
-     * The buffering view is shown when the player is in the {@link FuPlayer#STATE_BUFFERING buffering}
-     * state and {@link FuPlayer#getPlayWhenReady() playWhenReady} is {@code true}.
+     * The buffering view is shown when the player is in the {@link ExoPlayer#STATE_BUFFERING buffering}
+     * state and {@link ExoPlayer#getPlayWhenReady() playWhenReady} is {@code true}.
      */
     public static final int SHOW_MODE_PLAYING = 1;
 
@@ -89,7 +89,7 @@ public class SampleBufferingView extends BaseStateView {
         if (player == null) {
             return showInDetachPlayer;
         } else {
-            if (player.getPlaybackState() == FuPlayer.STATE_BUFFERING) {
+            if (player.getPlaybackState() == ExoPlayer.STATE_BUFFERING) {
                 if (showMode == SHOW_MODE_ALWAYS) {
                     return true;
                 } else if (showMode == SHOW_MODE_PLAYING && player.getPlayWhenReady()) {
@@ -101,13 +101,13 @@ public class SampleBufferingView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(@NonNull FuPlayer player) {
+    protected void onAttachedToPlayer(@NonNull ExoPlayer player) {
         player.addListener(componentListener);
         updateVisibility();
     }
 
     @Override
-    protected void onDetachedFromPlayer(@NonNull FuPlayer player) {
+    protected void onDetachedFromPlayer(@NonNull ExoPlayer player) {
         player.removeListener(componentListener);
         updateVisibility();
     }
@@ -131,7 +131,7 @@ public class SampleBufferingView extends BaseStateView {
         updateVisibility();
     }
 
-    private final class ComponentListener implements FuPlayer.EventListener {
+    private final class ComponentListener implements ExoPlayer.EventListener {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {

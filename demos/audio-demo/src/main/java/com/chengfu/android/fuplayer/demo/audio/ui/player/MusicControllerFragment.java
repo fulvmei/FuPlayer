@@ -9,14 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.chengfu.android.fuplayer.audio.widget.MusicPlayView;
+import com.chengfu.android.fuplayer.audio.widget.AudioPlayView;
 import com.chengfu.android.fuplayer.demo.audio.R;
 import com.chengfu.android.fuplayer.demo.audio.viewmodels.MainActivityViewModel;
 
 
 public class MusicControllerFragment extends Fragment {
 
-    private MusicPlayView musicPlayView;
+    private AudioPlayView musicPlayView;
 
     private MainActivityViewModel viewModel;
 

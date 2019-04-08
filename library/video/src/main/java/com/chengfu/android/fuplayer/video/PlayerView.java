@@ -1,20 +1,20 @@
 package com.chengfu.android.fuplayer.video;
 
 
-import com.chengfu.android.fuplayer.core.FuPlayer;
+import com.google.android.exoplayer2.ExoPlayer;
 
 public interface PlayerView {
     /**
-     * Returns the {@link FuPlayer} currently being controlled by this view, or null if no player is
+     * Returns the {@link ExoPlayer} currently being controlled by this view, or null if no player is
      * set.
      */
-    FuPlayer getPlayer();
+    ExoPlayer getPlayer();
 
     /**
-     * Sets the {@link FuPlayer} to control.
+     * Sets the {@link ExoPlayer} to control.
      *
-     * @param player The {@link FuPlayer} to control.
+     * @param player The {@link ExoPlayer} to control.
      */
-    void setPlayer(FuPlayer player);
+    void setPlayer(ExoPlayer player);
 
 }

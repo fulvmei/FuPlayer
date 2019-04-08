@@ -28,13 +28,12 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.android.exoplayer:extension-mediasession:' + exolayerVersion
     implementation project(':library:core')
-    implementation project(':extensions:exo')
+    api project(':extensions:exo')
 }
 
 ext {
     releaseArtifact = 'fuplayer-audio'
     releaseDescription = 'The FuPlayer library audio module.'
 }
-apply from: '../../publish.gradle'
+//apply from: '../../publish.gradle'

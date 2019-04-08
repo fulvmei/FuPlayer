@@ -27,8 +27,8 @@ android {
 }
 
 dependencies {
-    compileOnly project(':library:core')
-//    implementation 'com.google.android.exoplayer:exoplayer-core:'+exolayerVersion
+    api 'com.google.android.exoplayer:extension-mediasession:' + exolayerVersion
+    api project(':library:core')
 }
 
 ext {

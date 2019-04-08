@@ -7,5 +7,5 @@ import com.google.android.exoplayer2.ExoPlayer;
 public interface PlayerFactory {
 
     @NonNull
-    FuPlayer create();
+    ExoPlayer create();
 }

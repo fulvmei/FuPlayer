@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.chengfu.android.fuplayer.core.FuPlayer;
+import com.google.android.exoplayer2.ExoPlayer;
 
 public class SampleErrorView extends BaseStateView {
 
@@ -19,7 +19,7 @@ public class SampleErrorView extends BaseStateView {
     protected boolean showInDetachPlayer;
 
     public interface OnRetryListener {
-        boolean onRetry(FuPlayer player);
+        boolean onRetry(ExoPlayer player);
     }
 
     public SampleErrorView(@NonNull Context context) {
@@ -77,20 +77,20 @@ public class SampleErrorView extends BaseStateView {
         if (player == null) {
             return showInDetachPlayer;
         }
-        if (player.getPlaybackState() == FuPlayer.STATE_IDLE && player.getPlaybackError() != null) {
+        if (player.getPlaybackState() == ExoPlayer.STATE_IDLE && player.getPlaybackError() != null) {
             return true;
         }
         return false;
     }
 
     @Override
-    protected void onAttachedToPlayer(@NonNull FuPlayer player) {
+    protected void onAttachedToPlayer(@NonNull ExoPlayer player) {
         player.addListener(componentListener);
         updateVisibility();
     }
 
     @Override
-    protected void onDetachedFromPlayer(@NonNull FuPlayer player) {
+    protected void onDetachedFromPlayer(@NonNull ExoPlayer player) {
         player.removeListener(componentListener);
         updateVisibility();
     }
@@ -107,7 +107,7 @@ public class SampleErrorView extends BaseStateView {
         this.onRetryListener = onRetryListener;
     }
 
-    private final class ComponentListener implements FuPlayer.EventListener {
+    private final class ComponentListener implements ExoPlayer.EventListener {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {

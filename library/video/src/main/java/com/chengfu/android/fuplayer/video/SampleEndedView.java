@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.chengfu.android.fuplayer.core.FuPlayer;
+import com.google.android.exoplayer2.ExoPlayer;
 
 public class SampleEndedView extends BaseStateView {
 
@@ -19,7 +19,7 @@ public class SampleEndedView extends BaseStateView {
     protected boolean showInDetachPlayer;
 
     public interface OnRetryListener {
-        boolean onRetry(FuPlayer player);
+        boolean onRetry(ExoPlayer player);
     }
 
     public SampleEndedView(@NonNull Context context) {
@@ -49,7 +49,7 @@ public class SampleEndedView extends BaseStateView {
                 if (onRetryListener != null && onRetryListener.onRetry(player)) {
                     return;
                 }
-                if (player != null && player.getPlaybackState() == FuPlayer.STATE_ENDED) {
+                if (player != null && player.getPlaybackState() == ExoPlayer.STATE_ENDED) {
                     player.seekTo(0);
                     player.setPlayWhenReady(true);
                 }
@@ -63,13 +63,13 @@ public class SampleEndedView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(@NonNull FuPlayer player) {
+    protected void onAttachedToPlayer(@NonNull ExoPlayer player) {
         player.addListener(componentListener);
         updateVisibility();
     }
 
     @Override
-    protected void onDetachedFromPlayer(@NonNull FuPlayer player) {
+    protected void onDetachedFromPlayer(@NonNull ExoPlayer player) {
         player.removeListener(componentListener);
         updateVisibility();
     }
@@ -94,7 +94,7 @@ public class SampleEndedView extends BaseStateView {
         if (player == null) {
             return showInDetachPlayer;
         }
-        if (player.getPlaybackState() == FuPlayer.STATE_ENDED) {
+        if (player.getPlaybackState() == ExoPlayer.STATE_ENDED) {
             return true;
         }
         return false;
@@ -117,7 +117,7 @@ public class SampleEndedView extends BaseStateView {
         this.onRetryListener = onRetryListener;
     }
 
-    private final class ComponentListener implements FuPlayer.EventListener {
+    private final class ComponentListener implements ExoPlayer.EventListener {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
