@@ -28,6 +28,9 @@ android {
 }
 
 dependencies {
+//    api 'com.chengfu.android.fuplayer:fuplayer-core:'+releaseVersion
+//    api 'com.chengfu.android.fuplayer:fuplayer-video:'+releaseVersion
+//    api 'com.chengfu.android.fuplayer:fuplayer-audio:'+releaseVersion
     api project(':library:core')
     api project(':library:video')
     api project(':library:audio')
@@ -38,4 +41,4 @@ ext {
     releaseArtifact = 'fuplayer'
     releaseDescription = 'The FuPlayer library (all modules).'
 }
-apply from: '../../publish.gradle'
+//apply from: '../../publish.gradle'

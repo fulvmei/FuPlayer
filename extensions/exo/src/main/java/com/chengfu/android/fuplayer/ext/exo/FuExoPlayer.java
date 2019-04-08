@@ -4,7 +4,6 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.chengfu.android.fuplayer.core.FuPlayer;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -16,7 +15,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 
-public class FuExoPlayer implements FuPlayer {
+public class FuExoPlayer implements ExoPlayer {
 
     protected ExoPlayer mPlayer;
 

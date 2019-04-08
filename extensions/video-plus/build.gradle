@@ -28,16 +28,16 @@ android {
 
 dependencies {
     implementation 'com.android.support:support-annotations:' + supportLibraryVersion
-    implementation 'com.google.android.exoplayer:exoplayer-core:'+exolayerVersion
-    implementation project(':library:video')
-//    api 'com.google.android.exoplayer:extension-mediasession:2.9.6'
-    implementation project(':extensions:exo')
-//    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation project(':library:core')
+//    api 'com.chengfu.android.fuplayer:fuplayer-core:'+releaseVersion
+//    api 'com.chengfu.android.fuplayer:fuplayer-video:'+releaseVersion
+//    api 'com.chengfu.android.fuplayer:extension-exo:'+releaseVersion
+    api project(':library:video')
+    compileOnly project(':extensions:exo')
+    compileOnly project(':library:core')
 }
 
 ext {
     releaseArtifact = 'extension-video-plus'
     releaseDescription = 'Video plus extension for FuPlayer.'
 }
-apply from: '../../publish.gradle'
+//apply from: '../../publish.gradle'

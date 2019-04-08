@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.chengfu.android.fuplayer.audio.widget.MusicPlayView
+    <com.chengfu.android.fuplayer.audio.widget.AudioPlayView
         android:id="@+id/musicPlayView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

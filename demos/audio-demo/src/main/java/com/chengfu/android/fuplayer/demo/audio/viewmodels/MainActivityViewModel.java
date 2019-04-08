@@ -18,7 +18,6 @@ public class MainActivityViewModel extends AndroidViewModel {
         mediaSessionConnection = new MediaSessionConnection(application, new ComponentName(application, MusicService.class));
     }
 
-
 //    public MainActivityViewModel(MediaSessionConnection mediaSessionConnection) {
 //        this.mediaSessionConnection = mediaSessionConnection;
 //        mediaBrowserConnected = mediaSessionConnection.isConnected;
