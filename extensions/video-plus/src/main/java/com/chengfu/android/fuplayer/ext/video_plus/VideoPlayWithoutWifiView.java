@@ -6,9 +6,9 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 
-import com.chengfu.android.fuplayer.video.BaseStateView;
+import com.chengfu.android.fuplayer.FuPlayer;
+import com.chengfu.android.fuplayer.ui.BaseStateView;
 import com.chengfu.android.fuplayer.ext.video_plus.util.NetworkUtil;
-import com.google.android.exoplayer2.ExoPlayer;
 
 public class VideoPlayWithoutWifiView extends BaseStateView {
 
@@ -116,19 +116,19 @@ public class VideoPlayWithoutWifiView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(@NonNull ExoPlayer player) {
+    protected void onAttachedToPlayer(@NonNull FuPlayer player) {
         player.addListener(componentListener);
         maybeShow();
     }
 
     @Override
-    protected void onDetachedFromPlayer(@NonNull ExoPlayer player) {
+    protected void onDetachedFromPlayer(@NonNull FuPlayer player) {
         player.removeListener(componentListener);
         hide();
     }
 
 
-    private final class ComponentListener implements ExoPlayer.EventListener {
+    private final class ComponentListener implements FuPlayer.EventListener {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {

@@ -5,13 +5,13 @@ import android.support.annotation.NonNull;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.view.View;
 
-import com.chengfu.android.fuplayer.core.PlayerFactory;
-import com.chengfu.android.fuplayer.video.BaseStateView;
-import com.chengfu.android.fuplayer.video.FuPlayerView;
-import com.chengfu.android.fuplayer.video.StateView;
+import com.chengfu.android.fuplayer.FuPlayer;
+import com.chengfu.android.fuplayer.PlayerFactory;
+import com.chengfu.android.fuplayer.ui.BaseStateView;
+import com.chengfu.android.fuplayer.ui.FuPlayerView;
+import com.chengfu.android.fuplayer.ui.StateView;
 import com.chengfu.android.fuplayer.ext.video_plus.VideoControlView;
 import com.chengfu.android.fuplayer.ext.video_plus.screen.ScreenRotationHelper;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.mediasession.DefaultPlaybackController;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
@@ -29,7 +29,7 @@ public class FuPlayerManager implements StateView {
     private final ComponentListener mComponentListener;
     private MediaSessionCompat mMediaSession;
     PlayerFactory mPlayerFactory;
-    private ExoPlayer mPlayer;
+    private FuPlayer mPlayer;
     private FuPlayerView mPlayerView;
     private VideoControlView mVideoControlView;
     private ScreenRotationHelper mScreenRotation;
@@ -66,12 +66,12 @@ public class FuPlayerManager implements StateView {
     }
 
     @Override
-    public ExoPlayer getPlayer() {
+    public FuPlayer getPlayer() {
         return mPlayer;
     }
 
     @Override
-    public void setPlayer(ExoPlayer player) {
+    public void setPlayer(FuPlayer player) {
 
     }
 

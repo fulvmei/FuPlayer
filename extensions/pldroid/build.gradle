@@ -42,4 +42,4 @@ ext {
     releaseArtifact = 'extension-pldroid'
     releaseDescription = 'Pldroid extension for FuPlayer.'
 }
-//apply from: '../../publish.gradle'
+apply from: '../../publish.gradle'

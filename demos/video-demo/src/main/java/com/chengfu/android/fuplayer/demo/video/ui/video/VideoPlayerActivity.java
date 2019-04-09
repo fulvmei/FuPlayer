@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.chengfu.android.fuplayer.demo.video.R;
 import com.chengfu.android.fuplayer.demo.video.player.FuPlayerManager;
-import com.chengfu.android.fuplayer.video.FuPlayerView;
+import com.chengfu.android.fuplayer.ui.FuPlayerView;
 import com.chengfu.android.fuplayer.demo.video.StaticConfig;
 import com.chengfu.android.fuplayer.demo.video.bean.Resource;
 import com.chengfu.android.fuplayer.demo.video.bean.Video;

@@ -28,6 +28,7 @@ android {
 }
 
 dependencies {
+    api 'com.google.android.exoplayer:extension-mediasession:' + exolayerVersion
     implementation project(':library:core')
     api project(':extensions:exo')
 }

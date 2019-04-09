@@ -1,4 +1,4 @@
-package com.chengfu.android.fuplayer.ext.video_plus;
+package com.chengfu.android.fuplayer.ui;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -9,31 +9,28 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.chengfu.android.fuplayer.FuPlayer;
-import com.chengfu.android.fuplayer.ui.BaseStateView;
 
-public class VideoIdleView extends BaseStateView {
+public class SampleErrorView extends BaseStateView {
 
     protected final ComponentListener componentListener;
 
-    protected OnPlayerClickListener onPlayerClickListener;
+    protected OnRetryListener onRetryListener;
 
-    private boolean disable;
+    protected boolean showInDetachPlayer;
 
-    public interface OnPlayerClickListener {
-        void onPlayClick(View v);
+    public interface OnRetryListener {
+        boolean onRetry(FuPlayer player);
     }
 
-
-    public VideoIdleView(@NonNull Context context) {
+    public SampleErrorView(@NonNull Context context) {
         this(context, null);
     }
 
-    public VideoIdleView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public SampleErrorView(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-
-    public VideoIdleView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public SampleErrorView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         View view = onCreateView(LayoutInflater.from(context), this);
@@ -46,11 +43,14 @@ public class VideoIdleView extends BaseStateView {
 
         updateVisibility();
 
-        View play = findViewById(R.id.play);
-        if (play != null) {
-            play.setOnClickListener(v -> {
-                if (onPlayerClickListener != null) {
-                    onPlayerClickListener.onPlayClick(v);
+        View retry = findViewById(R.id.btn_retry);
+        if (retry != null) {
+            retry.setOnClickListener(v -> {
+                if (onRetryListener != null && onRetryListener.onRetry(player)) {
+                    return;
+                }
+                if (player != null) {
+                    player.retry();
                 }
             });
         }
@@ -61,21 +61,8 @@ public class VideoIdleView extends BaseStateView {
 
     }
 
-
-    public void setDisable(boolean disable) {
-        if (this.disable == disable) {
-            return;
-        }
-        this.disable = disable;
-        updateVisibility();
-    }
-
-    public boolean isDisable() {
-        return disable;
-    }
-
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
-        return inflater.inflate(R.layout.fpu_view_video_state_idel, parent, false);
+        return inflater.inflate(R.layout.sample_error_view, parent, false);
     }
 
     protected void updateVisibility() {
@@ -87,41 +74,41 @@ public class VideoIdleView extends BaseStateView {
     }
 
     protected boolean isInShowState() {
-        if (disable) {
-            return false;
-        }
         if (player == null) {
-            return true;
+            return showInDetachPlayer;
         }
-        if (player.getPlaybackState() == FuPlayer.STATE_IDLE && player.getPlaybackError() == null) {
+        if (player.getPlaybackState() == FuPlayer.STATE_IDLE && player.getPlaybackError() != null) {
             return true;
         }
         return false;
     }
 
-    public OnPlayerClickListener getOnPlayerClickListener() {
-        return onPlayerClickListener;
-    }
-
-    public void setOnPlayerClickListener(OnPlayerClickListener onPlayerClickListener) {
-        this.onPlayerClickListener = onPlayerClickListener;
-    }
-
     @Override
     protected void onAttachedToPlayer(@NonNull FuPlayer player) {
-        updateVisibility();
-
         player.addListener(componentListener);
+        updateVisibility();
     }
 
     @Override
     protected void onDetachedFromPlayer(@NonNull FuPlayer player) {
-        updateVisibility();
         player.removeListener(componentListener);
+        updateVisibility();
     }
 
+    protected int getLayoutResourcesId() {
+        return R.layout.sample_error_view;
+    }
+
+    public OnRetryListener getOnRetryListener() {
+        return onRetryListener;
+    }
+
+    public void setOnRetryListener(OnRetryListener onRetryListener) {
+        this.onRetryListener = onRetryListener;
+    }
 
     private final class ComponentListener implements FuPlayer.EventListener {
+
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             updateVisibility();

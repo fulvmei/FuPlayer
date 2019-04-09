@@ -9,9 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.chengfu.android.fuplayer.video.BaseStateView;
+import com.chengfu.android.fuplayer.FuPlayer;
+import com.chengfu.android.fuplayer.ui.BaseStateView;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.video.VideoListener;
 
 public class VideoImageView extends BaseStateView {
@@ -51,8 +51,8 @@ public class VideoImageView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(@NonNull ExoPlayer player) {
-        if (player.getPlaybackState() == ExoPlayer.STATE_READY && player.getPlayWhenReady()) {
+    protected void onAttachedToPlayer(@NonNull FuPlayer player) {
+        if (player.getPlaybackState() == FuPlayer.STATE_READY && player.getPlayWhenReady()) {
             hasFirstFrame = true;
         } else {
             hasFirstFrame = false;
@@ -66,7 +66,7 @@ public class VideoImageView extends BaseStateView {
     }
 
     @Override
-    protected void onDetachedFromPlayer(@NonNull ExoPlayer player) {
+    protected void onDetachedFromPlayer(@NonNull FuPlayer player) {
         hasFirstFrame = false;
         updateVisibility();
 
@@ -115,7 +115,7 @@ public class VideoImageView extends BaseStateView {
             return true;
         }
         switch (player.getPlaybackState()) {
-            case ExoPlayer.STATE_IDLE:
+            case FuPlayer.STATE_IDLE:
                 if (player.getPlaybackError() != null) {
                     if (showInError || !hasFirstFrame) {
                         return true;
@@ -124,14 +124,14 @@ public class VideoImageView extends BaseStateView {
                     }
                 }
                 return true;
-            case ExoPlayer.STATE_READY:
+            case FuPlayer.STATE_READY:
                 return false;
-            case ExoPlayer.STATE_BUFFERING:
+            case FuPlayer.STATE_BUFFERING:
                 if (!hasFirstFrame) {
                     return true;
                 }
                 return false;
-            case ExoPlayer.STATE_ENDED:
+            case FuPlayer.STATE_ENDED:
                 if (showInEnded) {
                     return true;
                 } else if (!hasFirstFrame) {
@@ -143,7 +143,7 @@ public class VideoImageView extends BaseStateView {
         }
     }
 
-    private final class ComponentListener implements ExoPlayer.EventListener, VideoListener {
+    private final class ComponentListener implements FuPlayer.EventListener, VideoListener {
 
         @Override
         public void onPlayerError(ExoPlaybackException error) {
