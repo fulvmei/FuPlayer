@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="202.5dp">
 
-        <com.chengfu.android.fuplayer.video.FuPlayerView
+        <com.chengfu.android.fuplayer.ui.FuPlayerView
             android:id="@+id/playerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

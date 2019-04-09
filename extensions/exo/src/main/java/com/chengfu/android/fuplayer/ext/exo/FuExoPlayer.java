@@ -4,6 +4,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.chengfu.android.fuplayer.FuPlayer;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -15,11 +16,11 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 
-public class FuExoPlayer implements ExoPlayer {
+public class FuExoPlayer implements FuPlayer {
 
-    protected ExoPlayer mPlayer;
+    private ExoPlayer mPlayer;
 
-    public FuExoPlayer(@NonNull ExoPlayer player) {
+    FuExoPlayer(@NonNull ExoPlayer player) {
         mPlayer = player;
     }
 
@@ -46,16 +47,6 @@ public class FuExoPlayer implements ExoPlayer {
     @Override
     public PlayerMessage createMessage(PlayerMessage.Target target) {
         return mPlayer.createMessage(target);
-    }
-
-    @Override
-    public void sendMessages(ExoPlayerMessage... messages) {
-        mPlayer.sendMessages(messages);
-    }
-
-    @Override
-    public void blockingSendMessages(ExoPlayerMessage... messages) {
-        mPlayer.blockingSendMessages(messages);
     }
 
     @Override

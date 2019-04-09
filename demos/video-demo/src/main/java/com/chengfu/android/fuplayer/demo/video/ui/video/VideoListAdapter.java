@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.chengfu.android.fuplayer.demo.video.R;
 import com.chengfu.android.fuplayer.demo.video.player.FuPlayerManager;
-import com.chengfu.android.fuplayer.video.FuPlayerView;
+import com.chengfu.android.fuplayer.ui.FuPlayerView;
 import com.chengfu.android.fuplayer.demo.video.APP;
 import com.chengfu.android.fuplayer.demo.video.bean.Video;
 import com.chengfu.android.fuplayer.demo.video.player.PlayerAnalytics;

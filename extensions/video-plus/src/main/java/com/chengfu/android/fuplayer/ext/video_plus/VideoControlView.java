@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.chengfu.android.fuplayer.video.DefaultControlView;
+import com.chengfu.android.fuplayer.ui.DefaultControlView;
 import com.chengfu.android.fuplayer.ext.video_plus.gesture.GestureImpl;
 import com.chengfu.android.fuplayer.ext.video_plus.screen.ScreenRotationHelper;
 

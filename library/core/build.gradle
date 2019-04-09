@@ -35,4 +35,4 @@ ext {
     releaseDescription = 'The FuPlayer library core module.'
 }
 
-//apply from: '../../publish.gradle'
+apply from: '../../publish.gradle'

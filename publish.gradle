@@ -1,36 +1,13 @@
-apply plugin: 'com.github.dcendents.android-maven'
-ext {
-    bintrayRepo = 'fuplayer'
-    bintrayName = releaseArtifact
-
-    publishedGroupId = 'com.chengfu.android.fuplayer'
-
-    artifact = releaseArtifact
-
-    libraryName = releaseArtifact
-    libraryVersion = releaseVersion
-    libraryDescription = releaseDescription
-
-    siteUrl = 'https://github.com/fulvmei/FuPlayer.git'
-    gitUrl = 'https://github.com/fulvmei/FuPlayer.git'
-
-
-    developerId = 'fu-cheng'
-    developerName = 'fu-cheng'
-    developerEmail = 'fulvmei@gmail.com'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
-}
-
-tasks.withType(Javadoc) {
-    options{
-        encoding "UTF-8"
-        charSet 'UTF-8'
-        links "http://docs.oracle.com/javase/7/docs/api"
+if (project.ext.has("fuplayerPublishEnabled")
+        && project.ext.fuplayerPublishEnabled) {
+    apply plugin: 'bintray-release'
+    publish {
+        artifactId = releaseArtifact
+        desc = releaseDescription
+        publishVersion = releaseVersion
+        repoName = "fuplayer"
+        userOrg = 'fu-cheng'
+        groupId = 'com.chengfu.android.fuplayer'
+        website = 'https://github.com/fulvmei/FuPlayer.git'
     }
-    options.addStringOption('Xdoclint:none', '-quiet')
 }
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'

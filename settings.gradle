@@ -7,6 +7,6 @@ include ':extensions:exo'
 
 include ':library:all'
 include ':library:core'
-include ':library:video'
+include ':library:ui'
 include ':library:audio'
 

@@ -31,7 +31,7 @@ dependencies {
 //    api 'com.chengfu.android.fuplayer:fuplayer-core:'+releaseVersion
 //    api 'com.chengfu.android.fuplayer:fuplayer-video:'+releaseVersion
 //    api 'com.chengfu.android.fuplayer:extension-exo:'+releaseVersion
-    api project(':library:video')
+    api project(':library:ui')
     compileOnly project(':extensions:exo')
     compileOnly project(':library:core')
 }

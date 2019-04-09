@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.chengfu.android.fuplayer.video.SampleBufferingView;
+import com.chengfu.android.fuplayer.ui.SampleBufferingView;
 
 public class VideoBufferingView extends SampleBufferingView {
 
