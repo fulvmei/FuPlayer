@@ -28,6 +28,11 @@ android {
 
 dependencies {
     implementation project(':library:core')
+
+    api 'com.google.android.exoplayer:exoplayer-dash:'+exolayerVersion
+    api 'com.google.android.exoplayer:exoplayer-hls:'+exolayerVersion
+    api 'com.google.android.exoplayer:exoplayer-smoothstreaming:'+exolayerVersion
+    api 'com.google.android.exoplayer:extension-rtmp:'+exolayerVersion
 }
 
 ext {
