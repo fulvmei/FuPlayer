@@ -2,15 +2,17 @@ package com.chengfu.android.fuplayer.util;
 
 import android.util.Log;
 
+import com.chengfu.android.fuplayer.core.BuildConfig;
+
 public class FuLog {
 
-    public static boolean enabled = false;
+    public static boolean DEBUG = BuildConfig.DEBUG;
 
     private FuLog() {
     }
 
     public static int v(String tag, String msg) {
-        if (enabled) {
+        if (DEBUG) {
             return Log.v(tag, msg);
         }
         return 0;
@@ -18,7 +20,7 @@ public class FuLog {
 
 
     public static int v(String tag, String msg, Throwable tr) {
-        if (enabled) {
+        if (DEBUG) {
             return Log.v(tag, msg, tr);
         }
         return 0;
@@ -26,7 +28,7 @@ public class FuLog {
 
 
     public static int d(String tag, String msg) {
-        if (enabled) {
+        if (DEBUG) {
             return Log.d(tag, msg);
         }
         return 0;
@@ -34,7 +36,7 @@ public class FuLog {
 
 
     public static int d(String tag, String msg, Throwable tr) {
-        if (enabled) {
+        if (DEBUG) {
             return Log.d(tag, msg, tr);
         }
         return 0;
@@ -42,49 +44,49 @@ public class FuLog {
 
 
     public static int i(String tag, String msg) {
-        if (enabled) {
+        if (DEBUG) {
             return Log.i(tag, msg);
         }
         return 0;
     }
 
     public static int i(String tag, String msg, Throwable tr) {
-        if (enabled) {
+        if (DEBUG) {
             return Log.i(tag, msg, tr);
         }
         return 0;
     }
 
     public static int w(String tag, String msg) {
-        if (enabled) {
+        if (DEBUG) {
             return Log.w(tag, msg);
         }
         return 0;
     }
 
     public static int w(String tag, String msg, Throwable tr) {
-        if (enabled) {
+        if (DEBUG) {
             return Log.w(tag, msg, tr);
         }
         return 0;
     }
 
     public static int w(String tag, Throwable tr) {
-        if (enabled) {
+        if (DEBUG) {
             return Log.w(tag, tr);
         }
         return 0;
     }
 
     public static int e(String tag, String msg) {
-        if (enabled) {
+        if (DEBUG) {
             return Log.e(tag, msg);
         }
         return 0;
     }
 
     public static int e(String tag, String msg, Throwable tr) {
-        if (enabled) {
+        if (DEBUG) {
             return Log.e(tag, msg, tr);
         }
         return 0;

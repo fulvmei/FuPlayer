@@ -1,12 +1,7 @@
-include ':demos:video-demo'
-include ':demos:audio-demo'
-
-include ':extensions:pldroid'
-include ':extensions:video-plus'
+include ':extensions:pldroid', ':demo'
 include ':extensions:exo'
 
 include ':library:all'
 include ':library:core'
 include ':library:ui'
-include ':library:audio'
 

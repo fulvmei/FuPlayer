@@ -167,38 +167,38 @@ public class DefaultControlView extends BaseControlView {
 
     protected void initView(Context context, AttributeSet attrs, int defStyleAttr) {
 
-        mContainerView = findViewById(R.id.controller_container);
+        mContainerView = findViewById(R.id.fpu_controller_container);
         if (mContainerView != null) {
             mContainerView.setVisibility(View.GONE);
         }
-        mDurationView = findViewById(R.id.controller_duration);
-        mPositionView = findViewById(R.id.controller_position);
-        mSeekView = findViewById(R.id.controller_seek);
+        mDurationView = findViewById(R.id.fpu_controller_duration);
+        mPositionView = findViewById(R.id.fpu_controller_position);
+        mSeekView = findViewById(R.id.fpu_controller_seek);
         if (mSeekView != null) {
             mSeekView.setMax(mSeekNumber);
             mSeekView.setOnSeekBarChangeListener(mComponentListener);
         }
-        mPlayPauseSwitchView = findViewById(R.id.controller_play_pause_switch);
+        mPlayPauseSwitchView = findViewById(R.id.fpu_controller_play_pause_switch);
         if (mPlayPauseSwitchView != null) {
             mPlayPauseSwitchView.setOnClickListener(mComponentListener);
         }
-        mFastRewindView = findViewById(R.id.controller_rewind);
+        mFastRewindView = findViewById(R.id.fpu_controller_rewind);
         if (mFastRewindView != null) {
             mFastRewindView.setOnClickListener(mComponentListener);
         }
-        mFastForwardView = findViewById(R.id.controller_fast_forward);
+        mFastForwardView = findViewById(R.id.fpu_controller_fast_forward);
         if (mFastForwardView != null) {
             mFastForwardView.setOnClickListener(mComponentListener);
         }
-        mRepeatSwitchView = findViewById(R.id.controller_repeat_switch);
+        mRepeatSwitchView = findViewById(R.id.fpu_controller_repeat_switch);
         if (mRepeatSwitchView != null) {
             mRepeatSwitchView.setOnClickListener(mComponentListener);
         }
-        mVolumeSwitchView = findViewById(R.id.controller_volume_switch);
+        mVolumeSwitchView = findViewById(R.id.fpu_controller_volume_switch);
         if (mVolumeSwitchView != null) {
             mVolumeSwitchView.setOnClickListener(mComponentListener);
         }
-        mShuffleSwitchView = findViewById(R.id.controller_shuffle_switch);
+        mShuffleSwitchView = findViewById(R.id.fpu_controller_shuffle_switch);
         if (mShuffleSwitchView != null) {
             mShuffleSwitchView.setOnClickListener(mComponentListener);
         }

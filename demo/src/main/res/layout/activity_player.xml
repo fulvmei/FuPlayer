@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".PlayerActivity">
+
+    <FrameLayout
+        android:id="@+id/playerRoot"
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+        <com.chengfu.android.fuplayer.ui.FuPlayerView
+            android:id="@+id/playerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#000000"
+            app:resize_mode="fit"
+            app:shutter_background_color="#000000"
+            app:surface_type="texture_view" />
+
+        <com.chengfu.android.fuplayer.ui.DefaultControlView
+            android:id="@+id/controlView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.chengfu.android.fuplayer.ui.SampleBufferingView
+            android:id="@+id/bufferingView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+        <com.chengfu.android.fuplayer.ui.SampleErrorView
+            android:id="@+id/errorView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <com.chengfu.android.fuplayer.ui.SampleEndedView
+            android:id="@+id/endedView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </FrameLayout>
+
+</RelativeLayout>

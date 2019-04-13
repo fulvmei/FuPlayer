@@ -73,7 +73,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         super(context, attrs, defStyleAttr);
 
         if (isInEditMode()) {
-            setBackgroundResource(R.color.player_view_edit_mode_bg);
+            setBackgroundResource(R.color.fpu_play_view_edit_mode_bg);
             return;
         }
 
