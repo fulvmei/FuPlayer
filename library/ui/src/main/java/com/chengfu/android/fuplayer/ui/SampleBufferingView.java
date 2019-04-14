@@ -92,9 +92,7 @@ public class SampleBufferingView extends BaseStateView {
             if (player.getPlaybackState() == FuPlayer.STATE_BUFFERING) {
                 if (showMode == SHOW_MODE_ALWAYS) {
                     return true;
-                } else if (showMode == SHOW_MODE_PLAYING && player.getPlayWhenReady()) {
-                    return true;
-                }
+                } else return showMode == SHOW_MODE_PLAYING && player.getPlayWhenReady();
             }
         }
         return false;

@@ -14,12 +14,12 @@ public class SampleErrorView extends BaseStateView {
 
     protected final ComponentListener componentListener;
 
-    protected OnRetryListener onRetryListener;
+    protected OnReplayListener onReplayListener;
 
     protected boolean showInDetachPlayer;
 
-    public interface OnRetryListener {
-        boolean onRetry(FuPlayer player);
+    public interface OnReplayListener {
+        boolean onReplay(FuPlayer player);
     }
 
     public SampleErrorView(@NonNull Context context) {
@@ -43,10 +43,10 @@ public class SampleErrorView extends BaseStateView {
 
         updateVisibility();
 
-        View retry = findViewById(R.id.btn_retry);
+        View retry = findViewById(R.id.fpu_state_error_retry);
         if (retry != null) {
             retry.setOnClickListener(v -> {
-                if (onRetryListener != null && onRetryListener.onRetry(player)) {
+                if (onReplayListener != null && onReplayListener.onReplay(player)) {
                     return;
                 }
                 if (player != null) {
@@ -99,12 +99,12 @@ public class SampleErrorView extends BaseStateView {
         return R.layout.sample_error_view;
     }
 
-    public OnRetryListener getOnRetryListener() {
-        return onRetryListener;
+    public OnReplayListener getOnReplayListener() {
+        return onReplayListener;
     }
 
-    public void setOnRetryListener(OnRetryListener onRetryListener) {
-        this.onRetryListener = onRetryListener;
+    public void setOnReplayListener(OnReplayListener onReplayListener) {
+        this.onReplayListener = onReplayListener;
     }
 
     private final class ComponentListener implements FuPlayer.EventListener {

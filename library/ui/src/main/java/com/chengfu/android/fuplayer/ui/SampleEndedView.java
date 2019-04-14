@@ -43,7 +43,7 @@ public class SampleEndedView extends BaseStateView {
 
         updateVisibility();
 
-        View retry = findViewById(R.id.btn_retry);
+        View retry = findViewById(R.id.fpu_state_ended_replay);
         if (retry != null) {
             retry.setOnClickListener(v -> {
                 if (onRetryListener != null && onRetryListener.onRetry(player)) {
