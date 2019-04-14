@@ -182,7 +182,7 @@ public class DefaultControlView extends BaseControlView {
         if (mPlayPauseSwitchView != null) {
             mPlayPauseSwitchView.setOnClickListener(mComponentListener);
         }
-        mFastRewindView = findViewById(R.id.fpu_controller_rewind);
+        mFastRewindView = findViewById(R.id.fpu_controller_fast_rewind);
         if (mFastRewindView != null) {
             mFastRewindView.setOnClickListener(mComponentListener);
         }
@@ -356,9 +356,9 @@ public class DefaultControlView extends BaseControlView {
 
     protected void updatePlayPauseViewResource(@NonNull ImageButton imageButton, boolean playWhenReady) {
         if (playWhenReady) {
-            imageButton.setImageResource(R.drawable.ic_pause_white_24dp);
+            imageButton.setImageResource(R.drawable.fpu_ic_pause);
         } else {
-            imageButton.setImageResource(R.drawable.ic_play_white_24dp);
+            imageButton.setImageResource(R.drawable.fpu_ic_play);
         }
     }
 
@@ -396,19 +396,19 @@ public class DefaultControlView extends BaseControlView {
     protected void updateRepeatViewResource(@NonNull ImageButton imageButton, int repeatMode) {
         switch (repeatMode) {
             case FuPlayer.REPEAT_MODE_OFF:
-                imageButton.setImageResource(R.drawable.default_controls_repeat_off);
+                imageButton.setImageResource(R.drawable.fpu_ic_repeat_off);
                 imageButton.setContentDescription("");
                 break;
             case FuPlayer.REPEAT_MODE_ONE:
-                imageButton.setImageResource(R.drawable.default_controls_repeat_one);
+                imageButton.setImageResource(R.drawable.fpu_ic_repeat_one);
                 imageButton.setContentDescription("");
                 break;
             case FuPlayer.REPEAT_MODE_ALL:
-                imageButton.setImageResource(R.drawable.default_controls_repeat_all);
+                imageButton.setImageResource(R.drawable.fpu_ic_repeat_all);
                 imageButton.setContentDescription("");
                 break;
             default:
-                imageButton.setImageResource(R.drawable.default_controls_repeat_off);
+                imageButton.setImageResource(R.drawable.fpu_ic_repeat_off);
                 imageButton.setContentDescription("");
         }
     }
@@ -434,9 +434,9 @@ public class DefaultControlView extends BaseControlView {
 
     protected void updateVolumeViewResource(@NonNull ImageButton imageButton, float volume) {
         if (volume > 0.0f) {
-            imageButton.setImageResource(R.drawable.ic_volume_up_white_24dp);
+            imageButton.setImageResource(R.drawable.fpu_ic_volume_up);
         } else {
-            imageButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
+            imageButton.setImageResource(R.drawable.fpu_ic_volume_off);
         }
     }
 
@@ -779,9 +779,6 @@ public class DefaultControlView extends BaseControlView {
             } else if (mFastForwardView == v) {
                 fastForward();
             } else if (mRepeatSwitchView == v) {
-                if (mPlayer == null) {
-                    return;
-                }
                 switch (mPlayer.getRepeatMode()) {
                     case FuPlayer.REPEAT_MODE_OFF:
                         mPlayer.setRepeatMode(FuPlayer.REPEAT_MODE_ONE);
@@ -794,7 +791,7 @@ public class DefaultControlView extends BaseControlView {
                         break;
                 }
             } else if (mVolumeSwitchView == v) {
-                if (mPlayer == null || mPlayer.getAudioComponent() == null) {
+                if (mPlayer.getAudioComponent() == null) {
                     return;
                 }
                 if (mPlayer.getAudioComponent().getVolume() > 0) {
@@ -803,9 +800,6 @@ public class DefaultControlView extends BaseControlView {
                     mPlayer.getAudioComponent().setVolume(1.0f);
                 }
             } else if (mShuffleSwitchView == v) {
-                if (mPlayer == null) {
-                    return;
-                }
                 if (mPlayer.getShuffleModeEnabled()) {
                     mPlayer.setShuffleModeEnabled(false);
                 } else {

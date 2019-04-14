@@ -7,16 +7,19 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tv_info"
+        android:id="@id/fpu_state_error_hint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="出错了！"
+        android:text="@string/fpu_state_error_hint"
         android:textColor="#ffffff" />
 
-    <Button
-        android:id="@+id/btn_retry"
+    <ImageButton
+        android:id="@id/fpu_state_error_retry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="重试" />
+        android:background="@null"
+        android:contentDescription="@string/fpu_retry"
+        android:padding="8dp"
+        android:src="@drawable/fpu_ic_replay" />
 </LinearLayout>
 
