@@ -50,9 +50,6 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
     private View mSurfaceView;
     private ImageView shutterView;
     private SubtitleView subtitleView;
-    //    private CopyOnWriteArraySet<BaseStateView> mStateViews = new CopyOnWriteArraySet<>();
-//    private PlayerController playerController;
-//    private FrameLayout overlayFrameLayout;
 
     private FuPlayer mPlayer;
     private ComponentListener componentListener;
@@ -73,7 +70,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         super(context, attrs, defStyleAttr);
 
         if (isInEditMode()) {
-            setBackgroundResource(R.color.fpu_play_view_edit_mode_bg);
+            setBackgroundResource(R.color.fu_play_view_edit_mode_bg);
             return;
         }
 
@@ -123,13 +120,6 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         }
         setKeepScreenOn(keepScreenOn);
     }
-
-
-//    private void updateStateViews() {
-//        for (BaseStateView stateView : mStateViews) {
-//            stateView.setPlayer(mPlayer);
-//        }
-//    }
 
     public void setShutterBackgroundColor(int color) {
         if (shutterView != null) {

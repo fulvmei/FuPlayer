@@ -10,15 +10,15 @@
         android:id="@+id/fpu_state_ended_hint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/fpu_state_ended_hint"
+        android:text="@string/fu_state_ended_hint"
         android:textColor="#ffffff" />
 
     <ImageButton
-        android:id="@id/fpu_state_ended_replay"
+        android:id="@id/fu_state_ended_replay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@null"
-        android:contentDescription="@string/fpu_replay"
+        android:contentDescription="@string/fu_replay"
         android:padding="8dp"
-        android:src="@drawable/fpu_ic_replay" />
+        android:src="@drawable/fu_ic_replay" />
 </LinearLayout>

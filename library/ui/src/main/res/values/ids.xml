@@ -1,36 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2016 The Android Open Source Project
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <item name="fpu_controller_container" type="id" />
-    <item name="fpu_controller_volume_switch" type="id" />
-    <item name="fpu_controller_shuffle_switch" type="id" />
-    <item name="fpu_controller_repeat_switch" type="id" />
-    <item name="fpu_controller_skip_previous" type="id" />
-    <item name="fpu_controller_skip_next" type="id" />
-    <item name="fpu_controller_fast_rewind" type="id" />
-    <item name="fpu_controller_fast_forward" type="id" />
-    <item name="fpu_controller_play_pause_switch" type="id" />
-    <item name="fpu_controller_duration" type="id" />
-    <item name="fpu_controller_position" type="id" />
-    <item name="fpu_controller_seek" type="id" />
+    <item name="fu_controller_container" type="id" />
+    <item name="fu_controller_volume_switch" type="id" />
+    <item name="fu_controller_shuffle_switch" type="id" />
+    <item name="fu_controller_repeat_switch" type="id" />
+    <item name="fu_controller_skip_previous" type="id" />
+    <item name="fu_controller_skip_next" type="id" />
+    <item name="fu_controller_fast_rewind" type="id" />
+    <item name="fu_controller_fast_forward" type="id" />
+    <item name="fu_controller_play_pause_switch" type="id" />
+    <item name="fu_controller_duration" type="id" />
+    <item name="fu_controller_position" type="id" />
+    <item name="fu_controller_seek" type="id" />
 
-    <item name="fpu_state_ended_hint" type="id" />
-    <item name="fpu_state_ended_replay" type="id" />
+    <item name="fu_state_ended_hint" type="id" />
+    <item name="fu_state_ended_replay" type="id" />
 
-    <item name="fpu_state_error_hint" type="id" />
-    <item name="fpu_state_error_retry" type="id" />
+    <item name="fu_state_error_hint" type="id" />
+    <item name="fu_state_error_retry" type="id" />
 
 </resources>

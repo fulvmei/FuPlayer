@@ -23,8 +23,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ExpandableListView.OnChildClickListener {
 
-    private ExpandableListView expandableListView;
-
     private MediaGroupListAdapter mediaGroupListAdapter;
     private List<MediaGroup> mediaGroupList;
 
@@ -33,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements ExpandableListVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        expandableListView = findViewById(R.id.expandableListView);
+        ExpandableListView expandableListView = findViewById(R.id.expandableListView);
 
         expandableListView.setOnChildClickListener(this);
 

@@ -40,7 +40,7 @@ public class DefaultControlView extends BaseControlView {
      */
     public static final int DEFAULT_SHOW_TIMEOUT_MS = 5000;
     /**
-     * The default progress updata interval, in milliseconds.
+     * The default progress update interval, in milliseconds.
      */
     public static final int DEFAULT_PROGRESS_UPDATE_INTERVAL_MS = 1000;
     /**
@@ -167,38 +167,38 @@ public class DefaultControlView extends BaseControlView {
 
     protected void initView(Context context, AttributeSet attrs, int defStyleAttr) {
 
-        mContainerView = findViewById(R.id.fpu_controller_container);
+        mContainerView = findViewById(R.id.fu_controller_container);
         if (mContainerView != null) {
             mContainerView.setVisibility(View.GONE);
         }
-        mDurationView = findViewById(R.id.fpu_controller_duration);
-        mPositionView = findViewById(R.id.fpu_controller_position);
-        mSeekView = findViewById(R.id.fpu_controller_seek);
+        mDurationView = findViewById(R.id.fu_controller_duration);
+        mPositionView = findViewById(R.id.fu_controller_position);
+        mSeekView = findViewById(R.id.fu_controller_seek);
         if (mSeekView != null) {
             mSeekView.setMax(mSeekNumber);
             mSeekView.setOnSeekBarChangeListener(mComponentListener);
         }
-        mPlayPauseSwitchView = findViewById(R.id.fpu_controller_play_pause_switch);
+        mPlayPauseSwitchView = findViewById(R.id.fu_controller_play_pause_switch);
         if (mPlayPauseSwitchView != null) {
             mPlayPauseSwitchView.setOnClickListener(mComponentListener);
         }
-        mFastRewindView = findViewById(R.id.fpu_controller_fast_rewind);
+        mFastRewindView = findViewById(R.id.fu_controller_fast_rewind);
         if (mFastRewindView != null) {
             mFastRewindView.setOnClickListener(mComponentListener);
         }
-        mFastForwardView = findViewById(R.id.fpu_controller_fast_forward);
+        mFastForwardView = findViewById(R.id.fu_controller_fast_forward);
         if (mFastForwardView != null) {
             mFastForwardView.setOnClickListener(mComponentListener);
         }
-        mRepeatSwitchView = findViewById(R.id.fpu_controller_repeat_switch);
+        mRepeatSwitchView = findViewById(R.id.fu_controller_repeat_switch);
         if (mRepeatSwitchView != null) {
             mRepeatSwitchView.setOnClickListener(mComponentListener);
         }
-        mVolumeSwitchView = findViewById(R.id.fpu_controller_volume_switch);
+        mVolumeSwitchView = findViewById(R.id.fu_controller_volume_switch);
         if (mVolumeSwitchView != null) {
             mVolumeSwitchView.setOnClickListener(mComponentListener);
         }
-        mShuffleSwitchView = findViewById(R.id.fpu_controller_shuffle_switch);
+        mShuffleSwitchView = findViewById(R.id.fu_controller_shuffle_switch);
         if (mShuffleSwitchView != null) {
             mShuffleSwitchView.setOnClickListener(mComponentListener);
         }
@@ -356,9 +356,9 @@ public class DefaultControlView extends BaseControlView {
 
     protected void updatePlayPauseViewResource(@NonNull ImageButton imageButton, boolean playWhenReady) {
         if (playWhenReady) {
-            imageButton.setImageResource(R.drawable.fpu_ic_pause);
+            imageButton.setImageResource(R.drawable.fu_ic_pause);
         } else {
-            imageButton.setImageResource(R.drawable.fpu_ic_play);
+            imageButton.setImageResource(R.drawable.fu_ic_play);
         }
     }
 
@@ -396,19 +396,19 @@ public class DefaultControlView extends BaseControlView {
     protected void updateRepeatViewResource(@NonNull ImageButton imageButton, int repeatMode) {
         switch (repeatMode) {
             case FuPlayer.REPEAT_MODE_OFF:
-                imageButton.setImageResource(R.drawable.fpu_ic_repeat_off);
+                imageButton.setImageResource(R.drawable.fu_ic_repeat_off);
                 imageButton.setContentDescription("");
                 break;
             case FuPlayer.REPEAT_MODE_ONE:
-                imageButton.setImageResource(R.drawable.fpu_ic_repeat_one);
+                imageButton.setImageResource(R.drawable.fu_ic_repeat_one);
                 imageButton.setContentDescription("");
                 break;
             case FuPlayer.REPEAT_MODE_ALL:
-                imageButton.setImageResource(R.drawable.fpu_ic_repeat_all);
+                imageButton.setImageResource(R.drawable.fu_ic_repeat_all);
                 imageButton.setContentDescription("");
                 break;
             default:
-                imageButton.setImageResource(R.drawable.fpu_ic_repeat_off);
+                imageButton.setImageResource(R.drawable.fu_ic_repeat_off);
                 imageButton.setContentDescription("");
         }
     }
@@ -434,9 +434,9 @@ public class DefaultControlView extends BaseControlView {
 
     protected void updateVolumeViewResource(@NonNull ImageButton imageButton, float volume) {
         if (volume > 0.0f) {
-            imageButton.setImageResource(R.drawable.fpu_ic_volume_up);
+            imageButton.setImageResource(R.drawable.fu_ic_volume_up);
         } else {
-            imageButton.setImageResource(R.drawable.fpu_ic_volume_off);
+            imageButton.setImageResource(R.drawable.fu_ic_volume_off);
         }
     }
 

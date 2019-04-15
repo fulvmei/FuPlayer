@@ -43,7 +43,7 @@ public class SampleErrorView extends BaseStateView {
 
         updateVisibility();
 
-        View retry = findViewById(R.id.fpu_state_error_retry);
+        View retry = findViewById(R.id.fu_state_error_retry);
         if (retry != null) {
             retry.setOnClickListener(v -> {
                 if (onReplayListener != null && onReplayListener.onReplay(player)) {
