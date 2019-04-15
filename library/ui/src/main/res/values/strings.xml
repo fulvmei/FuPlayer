@@ -1,17 +1,17 @@
 <resources>
-    <string name="fpu_volume_switch">volume switch</string>
-    <string name="fpu_shuffle_switch">shuffle switch</string>
-    <string name="fpu_repeat_switch">repeat switch</string>
-    <string name="fpu_skip_previous">skip previous</string>
-    <string name="fpu_skip_next">skip next</string>
-    <string name="fpu_fast_rewind">fast rewind</string>
-    <string name="fpu_fast_forward">fast forward</string>
-    <string name="fpu_play_pause_switch">play pause switch</string>
-    <string name="fpu_shutter">shutter</string>
+    <string name="fu_volume_switch">volume switch</string>
+    <string name="fu_shuffle_switch">shuffle switch</string>
+    <string name="fu_repeat_switch">repeat switch</string>
+    <string name="fu_skip_previous">skip previous</string>
+    <string name="fu_skip_next">skip next</string>
+    <string name="fu_fast_rewind">fast rewind</string>
+    <string name="fu_fast_forward">fast forward</string>
+    <string name="fu_play_pause_switch">play pause switch</string>
+    <string name="fu_shutter">shutter</string>
 
-    <string name="fpu_state_ended_hint">Completed</string>
-    <string name="fpu_replay">Replay</string>
+    <string name="fu_state_ended_hint">Completed</string>
+    <string name="fu_replay">Replay</string>
 
-    <string name="fpu_state_error_hint">Error</string>
-    <string name="fpu_retry">Retry</string>
+    <string name="fu_state_error_hint">Error</string>
+    <string name="fu_retry">Retry</string>
 </resources>

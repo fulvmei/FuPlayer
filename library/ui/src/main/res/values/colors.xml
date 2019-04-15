@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="fpu_white">#FFFFFF</color>
-
-    <color name="fpu_button_bg">#CCCCCC</color>
-    <color name="fpu_button_tv_color">#000000</color>
-
-    <color name="fpu_controller_bg_dark">#66000000</color>
-    <color name="fpu_controller_bg_light">#00000000</color>
-
-    <color name="fpu_edit_base_line_color">#77ffffff</color>
-
-    <color name="fpu_default_controller_seek_bar_bg">#666666</color>
-    <color name="fpu_default_controller_seek_bar_progress">#FF5722</color>
-    <color name="fpu_default_controller_seek_bar_progress2">#cccccc</color>
-
-    <color name="fpu_play_view_edit_mode_bg">#FF7F7F7F</color>
+    <color name="fu_play_view_edit_mode_bg">#FF7F7F7F</color>
 
 </resources>

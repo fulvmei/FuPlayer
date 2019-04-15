@@ -28,8 +28,6 @@ public class PlayerActivity extends AppCompatActivity {
     private Media media;
 
     private View playerRoot;
-    private FuPlayerView playerView;
-    private DefaultControlView controlView;
     private FuPlayer player;
     private SampleBufferingView loadingView;
     private SampleErrorView errorView;
@@ -53,11 +51,11 @@ public class PlayerActivity extends AppCompatActivity {
 
         playerRoot = findViewById(R.id.playerRoot);
 
-        playerView = findViewById(R.id.playerView);
+        FuPlayerView playerView = findViewById(R.id.playerView);
         loadingView = findViewById(R.id.bufferingView);
         errorView = findViewById(R.id.errorView);
         endedView = findViewById(R.id.endedView);
-        controlView = findViewById(R.id.controlView);
+        DefaultControlView controlView = findViewById(R.id.controlView);
 
         controlView.setShowAlwaysInPaused(true);
 
