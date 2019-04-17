@@ -630,22 +630,13 @@ public class DefaultControlView extends BaseControlView {
         }
         switch (mPlayer.getPlaybackState()) {
             case FuPlayer.STATE_IDLE:
-                if (!mHideInError && mPlayer.getPlaybackError() != null) {
-                    return true;
-                }
-                return false;
+                return !mHideInError && mPlayer.getPlaybackError() != null;
             case FuPlayer.STATE_BUFFERING:
-                if (!mHideInBuffering) {
-                    return true;
-                }
-                return false;
+                return !mHideInBuffering;
             case FuPlayer.STATE_READY:
                 return true;
             case FuPlayer.STATE_ENDED:
-                if (!mHideInEnded) {
-                    return true;
-                }
-                return false;
+                return !mHideInEnded;
             default:
                 return false;
         }
