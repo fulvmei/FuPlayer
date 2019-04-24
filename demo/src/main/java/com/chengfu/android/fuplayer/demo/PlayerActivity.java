@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,7 @@ public class PlayerActivity extends AppCompatActivity {
     private SampleErrorView errorView;
     private SampleEndedView endedView;
     private PlayerNotificationManager playerNotificationManager;
+    private Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +85,7 @@ public class PlayerActivity extends AppCompatActivity {
         playerView.setPlayer(player);
         controlView.setPlayer(player);
 
-        playerNotificationManager=new PlayerNotificationManager(this, "1", 1, new PlayerNotificationManager.MediaDescriptionAdapter() {
+        playerNotificationManager = new PlayerNotificationManager(this, "1", 1, new PlayerNotificationManager.MediaDescriptionAdapter() {
             @Override
             public String getCurrentContentTitle(FuPlayer player) {
                 return media.getName();
@@ -104,20 +106,27 @@ public class PlayerActivity extends AppCompatActivity {
             @Nullable
             @Override
             public Bitmap getCurrentLargeIcon(FuPlayer player, PlayerNotificationManager.BitmapCallback callback) {
+                if (bitmap != null) {
+                    return bitmap;
+                }
                 Glide.with(PlayerActivity.this)
                         .asBitmap()
                         .load("https://ss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/image/h%3D300/sign=455610afdfc8a786a12a4c0e5708c9c7/5bafa40f4bfbfbedcb2d862a76f0f736afc31f6a.jpg")
                         .into(new SimpleTarget<Bitmap>() {
                             @Override
                             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                bitmap = resource;
                                 callback.onBitmap(resource);
                             }
                         });
-            return null;
+                return null;
             }
         });
 
         playerNotificationManager.setPlayer(player);
+        playerNotificationManager.setVisibility(NotificationCompat.VISIBILITY_PRIVATE);
+        playerNotificationManager.setPriority(NotificationCompat.PRIORITY_MAX);
+
 
         onOrientationChanged(getResources().getConfiguration().orientation);
     }
@@ -155,15 +164,17 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        player.retry();
+        player.setPlayWhenReady(true);
+//        player.retry();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if(player.getPlaybackState()!= Player.STATE_IDLE){
-            player.stop();
-        }
+        player.setPlayWhenReady(false);
+//        if(player.getPlaybackState()!= Player.STATE_IDLE){
+//            player.stop();
+//        }
     }
 
     @Override

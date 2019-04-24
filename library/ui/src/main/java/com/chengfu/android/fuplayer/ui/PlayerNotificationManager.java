@@ -442,7 +442,7 @@ public class PlayerNotificationManager {
         colorized = true;
         useChronometer = true;
         color = Color.TRANSPARENT;
-        smallIconResourceId = context.getApplicationInfo() != null ? context.getApplicationInfo().icon : R.drawable.fu_ic_close;
+        smallIconResourceId = context.getApplicationInfo() != null ? context.getApplicationInfo().icon : R.drawable.fu_ic_notification;
         defaults = 0;
         priority = NotificationCompat.PRIORITY_LOW;
         fastForwardMs = DEFAULT_FAST_FORWARD_MS;
