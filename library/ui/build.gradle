@@ -25,6 +25,7 @@ android {
 
 dependencies {
     implementation 'com.android.support:support-annotations:' + supportLibraryVersion
+    implementation 'com.android.support:support-media-compat:' + supportLibraryVersion
     compileOnly 'org.checkerframework:checker-qual:2.5.3'
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.3'
     implementation project(':library:core')

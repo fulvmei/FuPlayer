@@ -1,13 +1,25 @@
 package com.chengfu.android.fuplayer.demo;
 
+import android.app.PendingIntent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.Request;
+import com.bumptech.glide.request.RequestFutureTarget;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.SizeReadyCallback;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.demo.bean.Media;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
@@ -15,6 +27,7 @@ import com.chengfu.android.fuplayer.demo.util.ScreenTools;
 import com.chengfu.android.fuplayer.ui.DefaultControlView;
 import com.chengfu.android.fuplayer.ui.FuPlayerView;
 import com.chengfu.android.fuplayer.ext.exo.FuExoPlayerFactory;
+import com.chengfu.android.fuplayer.ui.PlayerNotificationManager;
 import com.chengfu.android.fuplayer.ui.SampleBufferingView;
 import com.chengfu.android.fuplayer.ui.SampleEndedView;
 import com.chengfu.android.fuplayer.ui.SampleErrorView;
@@ -32,6 +45,7 @@ public class PlayerActivity extends AppCompatActivity {
     private SampleBufferingView loadingView;
     private SampleErrorView errorView;
     private SampleEndedView endedView;
+    private PlayerNotificationManager playerNotificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +82,42 @@ public class PlayerActivity extends AppCompatActivity {
         endedView.setPlayer(player);
         playerView.setPlayer(player);
         controlView.setPlayer(player);
+
+        playerNotificationManager=new PlayerNotificationManager(this, "1", 1, new PlayerNotificationManager.MediaDescriptionAdapter() {
+            @Override
+            public String getCurrentContentTitle(FuPlayer player) {
+                return media.getName();
+            }
+
+            @Nullable
+            @Override
+            public PendingIntent createCurrentContentIntent(FuPlayer player) {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public String getCurrentContentText(FuPlayer player) {
+                return media.getTag();
+            }
+
+            @Nullable
+            @Override
+            public Bitmap getCurrentLargeIcon(FuPlayer player, PlayerNotificationManager.BitmapCallback callback) {
+                Glide.with(PlayerActivity.this)
+                        .asBitmap()
+                        .load("https://ss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/image/h%3D300/sign=455610afdfc8a786a12a4c0e5708c9c7/5bafa40f4bfbfbedcb2d862a76f0f736afc31f6a.jpg")
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                callback.onBitmap(resource);
+                            }
+                        });
+            return null;
+            }
+        });
+
+        playerNotificationManager.setPlayer(player);
 
         onOrientationChanged(getResources().getConfiguration().orientation);
     }
