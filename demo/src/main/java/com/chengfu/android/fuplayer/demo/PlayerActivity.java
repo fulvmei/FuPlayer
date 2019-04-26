@@ -3,6 +3,7 @@ package com.chengfu.android.fuplayer.demo;
 import android.app.PendingIntent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -85,7 +86,7 @@ public class PlayerActivity extends AppCompatActivity {
         playerView.setPlayer(player);
         controlView.setPlayer(player);
 
-        playerNotificationManager = new PlayerNotificationManager(this, "1", 1, new PlayerNotificationManager.MediaDescriptionAdapter() {
+        playerNotificationManager = new PlayerNotificationManager(this, "com.chengfu.android.media.NOW_PLAYING", 1, new PlayerNotificationManager.MediaDescriptionAdapter() {
             @Override
             public String getCurrentContentTitle(FuPlayer player) {
                 return media.getName();
@@ -106,20 +107,23 @@ public class PlayerActivity extends AppCompatActivity {
             @Nullable
             @Override
             public Bitmap getCurrentLargeIcon(FuPlayer player, PlayerNotificationManager.BitmapCallback callback) {
-                if (bitmap != null) {
-                    return bitmap;
-                }
-                Glide.with(PlayerActivity.this)
-                        .asBitmap()
-                        .load("https://ss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/image/h%3D300/sign=455610afdfc8a786a12a4c0e5708c9c7/5bafa40f4bfbfbedcb2d862a76f0f736afc31f6a.jpg")
-                        .into(new SimpleTarget<Bitmap>() {
-                            @Override
-                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                                bitmap = resource;
-                                callback.onBitmap(resource);
-                            }
-                        });
                 return null;
+//                return   BitmapFactory.decodeResource(PlayerActivity.this.getResources(), R.drawable.a);
+//                if (bitmap != null) {
+//                    return bitmap;
+//                }
+//                Glide.with(PlayerActivity.this)
+//                        .asBitmap()
+//                        .load("https://ss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/image/h%3D300/sign=455610afdfc8a786a12a4c0e5708c9c7/5bafa40f4bfbfbedcb2d862a76f0f736afc31f6a.jpg")
+//                        .into(new SimpleTarget<Bitmap>() {
+//                            @Override
+//                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+//                                bitmap = resource;
+//                                callback.onBitmap(resource);
+//                            }
+//                        });
+
+//                return null;
             }
         });
 
