@@ -955,9 +955,10 @@ public class PlayerNotificationManager {
     protected int[] getActionIndicesForCompactView(List<String> actionNames, FuPlayer player) {
         int pauseActionIndex = actionNames.indexOf(ACTION_PAUSE);
         int playActionIndex = actionNames.indexOf(ACTION_PLAY);
+        int stopActionIndex = actionNames.indexOf(ACTION_STOP);
         return pauseActionIndex != -1
-                ? new int[]{pauseActionIndex}
-                : (playActionIndex != -1 ? new int[]{playActionIndex} : new int[0]);
+                ? new int[]{pauseActionIndex,stopActionIndex}
+                : (playActionIndex != -1 ? new int[]{playActionIndex,stopActionIndex} : new int[0]);
     }
 
     private static Map<String, NotificationCompat.Action> createPlaybackActions(
