@@ -1,0 +1,37 @@
+apply plugin: 'com.android.library'
+apply from: '../../constants.gradle'
+
+android {
+    compileSdkVersion 28
+
+    compileSdkVersion project.ext.compileSdkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        minSdkVersion project.ext.minSdkVersion
+        targetSdkVersion project.ext.targetSdkVersion
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation project(':library:core')
+    api 'com.android.support:support-media-compat:'+supportLibraryVersion
+}
+
+ext {
+    releaseArtifact = 'extension-mediasession'
+    releaseDescription = 'Mediasession extension for FuPlayer.'
+}
+apply from: '../../publish.gradle'

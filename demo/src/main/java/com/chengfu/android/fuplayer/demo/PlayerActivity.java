@@ -3,25 +3,16 @@ package com.chengfu.android.fuplayer.demo;
 import android.app.PendingIntent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.Request;
-import com.bumptech.glide.request.RequestFutureTarget;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.SizeReadyCallback;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
 import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.demo.bean.Media;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
@@ -33,12 +24,15 @@ import com.chengfu.android.fuplayer.ui.PlayerNotificationManager;
 import com.chengfu.android.fuplayer.ui.SampleBufferingView;
 import com.chengfu.android.fuplayer.ui.SampleEndedView;
 import com.chengfu.android.fuplayer.ui.SampleErrorView;
-import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.gyf.barlibrary.BarHide;
 import com.gyf.barlibrary.ImmersionBar;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 
 public class PlayerActivity extends AppCompatActivity {
+
     public static final String TAG = "VideoPlayerActivity";
     private Media media;
 
@@ -48,7 +42,7 @@ public class PlayerActivity extends AppCompatActivity {
     private SampleErrorView errorView;
     private SampleEndedView endedView;
     private PlayerNotificationManager playerNotificationManager;
-    private Bitmap bitmap;
+    private Bitmap bigIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +71,11 @@ public class PlayerActivity extends AppCompatActivity {
         controlView.setShowAlwaysInPaused(true);
 
         player = new FuExoPlayerFactory(this).create();
-        player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath()));
+        ConcatenatingMediaSource mediaSource = new ConcatenatingMediaSource();
+        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath()));
+//        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath()));
+//        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath()));
+        player.prepare(mediaSource);
         player.setPlayWhenReady(true);
 
         loadingView.setPlayer(player);
@@ -86,7 +84,8 @@ public class PlayerActivity extends AppCompatActivity {
         playerView.setPlayer(player);
         controlView.setPlayer(player);
 
-        playerNotificationManager = new PlayerNotificationManager(this, "com.chengfu.android.media.NOW_PLAYING", 1, new PlayerNotificationManager.MediaDescriptionAdapter() {
+
+        playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(this, "com.chengfu.android.media.NOW_PLAYING", R.string.app_name, 2, new PlayerNotificationManager.MediaDescriptionAdapter() {
             @Override
             public String getCurrentContentTitle(FuPlayer player) {
                 return media.getName();
@@ -107,28 +106,44 @@ public class PlayerActivity extends AppCompatActivity {
             @Nullable
             @Override
             public Bitmap getCurrentLargeIcon(FuPlayer player, PlayerNotificationManager.BitmapCallback callback) {
-                return null;
-//                return   BitmapFactory.decodeResource(PlayerActivity.this.getResources(), R.drawable.a);
-//                if (bitmap != null) {
-//                    return bitmap;
-//                }
-//                Glide.with(PlayerActivity.this)
-//                        .asBitmap()
-//                        .load("https://ss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/image/h%3D300/sign=455610afdfc8a786a12a4c0e5708c9c7/5bafa40f4bfbfbedcb2d862a76f0f736afc31f6a.jpg")
-//                        .into(new SimpleTarget<Bitmap>() {
-//                            @Override
-//                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-//                                bitmap = resource;
-//                                callback.onBitmap(resource);
-//                            }
-//                        });
+                System.out.println("0000000000000");
+                if (bigIcon != null) {
+                    return bigIcon;
+                }
+                System.out.println("222222222222222");
+                Picasso.get().load("http://pic29.nipic.com/20130517/9252150_140653449378_2.jpg")
+                        .centerCrop()
+                        .resize(100, 100)
+                        .into(new Target() {
+                            @Override
+                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                System.out.println("1111111111111111111111111111111111111");
+                                bigIcon = bitmap;
+                                callback.onBitmap(bitmap);
+                            }
 
-//                return null;
+                            @Override
+                            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                                System.out.println("2222222222222222222222222222222222222" + e);
+                                callback.onBitmap(bigIcon);
+                            }
+
+                            @Override
+                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                            }
+                        });
+                return null;
             }
         });
 
+        playerNotificationManager.setRewindIncrementMs(0);
+        playerNotificationManager.setFastForwardIncrementMs(0);
+        playerNotificationManager.setUseNavigationActions(true);
         playerNotificationManager.setPlayer(player);
+        playerNotificationManager.setUseNavigationActionsInCompactView(true);
         playerNotificationManager.setVisibility(NotificationCompat.VISIBILITY_PRIVATE);
+        playerNotificationManager.setUseStopAction(true);
         playerNotificationManager.setPriority(NotificationCompat.PRIORITY_MAX);
 
 
