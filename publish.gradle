@@ -16,3 +16,4 @@ def getRepoName() {
     boolean publicForTest = project.ext.has("publicForTest") && project.ext.publicForTest.toBoolean()
     return publicForTest ? 'fuplayer-test' : 'fuplayer'
 }
+

@@ -8,7 +8,10 @@
     <string name="fu_fast_forward">fast forward</string>
     <string name="fu_play_pause_switch">play pause switch</string>
     <string name="fu_shutter">shutter</string>
+<<<<<<< HEAD
     <string name="fu_controls_stop_description">stop</string>
+=======
+>>>>>>> c83ea00c7e011345ba8d9b2fcc5a1dc569d04e88
 
     <string name="fu_state_ended_hint">Completed</string>
     <string name="fu_replay">Replay</string>

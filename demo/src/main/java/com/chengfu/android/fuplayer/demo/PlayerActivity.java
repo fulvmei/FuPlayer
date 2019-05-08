@@ -1,5 +1,6 @@
 package com.chengfu.android.fuplayer.demo;
 
+<<<<<<< HEAD
 import android.app.PendingIntent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -9,6 +10,12 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+=======
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.media.AudioManager;
+import android.os.Bundle;
+>>>>>>> c83ea00c7e011345ba8d9b2fcc5a1dc569d04e88
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +27,7 @@ import com.chengfu.android.fuplayer.demo.util.ScreenTools;
 import com.chengfu.android.fuplayer.ui.DefaultControlView;
 import com.chengfu.android.fuplayer.ui.FuPlayerView;
 import com.chengfu.android.fuplayer.ext.exo.FuExoPlayerFactory;
+<<<<<<< HEAD
 import com.chengfu.android.fuplayer.ui.PlayerNotificationManager;
 import com.chengfu.android.fuplayer.ui.SampleBufferingView;
 import com.chengfu.android.fuplayer.ui.SampleEndedView;
@@ -33,6 +41,17 @@ import com.squareup.picasso.Target;
 
 public class PlayerActivity extends AppCompatActivity {
 
+=======
+import com.chengfu.android.fuplayer.ui.SampleBufferingView;
+import com.chengfu.android.fuplayer.ui.SampleEndedView;
+import com.chengfu.android.fuplayer.ui.SampleErrorView;
+import com.google.android.exoplayer2.Player;
+import com.gyf.barlibrary.BarHide;
+import com.gyf.barlibrary.ImmersionBar;
+
+
+public class PlayerActivity extends AppCompatActivity {
+>>>>>>> c83ea00c7e011345ba8d9b2fcc5a1dc569d04e88
     public static final String TAG = "VideoPlayerActivity";
     private Media media;
 
@@ -41,8 +60,11 @@ public class PlayerActivity extends AppCompatActivity {
     private SampleBufferingView loadingView;
     private SampleErrorView errorView;
     private SampleEndedView endedView;
+<<<<<<< HEAD
     private PlayerNotificationManager playerNotificationManager;
     private Bitmap bigIcon;
+=======
+>>>>>>> c83ea00c7e011345ba8d9b2fcc5a1dc569d04e88
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +93,15 @@ public class PlayerActivity extends AppCompatActivity {
         controlView.setShowAlwaysInPaused(true);
 
         player = new FuExoPlayerFactory(this).create();
+<<<<<<< HEAD
         ConcatenatingMediaSource mediaSource = new ConcatenatingMediaSource();
         mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath()));
 //        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath()));
 //        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath()));
         player.prepare(mediaSource);
+=======
+        player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath()));
+>>>>>>> c83ea00c7e011345ba8d9b2fcc5a1dc569d04e88
         player.setPlayWhenReady(true);
 
         loadingView.setPlayer(player);
@@ -84,6 +110,7 @@ public class PlayerActivity extends AppCompatActivity {
         playerView.setPlayer(player);
         controlView.setPlayer(player);
 
+<<<<<<< HEAD
 
         playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(this, "com.chengfu.android.media.NOW_PLAYING", R.string.app_name, 2, new PlayerNotificationManager.MediaDescriptionAdapter() {
             @Override
@@ -147,6 +174,8 @@ public class PlayerActivity extends AppCompatActivity {
         playerNotificationManager.setPriority(NotificationCompat.PRIORITY_MAX);
 
 
+=======
+>>>>>>> c83ea00c7e011345ba8d9b2fcc5a1dc569d04e88
         onOrientationChanged(getResources().getConfiguration().orientation);
     }
 
@@ -183,17 +212,27 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+<<<<<<< HEAD
         player.setPlayWhenReady(true);
 //        player.retry();
+=======
+        player.retry();
+>>>>>>> c83ea00c7e011345ba8d9b2fcc5a1dc569d04e88
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+<<<<<<< HEAD
         player.setPlayWhenReady(false);
 //        if(player.getPlaybackState()!= Player.STATE_IDLE){
 //            player.stop();
 //        }
+=======
+        if(player.getPlaybackState()!= Player.STATE_IDLE){
+            player.stop();
+        }
+>>>>>>> c83ea00c7e011345ba8d9b2fcc5a1dc569d04e88
     }
 
     @Override
