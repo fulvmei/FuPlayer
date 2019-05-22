@@ -24,6 +24,8 @@ import com.chengfu.android.fuplayer.ui.PlayerNotificationManager;
 import com.chengfu.android.fuplayer.ui.SampleBufferingView;
 import com.chengfu.android.fuplayer.ui.SampleEndedView;
 import com.chengfu.android.fuplayer.ui.SampleErrorView;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.gyf.barlibrary.BarHide;
 import com.gyf.barlibrary.ImmersionBar;
@@ -83,7 +85,7 @@ public class PlayerActivity extends AppCompatActivity {
         endedView.setPlayer(player);
         playerView.setPlayer(player);
         controlView.setPlayer(player);
-
+        player.retry();
 
         playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(this, "com.chengfu.android.media.NOW_PLAYING", R.string.app_name, 2, new PlayerNotificationManager.MediaDescriptionAdapter() {
             @Override
