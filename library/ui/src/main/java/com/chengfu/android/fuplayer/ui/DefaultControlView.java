@@ -589,6 +589,8 @@ public class DefaultControlView extends BaseControlView {
             updateAll();
 
             onHideChanged(false);
+
+            dispatchVisibilityChanged(true);
         }
 
         if (!mShowAlwaysInPaused || !isInShowAlwaysInPausedState()) {
@@ -607,6 +609,7 @@ public class DefaultControlView extends BaseControlView {
             mHideAtMs = -1;
 
             onHideChanged(true);
+            dispatchVisibilityChanged(false);
         }
     }
 

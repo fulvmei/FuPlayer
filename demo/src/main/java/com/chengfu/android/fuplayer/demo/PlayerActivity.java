@@ -24,6 +24,7 @@ import com.chengfu.android.fuplayer.ui.PlayerNotificationManager;
 import com.chengfu.android.fuplayer.ui.SampleBufferingView;
 import com.chengfu.android.fuplayer.ui.SampleEndedView;
 import com.chengfu.android.fuplayer.ui.SampleErrorView;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
@@ -62,6 +63,13 @@ public class PlayerActivity extends AppCompatActivity {
                 .hideBar(BarHide.FLAG_SHOW_BAR)
                 .init();
 
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                player.stop(true);
+            }
+        });
+
         playerRoot = findViewById(R.id.playerRoot);
 
         FuPlayerView playerView = findViewById(R.id.playerView);
@@ -72,12 +80,25 @@ public class PlayerActivity extends AppCompatActivity {
 
         controlView.setShowAlwaysInPaused(true);
 
+
         player = new FuExoPlayerFactory(this).create();
+
+        player.addListener(new Player.EventListener() {
+            @Override
+            public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
+                System.out.println("onTimelineChanged : reason="+reason);
+            }
+        });
+
         ConcatenatingMediaSource mediaSource = new ConcatenatingMediaSource();
-        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath()));
+        int contentType = C.TYPE_OTHER;
+        if (media.getTag().endsWith("m3u8")) {
+            contentType = C.TYPE_HLS;
+        }
+        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath(), contentType));
 //        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath()));
 //        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath()));
-        player.prepare(mediaSource);
+        player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath(), contentType));
         player.setPlayWhenReady(true);
 
         loadingView.setPlayer(player);
@@ -108,25 +129,22 @@ public class PlayerActivity extends AppCompatActivity {
             @Nullable
             @Override
             public Bitmap getCurrentLargeIcon(FuPlayer player, PlayerNotificationManager.BitmapCallback callback) {
-                System.out.println("0000000000000");
+
                 if (bigIcon != null) {
                     return bigIcon;
                 }
-                System.out.println("222222222222222");
                 Picasso.get().load("http://pic29.nipic.com/20130517/9252150_140653449378_2.jpg")
                         .centerCrop()
                         .resize(100, 100)
                         .into(new Target() {
                             @Override
                             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                                System.out.println("1111111111111111111111111111111111111");
                                 bigIcon = bitmap;
                                 callback.onBitmap(bitmap);
                             }
 
                             @Override
                             public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-                                System.out.println("2222222222222222222222222222222222222" + e);
                                 callback.onBitmap(bigIcon);
                             }
 

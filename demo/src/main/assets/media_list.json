@@ -56,7 +56,7 @@
     "media_list": [
       {
         "name": "直播",
-        "path": "http://sel.gzstv.com/recordings/z1.icvkuzqj.secw/1547173500_1547180880.m3u8",
+        "path": "http://hls2.gzstv.com/gztv/gztv1/index.m3u8?k=d56db7dbce24dbe49e638c11c21778c7&t=5D4B9B07",
         "type": "video",
         "tag": "m3u8"
       },
