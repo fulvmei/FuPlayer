@@ -2,7 +2,7 @@ project.ext {
     releaseVersion = '1.1.1'
     releaseVersionCode = 6
     fuplayerPublishEnabled = true
-    publicForTest = false
+    publicForTest = true
 
     minSdkVersion = 17
     targetSdkVersion = 28
