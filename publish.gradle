@@ -5,7 +5,7 @@ if (project.ext.has("fuplayerPublishEnabled")
         artifactId = releaseArtifact
         desc = releaseDescription
         publishVersion = releaseVersion
-        repoName = getRepoName()
+        repoName = 'fuplayer'
         userOrg = 'fu-cheng'
         groupId = 'com.chengfu.android.fuplayer'
         website = 'https://github.com/fulvmei/FuPlayer.git'
