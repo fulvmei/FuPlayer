@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.chengfu.android.fuplayer.FuPlayer;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.Timeline;
 
 public class SampleErrorView extends BaseStateView {
 
@@ -111,6 +113,11 @@ public class SampleErrorView extends BaseStateView {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            updateVisibility();
+        }
+
+        @Override
+        public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
             updateVisibility();
         }
     }

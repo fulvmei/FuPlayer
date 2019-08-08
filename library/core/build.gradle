@@ -24,6 +24,7 @@ android {
 
 dependencies {
     api 'com.google.android.exoplayer:exoplayer-core:'+exolayerVersion
+    api 'com.android.support:support-annotations:'+supportLibraryVersion
 }
 
 ext {
