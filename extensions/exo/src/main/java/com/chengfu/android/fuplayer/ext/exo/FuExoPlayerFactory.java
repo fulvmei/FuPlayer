@@ -1,7 +1,7 @@
 package com.chengfu.android.fuplayer.ext.exo;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.PlayerFactory;

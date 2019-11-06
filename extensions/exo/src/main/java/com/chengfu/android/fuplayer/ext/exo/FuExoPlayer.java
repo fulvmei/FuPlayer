@@ -1,8 +1,8 @@
 package com.chengfu.android.fuplayer.ext.exo;
 
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.chengfu.android.fuplayer.FuPlayer;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -101,6 +101,16 @@ public class FuExoPlayer implements FuPlayer {
     @Override
     public int getPlaybackState() {
         return mPlayer.getPlaybackState();
+    }
+
+    @Override
+    public int getPlaybackSuppressionReason() {
+        return mPlayer.getPlaybackSuppressionReason();
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return mPlayer.isPlaying();
     }
 
     @Nullable

@@ -7,16 +7,16 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.demo.bean.Media;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
-import com.chengfu.android.fuplayer.demo.util.ScreenTools;
 import com.chengfu.android.fuplayer.ui.DefaultControlView;
 import com.chengfu.android.fuplayer.ui.FuPlayerView;
 import com.chengfu.android.fuplayer.ext.exo.FuExoPlayerFactory;
@@ -32,6 +32,7 @@ import com.gyf.barlibrary.BarHide;
 import com.gyf.barlibrary.ImmersionBar;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
 
 
 public class PlayerActivity extends AppCompatActivity {
@@ -73,6 +74,13 @@ public class PlayerActivity extends AppCompatActivity {
         playerRoot = findViewById(R.id.playerRoot);
 
         FuPlayerView playerView = findViewById(R.id.playerView);
+
+        Glide.with(this)
+                .asBitmap()
+                .load("http://pic29.nipic.com/20130517/9252150_140653449378_2.jpg")
+//                .bitmapTransform(new BlurTransformation(PlayerActivity.this,23,4))  // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
+                .into(playerView.getUnderlayView());
+
         loadingView = findViewById(R.id.bufferingView);
         errorView = findViewById(R.id.errorView);
         endedView = findViewById(R.id.endedView);
@@ -183,7 +191,8 @@ public class PlayerActivity extends AppCompatActivity {
         } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             ViewGroup.LayoutParams layoutParams = playerRoot.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            layoutParams.height = (int) (ScreenTools.getScreenWidth(this) * 9 * 1.0f / 16);
+//            layoutParams.height = (int) (ScreenTools.getScreenWidth(this) * 9 * 1.0f / 16);
+            layoutParams.height = 1200;
 
             ImmersionBar.with(this)
                     .statusBarColorInt(Color.BLACK)
@@ -197,6 +206,8 @@ public class PlayerActivity extends AppCompatActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         onOrientationChanged(newConfig.orientation);
+
+
     }
 
 
