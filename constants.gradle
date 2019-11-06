@@ -1,6 +1,6 @@
 project.ext {
-    releaseVersion = '1.1.1'
-    releaseVersionCode = 6
+    releaseVersion = '1.1.2'
+    releaseVersionCode = 7
     fuplayerPublishEnabled = true
     publicForTest = true
 
@@ -10,6 +10,7 @@ project.ext {
     buildToolsVersion = "28.0.3"
     supportLibraryVersion = '28.0.0'
 
-    exolayerVersion = '2.9.6'
+//    exolayerVersion = '2.9.6'
+    exolayerVersion = '2.10.5'
 }
 

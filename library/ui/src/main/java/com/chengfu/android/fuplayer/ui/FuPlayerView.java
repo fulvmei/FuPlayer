@@ -2,12 +2,16 @@ package com.chengfu.android.fuplayer.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Looper;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
+
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -46,6 +50,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
     public static final int RESIZE_MODE_FILL = AspectRatioFrameLayout.RESIZE_MODE_FILL;
     public static final int RESIZE_MODE_ZOOM = AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
 
+    private ImageView mUnderlayView;
     private AspectRatioFrameLayout mSurfaceContainer;
     private View mSurfaceView;
     private ImageView shutterView;
@@ -90,7 +95,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         }
         LayoutInflater.from(context).inflate(R.layout.default_player_view, this);
 
-
+        mUnderlayView = findViewById(R.id.underlay);
         mSurfaceContainer = findViewById(R.id.surface_container);
         shutterView = findViewById(R.id.view_shutter);
         subtitleView = findViewById(R.id.subtitleView);
@@ -119,6 +124,10 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
             keepScreenOn = true;
         }
         setKeepScreenOn(keepScreenOn);
+    }
+
+    public ImageView getUnderlayView() {
+        return mUnderlayView;
     }
 
     public void setShutterBackgroundColor(int color) {
@@ -294,24 +303,6 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         }
         updateScreenOn();
     }
-
-//    public void addStateView(BaseStateView stateView) {
-//        if (stateView == null || mStateViews.contains(stateView)) {
-//            return;
-//        }
-//        addView(stateView, getChildCount());
-//        mStateViews.add(stateView);
-//        stateView.setPlayer(mPlayer);
-//    }
-
-//    public void removeStateView(BaseStateView stateView) {
-//        if (stateView == null || !mStateViews.contains(stateView)) {
-//            return;
-//        }
-//        removeView(stateView);
-//        mStateViews.remove(stateView);
-//        stateView.setPlayer(null);
-//    }
 
     /**
      * Should be called when the player is visible to the user and if {@code surface_type} is {@code

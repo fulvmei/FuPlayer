@@ -1,15 +1,14 @@
 package com.chengfu.android.fuplayer.ui;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.chengfu.android.fuplayer.FuPlayer;
-import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Timeline;
 
 public class SampleErrorView extends BaseStateView {
