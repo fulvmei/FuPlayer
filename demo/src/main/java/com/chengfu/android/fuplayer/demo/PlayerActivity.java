@@ -18,6 +18,7 @@ import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.demo.bean.Media;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
 import com.chengfu.android.fuplayer.ui.DefaultControlView;
+import com.chengfu.android.fuplayer.ui.DefaultTimeBar;
 import com.chengfu.android.fuplayer.ui.FuPlayerView;
 import com.chengfu.android.fuplayer.ext.exo.FuExoPlayerFactory;
 import com.chengfu.android.fuplayer.ui.PlayerNotificationManager;
@@ -33,8 +34,6 @@ import com.gyf.barlibrary.ImmersionBar;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-
-
 public class PlayerActivity extends AppCompatActivity {
 
     public static final String TAG = "VideoPlayerActivity";
@@ -47,6 +46,9 @@ public class PlayerActivity extends AppCompatActivity {
     private SampleEndedView endedView;
     private PlayerNotificationManager playerNotificationManager;
     private Bitmap bigIcon;
+    DefaultControlView controlView;
+    ConcatenatingMediaSource mediaSource;
+    FuPlayerView playerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +75,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         playerRoot = findViewById(R.id.playerRoot);
 
-        FuPlayerView playerView = findViewById(R.id.playerView);
+         playerView = findViewById(R.id.playerView);
 
         Glide.with(this)
                 .asBitmap()
@@ -84,37 +86,19 @@ public class PlayerActivity extends AppCompatActivity {
         loadingView = findViewById(R.id.bufferingView);
         errorView = findViewById(R.id.errorView);
         endedView = findViewById(R.id.endedView);
-        DefaultControlView controlView = findViewById(R.id.controlView);
+         controlView = findViewById(R.id.controlView);
 
         controlView.setShowAlwaysInPaused(true);
 
+//        controlView.setProgressAdapter(new DynamicProgressAdapter(1000,6000));
 
-        player = new FuExoPlayerFactory(this).create();
-
-        player.addListener(new Player.EventListener() {
-            @Override
-            public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
-                System.out.println("onTimelineChanged : reason="+reason);
-            }
-        });
-
-        ConcatenatingMediaSource mediaSource = new ConcatenatingMediaSource();
-        int contentType = C.TYPE_OTHER;
-        if (media.getTag().endsWith("m3u8")) {
-            contentType = C.TYPE_HLS;
-        }
-        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath(), contentType));
 //        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath()));
 //        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath()));
-        player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath(), contentType));
-        player.setPlayWhenReady(true);
 
-        loadingView.setPlayer(player);
-        errorView.setPlayer(player);
-        endedView.setPlayer(player);
-        playerView.setPlayer(player);
-        controlView.setPlayer(player);
-        player.retry();
+        initPlayer();
+
+
+//        player.retry();
 
         playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(this, "com.chengfu.android.media.NOW_PLAYING", R.string.app_name, 2, new PlayerNotificationManager.MediaDescriptionAdapter() {
             @Override
@@ -176,6 +160,39 @@ public class PlayerActivity extends AppCompatActivity {
 
 
         onOrientationChanged(getResources().getConfiguration().orientation);
+
+
+       DefaultTimeBar timeBar= findViewById(R.id.timeBar);
+
+        timeBar.setPosition(30000);
+        timeBar.setDuration(60000);
+    }
+
+    private void initPlayer(){
+        player = new FuExoPlayerFactory(this).create();
+
+        player.addListener(new Player.EventListener() {
+            @Override
+            public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
+                System.out.println("onTimelineChanged : reason="+reason);
+            }
+        });
+
+        mediaSource = new ConcatenatingMediaSource();
+        int contentType = C.TYPE_OTHER;
+        if (media.getTag().endsWith("m3u8")) {
+            contentType = C.TYPE_HLS;
+        }
+        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath(), contentType));
+
+        player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath(), contentType));
+        player.setPlayWhenReady(true);
+
+        loadingView.setPlayer(player);
+        errorView.setPlayer(player);
+        endedView.setPlayer(player);
+        playerView.setPlayer(player);
+        controlView.setPlayer(player);
     }
 
     private void onOrientationChanged(int orientation) {
@@ -214,14 +231,30 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        player.setPlayWhenReady(true);
+
 //        player.retry();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(player==null){
+            initPlayer();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        player.release();
+        player=null;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        player.setPlayWhenReady(false);
+
+//        player.setPlayWhenReady(false);
 //        if(player.getPlaybackState()!= Player.STATE_IDLE){
 //            player.stop();
 //        }

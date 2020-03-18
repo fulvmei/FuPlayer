@@ -56,7 +56,7 @@
     "media_list": [
       {
         "name": "直播",
-        "path": "http://hls2.gzstv.com/gztv/gztv1/index.m3u8?k=d56db7dbce24dbe49e638c11c21778c7&t=5D4B9B07",
+        "path": "https://hls-qnhi-live.gzstv.com/livegztv-hi/CH01_hi.m3u8?s=97e492ce7592ac4136c8e3b274a25869&ts=5ddf369f",
         "type": "video",
         "tag": "m3u8"
       },

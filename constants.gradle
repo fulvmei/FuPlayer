@@ -1,6 +1,6 @@
 project.ext {
-    releaseVersion = '1.1.2'
-    releaseVersionCode = 7
+    releaseVersion = '1.2.2'
+    releaseVersionCode = 10
     fuplayerPublishEnabled = true
     publicForTest = true
 

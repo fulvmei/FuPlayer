@@ -265,7 +265,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
             return;
         }
         if (mPlayer != null) {
-            mPlayer.addListener(componentListener);
+            mPlayer.removeListener(componentListener);
             FuPlayer.VideoComponent oldVideoComponent = mPlayer.getVideoComponent();
             if (oldVideoComponent != null) {
                 oldVideoComponent.removeVideoListener(componentListener);

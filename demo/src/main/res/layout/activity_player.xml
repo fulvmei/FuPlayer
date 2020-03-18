@@ -49,10 +49,21 @@
     </FrameLayout>
 
     <Button
-        android:layout_below="@id/playerRoot"
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/playerRoot"
         android:text="Button" />
+
+    <com.chengfu.android.fuplayer.ui.DefaultTimeBar
+        android:id="@+id/timeBar"
+        app:bar_height="50dp"
+        app:ad_marker_color="#000000"
+        app:scrubber_drawable="@drawable/fu_ic_notification"
+        app:scrubber_color="#00ff00"
+        android:background="@color/colorAccent"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@id/button" />
 
 </RelativeLayout>
