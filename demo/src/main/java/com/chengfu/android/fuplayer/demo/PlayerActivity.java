@@ -227,14 +227,6 @@ public class PlayerActivity extends AppCompatActivity {
 
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-//        player.retry();
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -246,23 +238,9 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        player.release();
-        player=null;
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-//        player.setPlayWhenReady(false);
-//        if(player.getPlaybackState()!= Player.STATE_IDLE){
-//            player.stop();
-//        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        player.release();
-        super.onDestroy();
+        if(player!=null){
+            player.release();
+            player=null;
+        }
     }
 }
