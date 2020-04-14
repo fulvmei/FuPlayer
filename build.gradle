@@ -2,21 +2,22 @@
 
 buildscript {
     repositories {
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
         google()
         jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.1'
+        classpath 'com.android.tools.build:gradle:3.6.2'
         classpath 'com.novoda:bintray-release:0.9.1'
     }
 }
 
 allprojects {
     repositories {
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
         google()
         jcenter()
-        maven {url 'https://dl.bintray.com/fu-cheng/fuplayer'}
     }
 
     tasks.withType(Javadoc) {

@@ -307,6 +307,11 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public boolean isCurrentWindowLive() {
+        return mPlayer.isCurrentWindowLive();
+    }
+
+    @Override
     public boolean isCurrentWindowSeekable() {
         return mPlayer.isCurrentWindowSeekable();
     }
