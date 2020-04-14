@@ -7,11 +7,15 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 
 import com.bumptech.glide.Glide;
 import com.chengfu.android.fuplayer.FuPlayer;
@@ -29,10 +33,18 @@ import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
+import com.google.android.exoplayer2.source.ShuffleOrder;
+import com.google.android.exoplayer2.source.hls.HlsManifest;
 import com.gyf.barlibrary.BarHide;
 import com.gyf.barlibrary.ImmersionBar;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import timber.log.Timber;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -66,16 +78,49 @@ public class PlayerActivity extends AppCompatActivity {
                 .hideBar(BarHide.FLAG_SHOW_BAR)
                 .init();
 
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.add1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                player.stop(true);
+                int contentType = C.TYPE_OTHER;
+                if (media.getTag().endsWith("m3u8")) {
+                    contentType = C.TYPE_HLS;
+                }
+                mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(PlayerActivity.this, "http://mvoice.spriteapp.cn/voice/2016/1108/5821463c8ea94.mp3", contentType));
+
+//                player.stop(true);
+            }
+        });
+
+        findViewById(R.id.add2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int contentType = C.TYPE_OTHER;
+                if (media.getTag().endsWith("m3u8")) {
+                    contentType = C.TYPE_HLS;
+                }
+                mediaSource.addMediaSource(0,MediaSourceUtil.getMediaSource(PlayerActivity.this, "https://qn-live.gzstv.com/icvkuzqj/yinyue.m3u8", C.TYPE_HLS));
+
+//                player.stop(true);
+            }
+        });
+
+        findViewById(R.id.previous).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                player.previous();
+            }
+        });
+
+        findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                player.next();
             }
         });
 
         playerRoot = findViewById(R.id.playerRoot);
 
-         playerView = findViewById(R.id.playerView);
+        playerView = findViewById(R.id.playerView);
 
         Glide.with(this)
                 .asBitmap()
@@ -86,7 +131,7 @@ public class PlayerActivity extends AppCompatActivity {
         loadingView = findViewById(R.id.bufferingView);
         errorView = findViewById(R.id.errorView);
         endedView = findViewById(R.id.endedView);
-         controlView = findViewById(R.id.controlView);
+        controlView = findViewById(R.id.controlView);
 
         controlView.setShowAlwaysInPaused(true);
 
@@ -162,30 +207,73 @@ public class PlayerActivity extends AppCompatActivity {
         onOrientationChanged(getResources().getConfiguration().orientation);
 
 
-       DefaultTimeBar timeBar= findViewById(R.id.timeBar);
+        DefaultTimeBar timeBar = findViewById(R.id.timeBar);
 
         timeBar.setPosition(30000);
         timeBar.setDuration(60000);
     }
 
-    private void initPlayer(){
+    private void initPlayer() {
         player = new FuExoPlayerFactory(this).create();
 
         player.addListener(new Player.EventListener() {
             @Override
             public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
-                System.out.println("onTimelineChanged : reason="+reason);
+                JSONObject ja = new JSONObject();
+                Timeline.Window window = new Timeline.Window();
+                Timeline.Period period = new Timeline.Period();
+                if (timeline.isEmpty()) {
+                    return;
+                }
+                timeline.getWindow(player.getCurrentWindowIndex(), window);
+                timeline.getPeriod(player.getCurrentWindowIndex(), period);
+
+                try {
+                    ja.put("getWindowCount", timeline.getWindowCount());
+                    ja.put("getPeriodCount", timeline.getPeriodCount());
+//                    ja.put("getCurrentPeriodIndex", player.getCurrentPeriodIndex());
+//                    ja.put("getCurrentWindowIndex", player.getCurrentWindowIndex());
+//                    ja.put("defaultPositionUs", window.defaultPositionUs);
+//                    ja.put("durationUs", window.durationUs);
+//                    ja.put("firstPeriodIndex", window.firstPeriodIndex);
+//                    ja.put("isDynamic", window.isDynamic);
+//                    ja.put("isLive", window.isLive);
+//                    ja.put("isSeekable", window.isSeekable);
+//                    ja.put("lastPeriodIndex", window.lastPeriodIndex);
+//                    ja.put("positionInFirstPeriodUs", window.positionInFirstPeriodUs);
+//                    ja.put("presentationStartTimeMs", window.presentationStartTimeMs);
+//                    ja.put("windowStartTimeMs", window.windowStartTimeMs);
+//                    ja.put("manifest", window.manifest);
+//                    ja.put("tag", window.tag);
+//                    ja.put("uid", window.uid);
+//                    ja.put("period_durationUs",period.durationUs);
+//                    ja.put("period_windowIndex",period.windowIndex);
+//                    ja.put("period_id",period.id);
+//                    ja.put("period_uid",period.uid);
+
+                    HlsManifest s;
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Timber.e("onTimelineChanged reason="+reason+",data"+ja.toString());
+//                System.out.println(ja.toString());
+            }
+
+            @Override
+            public void onPositionDiscontinuity(int reason) {
+                Timber.e("onPositionDiscontinuity reason="+reason);
             }
         });
 
-        mediaSource = new ConcatenatingMediaSource();
+        mediaSource = new ConcatenatingMediaSource(false,false,new ShuffleOrder.DefaultShuffleOrder(0));
         int contentType = C.TYPE_OTHER;
         if (media.getTag().endsWith("m3u8")) {
             contentType = C.TYPE_HLS;
         }
         mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath(), contentType));
 
-        player.prepare(MediaSourceUtil.getMediaSource(this, media.getPath(), contentType));
+        player.prepare(mediaSource);
         player.setPlayWhenReady(true);
 
         loadingView.setPlayer(player);
@@ -230,7 +318,7 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(player==null){
+        if (player == null) {
             initPlayer();
         }
     }
@@ -238,9 +326,9 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(player!=null){
+        if (player != null) {
             player.release();
-            player=null;
+            player = null;
         }
     }
 }
