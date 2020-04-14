@@ -2,12 +2,10 @@ package com.chengfu.android.fuplayer.ui;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.os.Looper;
 
 import androidx.annotation.Nullable;
@@ -15,7 +13,6 @@ import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
@@ -25,12 +22,13 @@ import android.widget.ImageView;
 
 import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.ui.spherical.SingleTapListener;
-import com.chengfu.android.fuplayer.ui.spherical.SphericalSurfaceView;
+import com.chengfu.android.fuplayer.ui.spherical.SphericalGLSurfaceView;
 import com.chengfu.android.fuplayer.util.FuLog;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextOutput;
 import com.google.android.exoplayer2.util.Assertions;
+import com.google.android.exoplayer2.video.VideoDecoderGLSurfaceView;
 import com.google.android.exoplayer2.video.VideoListener;
 
 import java.util.List;
@@ -42,7 +40,8 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
     private static final int SURFACE_TYPE_NONE = 0;
     public static final int SURFACE_TYPE_SURFACE_VIEW = 1;
     public static final int SURFACE_TYPE_TEXTURE_VIEW = 2;
-    private static final int SURFACE_TYPE_MONO360_VIEW = 3;
+    private static final int SURFACE_TYPE_SPHERICAL_GL_SURFACE_VIEW = 3;
+    private static final int SURFACE_TYPE_VIDEO_DECODER_GL_SURFACE_VIEW = 4;
 
     public static final int RESIZE_MODE_FIT = AspectRatioFrameLayout.RESIZE_MODE_FIT;
     public static final int RESIZE_MODE_FIXED_WIDTH = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
@@ -142,7 +141,8 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
                 || (surfaceType != SURFACE_TYPE_NONE
                 && surfaceType != SURFACE_TYPE_SURFACE_VIEW
                 && surfaceType != SURFACE_TYPE_TEXTURE_VIEW
-                && surfaceType != SURFACE_TYPE_MONO360_VIEW)) {
+                && surfaceType != SURFACE_TYPE_SPHERICAL_GL_SURFACE_VIEW
+                && surfaceType != SURFACE_TYPE_VIDEO_DECODER_GL_SURFACE_VIEW)) {
             return;
         }
         if (mSurfaceView != null && mSurfaceView.getParent() != null && mSurfaceView.getParent() instanceof AspectRatioFrameLayout) {
@@ -160,11 +160,13 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
             case SURFACE_TYPE_TEXTURE_VIEW:
                 mSurfaceView = new TextureView(getContext());
                 break;
-            case SURFACE_TYPE_MONO360_VIEW:
-                SphericalSurfaceView sphericalSurfaceView = new SphericalSurfaceView(getContext());
-                sphericalSurfaceView.setSurfaceListener(componentListener);
-                sphericalSurfaceView.setSingleTapListener(componentListener);
-                mSurfaceView = sphericalSurfaceView;
+            case SURFACE_TYPE_SPHERICAL_GL_SURFACE_VIEW:
+                SphericalGLSurfaceView sphericalGLSurfaceView = new SphericalGLSurfaceView(getContext());
+                sphericalGLSurfaceView.setSingleTapListener(componentListener);
+                mSurfaceView = sphericalGLSurfaceView;
+                break;
+            case SURFACE_TYPE_VIDEO_DECODER_GL_SURFACE_VIEW:
+                mSurfaceView = new VideoDecoderGLSurfaceView(getContext());
                 break;
         }
 
@@ -181,6 +183,11 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
                 mPlayer.getVideoComponent().setVideoTextureView((TextureView) mSurfaceView);
             } else if (mSurfaceView instanceof SurfaceView) {
                 mPlayer.getVideoComponent().setVideoSurfaceView((SurfaceView) mSurfaceView);
+            } else if (mSurfaceView instanceof SphericalGLSurfaceView) {
+                ((SphericalGLSurfaceView) mSurfaceView).setVideoComponent(mPlayer.getVideoComponent());
+            } else if (mSurfaceView instanceof VideoDecoderGLSurfaceView) {
+                mPlayer.getVideoComponent().setVideoDecoderOutputBufferRenderer(
+                        ((VideoDecoderGLSurfaceView) mSurfaceView).getVideoDecoderOutputBufferRenderer());
             }
         }
 
@@ -273,6 +280,10 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
                     oldVideoComponent.setVideoTextureView(null);
                 } else if (mSurfaceView instanceof SurfaceView) {
                     oldVideoComponent.setVideoSurfaceView(null);
+                } else if (mSurfaceView instanceof SphericalGLSurfaceView) {
+                    ((SphericalGLSurfaceView) mSurfaceView).setVideoComponent(null);
+                } else if (mSurfaceView instanceof VideoDecoderGLSurfaceView) {
+                    oldVideoComponent.setVideoDecoderOutputBufferRenderer(null);
                 }
             }
             FuPlayer.TextComponent oldTextComponent = mPlayer.getTextComponent();
@@ -308,12 +319,12 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
      * Should be called when the player is visible to the user and if {@code surface_type} is {@code
      * spherical_view}. It is the counterpart to {@link #onPause()}.
      *
-     * <p>This method should typically be called in {@link Activity#onStart()}, or {@link
-     * Activity#onResume()} for API versions &lt;= 23.
+     * <p>This method should typically be called in {@link Activity# onStart()}, or {@link
+     * Activity# onResume()} for API versions &lt;= 23.
      */
     public void onResume() {
-        if (mSurfaceView instanceof SphericalSurfaceView) {
-            ((SphericalSurfaceView) mSurfaceView).onResume();
+        if (mSurfaceView instanceof SphericalGLSurfaceView) {
+            ((SphericalGLSurfaceView) mSurfaceView).onResume();
         }
     }
 
@@ -321,12 +332,12 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
      * Should be called when the player is no longer visible to the user and if {@code surface_type}
      * is {@code spherical_view}. It is the counterpart to {@link #onResume()}.
      *
-     * <p>This method should typically be called in {@link Activity#onStop()}, or {@link
-     * Activity#onPause()} for API versions &lt;= 23.
+     * <p>This method should typically be called in {@link Activity# onStop()}, or {@link
+     * Activity# onPause()} for API versions &lt;= 23.
      */
     public void onPause() {
-        if (mSurfaceView instanceof SphericalSurfaceView) {
-            ((SphericalSurfaceView) mSurfaceView).onPause();
+        if (mSurfaceView instanceof SphericalGLSurfaceView) {
+            ((SphericalGLSurfaceView) mSurfaceView).onPause();
         }
     }
 
@@ -357,7 +368,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         }
     }
 
-    private final class ComponentListener implements FuPlayer.EventListener, VideoListener, TextOutput, OnLayoutChangeListener, SphericalSurfaceView.SurfaceListener, SingleTapListener {
+    private final class ComponentListener implements FuPlayer.EventListener, VideoListener, TextOutput, OnLayoutChangeListener, SingleTapListener {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
@@ -396,7 +407,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
 
             if (mSurfaceContainer != null && mSurfaceView != null) {
                 mSurfaceContainer.setAspectRatio(
-                        mSurfaceView instanceof SphericalSurfaceView ? 0 : videoAspectRatio);
+                        mSurfaceView instanceof SphericalGLSurfaceView ? 0 : videoAspectRatio);
             }
         }
 
@@ -445,15 +456,15 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
             applyTextureViewRotation((TextureView) v, mTextureViewRotation);
         }
 
-        @Override
-        public void surfaceChanged(@Nullable Surface surface) {
-            if (mPlayer != null) {
-                FuPlayer.VideoComponent videoComponent = mPlayer.getVideoComponent();
-                if (videoComponent != null) {
-                    videoComponent.setVideoSurface(surface);
-                }
-            }
-        }
+//        @Override
+//        public void surfaceChanged(@Nullable Surface surface) {
+//            if (mPlayer != null) {
+//                FuPlayer.VideoComponent videoComponent = mPlayer.getVideoComponent();
+//                if (videoComponent != null) {
+//                    videoComponent.setVideoSurface(surface);
+//                }
+//            }
+//        }
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {

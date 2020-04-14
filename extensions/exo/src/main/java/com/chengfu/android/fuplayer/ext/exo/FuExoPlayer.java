@@ -59,6 +59,11 @@ public class FuExoPlayer implements FuPlayer {
         return mPlayer.getSeekParameters();
     }
 
+    @Override
+    public void setForegroundMode(boolean foregroundMode) {
+        mPlayer.setForegroundMode(foregroundMode);
+    }
+
     @Nullable
     @Override
     public AudioComponent getAudioComponent() {
