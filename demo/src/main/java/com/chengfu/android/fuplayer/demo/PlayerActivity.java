@@ -231,8 +231,8 @@ public class PlayerActivity extends AppCompatActivity {
                 try {
                     ja.put("getWindowCount", timeline.getWindowCount());
                     ja.put("getPeriodCount", timeline.getPeriodCount());
-//                    ja.put("getCurrentPeriodIndex", player.getCurrentPeriodIndex());
-//                    ja.put("getCurrentWindowIndex", player.getCurrentWindowIndex());
+                    ja.put("getCurrentPeriodIndex", player.getCurrentPeriodIndex());
+                    ja.put("getCurrentWindowIndex", player.getCurrentWindowIndex());
 //                    ja.put("defaultPositionUs", window.defaultPositionUs);
 //                    ja.put("durationUs", window.durationUs);
 //                    ja.put("firstPeriodIndex", window.firstPeriodIndex);
