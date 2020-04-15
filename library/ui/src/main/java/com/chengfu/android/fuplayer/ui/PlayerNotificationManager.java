@@ -42,57 +42,6 @@ import java.util.Map;
 
 import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 
-/**
- * A notification manager to start, update and cancel a media style notification reflecting the
- * player state.
- *
- * <p>The notification is cancelled when {@code null} is passed to {@link #setPlayer(FuPlayer)} or
- * when the notification is dismissed by the user.
- *
- * <p>If the player is released it must be removed from the manager by calling {@code
- * setPlayer(null)} which will cancel the notification.
- *
- * <h3>Action customization</h3>
- * <p>
- * Standard playback actions can be shown or omitted as follows:
- *
- * <ul>
- * <li><b>{@code useNavigationActions}</b> - Sets whether the navigation previous and next actions
- * are displayed.
- * <ul>
- * <li>Corresponding setter: {@link #setUseNavigationActions(boolean)}
- * <li>Default: {@code true}
- * </ul>
- * <li><b>{@code useNavigationActionsInCompactView}</b> - Sets whether the navigation previous and
- * next actions should are displayed in compact view (including the lock screen notification).
- * <ul>
- * <li>Corresponding setter: {@link #setUseNavigationActionsInCompactView(boolean)}
- * <li>Default: {@code false}
- * </ul>
- * <li><b>{@code usePlayPauseActions}</b> - Sets whether the play and pause actions are displayed.
- * <ul>
- * <li>Corresponding setter: {@link #setUsePlayPauseActions(boolean)}
- * <li>Default: {@code true}
- * </ul>
- * <li><b>{@code useStopAction}</b> - Sets whether the stop action is displayed.
- * <ul>
- * <li>Corresponding setter: {@link #setUseStopAction(boolean)}
- * <li>Default: {@code false}
- * </ul>
- * <li><b>{@code rewindIncrementMs}</b> - Sets the rewind increment. If set to zero the rewind
- * action is not displayed.
- * <ul>
- * <li>Corresponding setter: {@link #setRewindIncrementMs(long)}
- * <li>Default: {@link #DEFAULT_REWIND_MS} (5000)
- * </ul>
- * <li><b>{@code fastForwardIncrementMs}</b> - Sets the fast forward increment. If set to zero the
- * fast forward action is not included in the notification.
- * <ul>
- * <li>Corresponding setter: {@link #setFastForwardIncrementMs(long)}
- * <li>Default: {@link #DEFAULT_FAST_FORWARD_MS} (5000)
- * </ul>
- * </ul>
- */
 public class PlayerNotificationManager {
 
     /**
@@ -103,7 +52,7 @@ public class PlayerNotificationManager {
         /**
          * Gets the content title for the current media item.
          *
-         * <p>See {@link NotificationCompat.Builder#setContentTitle(CharSequence)}.
+         * See {@link NotificationCompat.Builder#setContentTitle(CharSequence)}.
          *
          * @param player The {@link FuPlayer} for which a notification is being built.
          */
@@ -112,7 +61,7 @@ public class PlayerNotificationManager {
         /**
          * Creates a content intent for the current media item.
          *
-         * <p>See {@link NotificationCompat.Builder#setContentIntent(PendingIntent)}.
+         * See {@link NotificationCompat.Builder#setContentIntent(PendingIntent)}.
          *
          * @param player The {@link FuPlayer} for which a notification is being built.
          */
@@ -122,7 +71,7 @@ public class PlayerNotificationManager {
         /**
          * Gets the content text for the current media item.
          *
-         * <p>See {@link NotificationCompat.Builder#setContentText(CharSequence)}.
+         * See {@link NotificationCompat.Builder#setContentText(CharSequence)}.
          *
          * @param player The {@link FuPlayer} for which a notification is being built.
          */
@@ -132,7 +81,7 @@ public class PlayerNotificationManager {
         /**
          * Gets the content sub text for the current media item.
          *
-         * <p>See {@link NotificationCompat.Builder#setSubText(CharSequence)}.
+         * See {@link NotificationCompat.Builder#setSubText(CharSequence)}.
          *
          * @param player The {@link FuPlayer} for which a notification is being built.
          */
@@ -144,13 +93,13 @@ public class PlayerNotificationManager {
         /**
          * Gets the large icon for the current media item.
          *
-         * <p>When a bitmap initially needs to be asynchronously loaded, a placeholder (or null) can be
+         * When a bitmap initially needs to be asynchronously loaded, a placeholder (or null) can be
          * returned and the bitmap asynchronously passed to the {@link BitmapCallback} once it is
          * loaded. Because the adapter may be called multiple times for the same media item, the bitmap
          * should be cached by the app and whenever possible be returned synchronously at subsequent
          * calls for the same media item.
          *
-         * <p>See {@link NotificationCompat.Builder#setLargeIcon(Bitmap)}.
+         * See {@link NotificationCompat.Builder#setLargeIcon(Bitmap)}.
          *
          * @param player   The {@link FuPlayer} for which a notification is being built.
          * @param callback A {@link BitmapCallback} to provide a {@link Bitmap} asynchronously.
@@ -167,7 +116,7 @@ public class PlayerNotificationManager {
         /**
          * Gets the actions handled by this receiver.
          *
-         * <p>If multiple {@link PlayerNotificationManager} instances are in use at the same time, the
+         * If multiple {@link PlayerNotificationManager} instances are in use at the same time, the
          * {@code instanceId} must be set as an intent extra with key {@link
          * PlayerNotificationManager#EXTRA_INSTANCE_ID} to avoid sending the action to every custom
          * action receiver. It's also necessary to ensure something is different about the actions. This
@@ -239,7 +188,7 @@ public class PlayerNotificationManager {
         /**
          * Called each time after the notification has been posted.
          *
-         * <p>For a service, the {@code ongoing} flag can be used as an indicator as to whether it
+         * For a service, the {@code ongoing} flag can be used as an indicator as to whether it
          * should be in the foreground.
          *
          * @param notificationId The id of the notification which has been posted.
@@ -422,7 +371,7 @@ public class PlayerNotificationManager {
      * Creates a notification manager and a low-priority notification channel with the specified
      * {@code channelId} and {@code channelName}.
      *
-     * <p>If the player notification manager is intended to be used within a foreground service,
+     * If the player notification manager is intended to be used within a foreground service,
      * {@link #createWithNotificationChannel(Context, String, int, int, MediaDescriptionAdapter,
      * NotificationListener)} should be used to which a {@link NotificationListener} can be passed.
      * This way you'll receive the notification to put the service into the foreground by calling
@@ -477,7 +426,7 @@ public class PlayerNotificationManager {
      * Creates a notification manager using the specified notification {@code channelId}. The caller
      * is responsible for creating the notification channel.
      *
-     * <p>When used within a service, consider using {@link #PlayerNotificationManager(Context,
+     * When used within a service, consider using {@link #PlayerNotificationManager(Context,
      * String, int, MediaDescriptionAdapter, NotificationListener)} to which a {@link
      * NotificationListener} can be passed.
      *
@@ -529,7 +478,7 @@ public class PlayerNotificationManager {
      * Creates a notification manager using the specified notification {@code channelId} and {@link
      * CustomActionReceiver}. The caller is responsible for creating the notification channel.
      *
-     * <p>When used within a service, consider using {@link #PlayerNotificationManager(Context,
+     * When used within a service, consider using {@link #PlayerNotificationManager(Context,
      * String, int, MediaDescriptionAdapter, NotificationListener, CustomActionReceiver)} to which a
      * {@link NotificationListener} can be passed.
      *
@@ -621,11 +570,11 @@ public class PlayerNotificationManager {
     /**
      * Sets the {@link FuPlayer}.
      *
-     * <p>Setting the player starts a notification immediately unless the player is in {@link
+     * Setting the player starts a notification immediately unless the player is in {@link
      * FuPlayer#STATE_IDLE}, in which case the notification is started as soon as the player transitions
      * away from being idle.
      *
-     * <p>If the player is released it must be removed from the manager by calling {@code
+     * If the player is released it must be removed from the manager by calling {@code
      * setPlayer(null)}. This will cancel the notification.
      *
      * @param player The {@link FuPlayer} to use, or {@code null} to remove the current player. Only
@@ -677,7 +626,7 @@ public class PlayerNotificationManager {
     /**
      * Sets the {@link NotificationListener}.
      *
-     * <p>Please note that you should call this method before you call {@link #setPlayer(FuPlayer)} or
+     * Please note that you should call this method before you call {@link #setPlayer(FuPlayer)} or
      * you may not get the {@link NotificationListener#onNotificationStarted(int, Notification)}
      * called on your listener.
      *
@@ -732,7 +681,7 @@ public class PlayerNotificationManager {
     /**
      * Sets whether navigation actions should be displayed in compact view.
      *
-     * <p>If {@link #useNavigationActions} is set to {@code false} navigation actions are displayed
+     * If {@link #useNavigationActions} is set to {@code false} navigation actions are displayed
      * neither in compact nor in full view mode of the notification.
      *
      * @param useNavigationActionsInCompactView Whether the navigation actions should be displayed in
@@ -786,7 +735,7 @@ public class PlayerNotificationManager {
     /**
      * Sets the badge icon type of the notification.
      *
-     * <p>See {@link NotificationCompat.Builder#setBadgeIconType(int)}.
+     * See {@link NotificationCompat.Builder#setBadgeIconType(int)}.
      *
      * @param badgeIconType The badge icon type.
      */
@@ -810,7 +759,7 @@ public class PlayerNotificationManager {
      * Sets whether the notification should be colorized. When set, the color set with {@link
      * #setColor(int)} will be used as the background color for the notification.
      *
-     * <p>See {@link NotificationCompat.Builder#setColorized(boolean)}.
+     * See {@link NotificationCompat.Builder#setColorized(boolean)}.
      *
      * @param colorized Whether to colorize the notification.
      */
@@ -824,7 +773,7 @@ public class PlayerNotificationManager {
     /**
      * Sets the defaults.
      *
-     * <p>See {@link NotificationCompat.Builder#setDefaults(int)}.
+     * See {@link NotificationCompat.Builder#setDefaults(int)}.
      *
      * @param defaults The default notification options.
      */
@@ -838,7 +787,7 @@ public class PlayerNotificationManager {
     /**
      * Sets the accent color of the notification.
      *
-     * <p>See {@link NotificationCompat.Builder#setColor(int)}.
+     * See {@link NotificationCompat.Builder#setColor(int)}.
      *
      * @param color The color, in ARGB integer form like the constants in {@link Color}.
      */
@@ -852,7 +801,7 @@ public class PlayerNotificationManager {
     /**
      * Sets the priority of the notification required for API 25 and lower.
      *
-     * <p>See {@link NotificationCompat.Builder#setPriority(int)}.
+     * See {@link NotificationCompat.Builder#setPriority(int)}.
      *
      * @param priority The priority which can be one of {@link NotificationCompat#PRIORITY_DEFAULT},
      *                 {@link NotificationCompat#PRIORITY_MAX}, {@link NotificationCompat#PRIORITY_HIGH}, {@link
@@ -880,7 +829,7 @@ public class PlayerNotificationManager {
     /**
      * Sets the small icon of the notification which is also shown in the system status bar.
      *
-     * <p>See {@link NotificationCompat.Builder#setSmallIcon(int)}.
+     * See {@link NotificationCompat.Builder#setSmallIcon(int)}.
      *
      * @param smallIconResourceId The resource id of the small icon.
      */
@@ -894,7 +843,7 @@ public class PlayerNotificationManager {
     /**
      * Sets whether the elapsed time of the media playback should be displayed
      *
-     * <p>See {@link NotificationCompat.Builder#setUsesChronometer(boolean)}.
+     * See {@link NotificationCompat.Builder#setUsesChronometer(boolean)}.
      *
      * @param useChronometer Whether to use chronometer.
      */
@@ -909,7 +858,7 @@ public class PlayerNotificationManager {
      * Sets the visibility of the notification which determines whether and how the notification is
      * shown when the device is in lock screen mode.
      *
-     * <p>See {@link NotificationCompat.Builder#setVisibility(int)}.
+     * See {@link NotificationCompat.Builder#setVisibility(int)}.
      *
      * @param visibility The visibility which must be one of {@link
      *                   NotificationCompat#VISIBILITY_PUBLIC}, {@link NotificationCompat#VISIBILITY_PRIVATE} or
@@ -1086,16 +1035,10 @@ public class PlayerNotificationManager {
      * Gets the names and order of the actions to be included in the notification at the current
      * player state.
      *
-     * <p>The playback and custom actions are combined and placed in the following order if not
+     * The playback and custom actions are combined and placed in the following order if not
      * omitted:
      *
-     * <pre>
-     *   +------------------------------------------------------------------------+
-     *   | prev | &lt;&lt; | play/pause | &gt;&gt; | next | custom actions | stop |
-     *   +------------------------------------------------------------------------+
-     * </pre>
-     *
-     * <p>This method can be safely overridden. However, the names must be of the playback actions
+     * This method can be safely overridden. However, the names must be of the playback actions
      * {@link #ACTION_PAUSE}, {@link #ACTION_PLAY}, {@link #ACTION_FAST_FORWARD}, {@link
      * #ACTION_REWIND}, {@link #ACTION_NEXT} or {@link #ACTION_PREVIOUS}, or a key contained in the
      * map returned by {@link CustomActionReceiver#createCustomActions(Context, int)}. Otherwise the
@@ -1147,7 +1090,7 @@ public class PlayerNotificationManager {
     /**
      * Gets an array with the indices of the buttons to be shown in compact mode.
      *
-     * <p>This method can be overridden. The indices must refer to the list of actions passed as the
+     * this method can be overridden. The indices must refer to the list of actions passed as the
      * first parameter.
      *
      * @param actionNames The names of the actions included in the notification.

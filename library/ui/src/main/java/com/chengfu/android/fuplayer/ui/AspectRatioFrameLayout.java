@@ -72,7 +72,7 @@ public final class AspectRatioFrameLayout extends FrameLayout {
     /**
      * The {@link FrameLayout} will not resize itself if the fractional difference between its natural
      * aspect ratio and the requested aspect ratio falls below this threshold.
-     * <p>
+     *
      * <p>This tolerance allows the view to occupy the whole of the screen when the requested aspect
      * ratio is very close, but not exactly equal to, the aspect ratio of the screen. This may reduce
      * the number of view layers that need to be composited by the underlying system, which can help

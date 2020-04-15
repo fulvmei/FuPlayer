@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2018 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.chengfu.android.fuplayer.ui.spherical;
 
 import android.content.Context;
@@ -24,27 +9,7 @@ import android.view.View;
 import androidx.annotation.BinderThread;
 import androidx.annotation.Nullable;
 
-/**
- * Basic touch input system.
- *
- * <p>Mixing touch input and gyro input results in a complicated UI so this should be used
- * carefully. This touch system implements a basic (X, Y) -> (yaw, pitch) transform. This works for
- * basic UI but fails in edge cases where the user tries to drag scene up or down. There is no good
- * UX solution for this. The least bad solution is to disable pitch manipulation and only let the
- * user adjust yaw. This example tries to limit the awkwardness by restricting pitch manipulation to
- * +/- 45 degrees.
- *
- * <p>It is also important to get the order of operations correct. To match what users expect, touch
- * interaction manipulates the scene by rotating the world by the yaw offset and tilting the camera
- * by the pitch offset. If the order of operations is incorrect, the sensors & touch rotations will
- * have strange interactions. The roll of the phone is also tracked so that the x & y are correctly
- * mapped to yaw & pitch no matter how the user holds their phone.
- *
- * <p>This class doesn't handle any scrolling inertia but Android's
- * com.google.vr.sdk.widgets.common.TouchTracker.FlingGestureListener can be used with this code for
- * a nicer UI. An even more advanced UI would reproject the user's touch point into 3D and drag the
- * Mesh as the user moves their finger. However, that requires quaternion interpolation.
- */
+
 /* package */ class TouchTracker extends GestureDetector.SimpleOnGestureListener
     implements View.OnTouchListener, OrientationListener.Listener {
 

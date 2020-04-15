@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2018 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.chengfu.android.fuplayer.ui.spherical;
 
 import android.content.Context;
@@ -44,16 +29,6 @@ import com.google.android.exoplayer2.util.Util;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-/**
- * Renders a GL scene in a non-VR Activity that is affected by phone orientation and touch input.
- *
- * <p>The two input components are the TYPE_GAME_ROTATION_VECTOR Sensor and a TouchListener. The GL
- * renderer combines these two inputs to render a scene with the appropriate camera orientation.
- *
- * <p>The primary complexity in this class is related to the various rotations. It is important to
- * apply the touch and sensor rotations in the correct order or the user's touch manipulations won't
- * match what they expect.
- */
 public final class SphericalGLSurfaceView extends GLSurfaceView {
 
   // Arbitrary vertical field of view.

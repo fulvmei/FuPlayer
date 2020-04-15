@@ -1,6 +1,7 @@
 package com.chengfu.android.fuplayer.ext.exo;
 
 import android.os.Looper;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -20,7 +21,7 @@ public class FuExoPlayer implements FuPlayer {
 
     private ExoPlayer mPlayer;
 
-    FuExoPlayer(@NonNull ExoPlayer player) {
+    public FuExoPlayer(@NonNull ExoPlayer player) {
         mPlayer = player;
     }
 

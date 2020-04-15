@@ -112,7 +112,7 @@ import com.google.android.exoplayer2.util.Util;
   /**
    * Draws the provided {@link Cue} into a canvas with the specified styling.
    *
-   * <p>A call to this method is able to use cached results of calculations made during the previous
+   * A call to this method is able to use cached results of calculations made during the previous
    * call, and so an instance of this class is able to optimize repeated calls to this method in
    * which the same parameters are passed.
    *

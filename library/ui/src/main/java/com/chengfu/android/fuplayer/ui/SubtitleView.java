@@ -89,7 +89,7 @@ public final class SubtitleView extends View implements TextOutput {
 
   /**
    * Set the text size to a given unit and value.
-   * <p>
+   *
    * See {@link TypedValue} for the possible dimension units.
    *
    * @param unit The desired dimension unit.
@@ -120,7 +120,7 @@ public final class SubtitleView extends View implements TextOutput {
   /**
    * Sets the text size to be a fraction of the view's remaining height after its top and bottom
    * padding have been subtracted.
-   * <p>
+   *
    * Equivalent to {@code #setFractionalTextSize(fractionOfHeight, false)}.
    *
    * @param fractionOfHeight A fraction between 0 and 1.
@@ -217,7 +217,7 @@ public final class SubtitleView extends View implements TextOutput {
    * Sets the bottom padding fraction to apply when {@link Cue#line} is {@link Cue#DIMEN_UNSET},
    * as a fraction of the view's remaining height after its top and bottom padding have been
    * subtracted.
-   * <p>
+   *
    * Note that this padding is applied in addition to any standard view padding.
    *
    * @param bottomPaddingFraction The bottom padding fraction.
