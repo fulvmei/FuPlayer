@@ -51,7 +51,7 @@ public class SampleErrorView extends BaseStateView {
                     return;
                 }
                 if (player != null) {
-                    player.retry();
+                    player.prepare();
                 }
             });
         }

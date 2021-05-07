@@ -8,14 +8,21 @@ import androidx.annotation.Nullable;
 import com.chengfu.android.fuplayer.FuPlayer;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.PlayerMessage;
 import com.google.android.exoplayer2.SeekParameters;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ShuffleOrder;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.util.Clock;
+
+import java.util.List;
 
 public class FuExoPlayer implements FuPlayer {
 
@@ -23,46 +30,6 @@ public class FuExoPlayer implements FuPlayer {
 
     public FuExoPlayer(@NonNull ExoPlayer player) {
         mPlayer = player;
-    }
-
-    @Override
-    public Looper getPlaybackLooper() {
-        return mPlayer.getPlaybackLooper();
-    }
-
-    @Override
-    public void retry() {
-        mPlayer.retry();
-    }
-
-    @Override
-    public void prepare(MediaSource mediaSource) {
-        mPlayer.prepare(mediaSource);
-    }
-
-    @Override
-    public void prepare(MediaSource mediaSource, boolean resetPosition, boolean resetState) {
-        mPlayer.prepare(mediaSource, resetPosition, resetState);
-    }
-
-    @Override
-    public PlayerMessage createMessage(PlayerMessage.Target target) {
-        return mPlayer.createMessage(target);
-    }
-
-    @Override
-    public void setSeekParameters(@Nullable SeekParameters seekParameters) {
-        mPlayer.setSeekParameters(seekParameters);
-    }
-
-    @Override
-    public SeekParameters getSeekParameters() {
-        return mPlayer.getSeekParameters();
-    }
-
-    @Override
-    public void setForegroundMode(boolean foregroundMode) {
-        mPlayer.setForegroundMode(foregroundMode);
     }
 
     @Nullable
@@ -89,6 +56,12 @@ public class FuExoPlayer implements FuPlayer {
         return mPlayer.getMetadataComponent();
     }
 
+    @Nullable
+    @Override
+    public DeviceComponent getDeviceComponent() {
+        return mPlayer.getDeviceComponent();
+    }
+
     @Override
     public Looper getApplicationLooper() {
         return mPlayer.getApplicationLooper();
@@ -102,6 +75,86 @@ public class FuExoPlayer implements FuPlayer {
     @Override
     public void removeListener(Player.EventListener listener) {
         mPlayer.removeListener(listener);
+    }
+
+    @Override
+    public void setMediaItems(List<MediaItem> mediaItems) {
+        mPlayer.setMediaItems(mediaItems);
+    }
+
+    @Override
+    public void setMediaItems(List<MediaItem> mediaItems, boolean resetPosition) {
+        mPlayer.setMediaItems(mediaItems, resetPosition);
+    }
+
+    @Override
+    public void setMediaItems(List<MediaItem> mediaItems, int startWindowIndex, long startPositionMs) {
+        mPlayer.setMediaItems(mediaItems, startWindowIndex, startPositionMs);
+    }
+
+    @Override
+    public void setMediaItem(MediaItem mediaItem) {
+        mPlayer.setMediaItem(mediaItem);
+    }
+
+    @Override
+    public void setMediaItem(MediaItem mediaItem, long startPositionMs) {
+        mPlayer.setMediaItem(mediaItem, startPositionMs);
+    }
+
+    @Override
+    public void setMediaItem(MediaItem mediaItem, boolean resetPosition) {
+        mPlayer.setMediaItem(mediaItem, resetPosition);
+    }
+
+    @Override
+    public void addMediaItem(MediaItem mediaItem) {
+        mPlayer.addMediaItem(mediaItem);
+    }
+
+    @Override
+    public void addMediaItem(int index, MediaItem mediaItem) {
+        mPlayer.addMediaItem(index, mediaItem);
+    }
+
+    @Override
+    public void addMediaItems(List<MediaItem> mediaItems) {
+        mPlayer.addMediaItems(mediaItems);
+    }
+
+    @Override
+    public void addMediaItems(int index, List<MediaItem> mediaItems) {
+        mPlayer.addMediaItems(index, mediaItems);
+    }
+
+    @Override
+    public void moveMediaItem(int currentIndex, int newIndex) {
+        mPlayer.moveMediaItem(currentIndex, newIndex);
+    }
+
+    @Override
+    public void moveMediaItems(int fromIndex, int toIndex, int newIndex) {
+        mPlayer.moveMediaItems(fromIndex, toIndex, newIndex);
+    }
+
+    @Override
+    public void removeMediaItem(int index) {
+        mPlayer.removeMediaItem(index);
+    }
+
+    @Override
+    public void removeMediaItems(int fromIndex, int toIndex) {
+        mPlayer.removeMediaItems(fromIndex, toIndex);
+    }
+
+    @Override
+    public void clearMediaItems() {
+        mPlayer.clearMediaItems();
+    }
+
+    @Override
+    public void prepare() {
+        mPlayer.prepare();
     }
 
     @Override
@@ -121,8 +174,24 @@ public class FuExoPlayer implements FuPlayer {
 
     @Nullable
     @Override
+    public ExoPlaybackException getPlayerError() {
+        return mPlayer.getPlayerError();
+    }
+
+    @Nullable
+    @Override
     public ExoPlaybackException getPlaybackError() {
         return mPlayer.getPlaybackError();
+    }
+
+    @Override
+    public void play() {
+        mPlayer.play();
+    }
+
+    @Override
+    public void pause() {
+        mPlayer.pause();
     }
 
     @Override
@@ -245,6 +314,11 @@ public class FuExoPlayer implements FuPlayer {
         return mPlayer.getCurrentTrackSelections();
     }
 
+    @Override
+    public List<Metadata> getCurrentStaticMetadata() {
+        return mPlayer.getCurrentStaticMetadata();
+    }
+
     @Nullable
     @Override
     public Object getCurrentManifest() {
@@ -280,6 +354,22 @@ public class FuExoPlayer implements FuPlayer {
     @Override
     public Object getCurrentTag() {
         return mPlayer.getCurrentTag();
+    }
+
+    @Nullable
+    @Override
+    public MediaItem getCurrentMediaItem() {
+        return mPlayer.getCurrentMediaItem();
+    }
+
+    @Override
+    public int getMediaItemCount() {
+        return mPlayer.getMediaItemCount();
+    }
+
+    @Override
+    public MediaItem getMediaItemAt(int index) {
+        return mPlayer.getMediaItemAt(index);
     }
 
     @Override
@@ -318,6 +408,11 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public long getCurrentLiveOffset() {
+        return mPlayer.getCurrentLiveOffset();
+    }
+
+    @Override
     public boolean isCurrentWindowSeekable() {
         return mPlayer.isCurrentWindowSeekable();
     }
@@ -350,5 +445,131 @@ public class FuExoPlayer implements FuPlayer {
     @Override
     public long getContentBufferedPosition() {
         return mPlayer.getContentBufferedPosition();
+    }
+
+    @Nullable
+    @Override
+    public TrackSelector getTrackSelector() {
+        return mPlayer.getTrackSelector();
+    }
+
+    @Override
+    public Looper getPlaybackLooper() {
+        return mPlayer.getPlaybackLooper();
+    }
+
+    @Override
+    public Clock getClock() {
+        return mPlayer.getClock();
+    }
+
+    @Override
+    public void retry() {
+        mPlayer.retry();
+    }
+
+    @Override
+    public void prepare(MediaSource mediaSource) {
+        mPlayer.prepare(mediaSource);
+    }
+
+    @Override
+    public void prepare(MediaSource mediaSource, boolean resetPosition, boolean resetState) {
+        mPlayer.prepare(mediaSource, resetPosition, resetState);
+    }
+
+    @Override
+    public void setMediaSources(List<MediaSource> mediaSources) {
+        mPlayer.setMediaSources(mediaSources);
+    }
+
+    @Override
+    public void setMediaSources(List<MediaSource> mediaSources, boolean resetPosition) {
+        mPlayer.setMediaSources(mediaSources, resetPosition);
+    }
+
+    @Override
+    public void setMediaSources(List<MediaSource> mediaSources, int startWindowIndex, long startPositionMs) {
+        mPlayer.setMediaSources(mediaSources, startWindowIndex, startPositionMs);
+    }
+
+    @Override
+    public void setMediaSource(MediaSource mediaSource) {
+        mPlayer.setMediaSource(mediaSource);
+    }
+
+    @Override
+    public void setMediaSource(MediaSource mediaSource, long startPositionMs) {
+        mPlayer.setMediaSource(mediaSource, startPositionMs);
+    }
+
+    @Override
+    public void setMediaSource(MediaSource mediaSource, boolean resetPosition) {
+        mPlayer.setMediaSource(mediaSource, resetPosition);
+    }
+
+    @Override
+    public void addMediaSource(MediaSource mediaSource) {
+        mPlayer.addMediaSource(mediaSource);
+    }
+
+    @Override
+    public void addMediaSource(int index, MediaSource mediaSource) {
+        mPlayer.addMediaSource(index, mediaSource);
+    }
+
+    @Override
+    public void addMediaSources(List<MediaSource> mediaSources) {
+        mPlayer.addMediaSources(mediaSources);
+    }
+
+    @Override
+    public void addMediaSources(int index, List<MediaSource> mediaSources) {
+        mPlayer.addMediaSources(index, mediaSources);
+    }
+
+    @Override
+    public void setShuffleOrder(ShuffleOrder shuffleOrder) {
+        mPlayer.setShuffleOrder(shuffleOrder);
+    }
+
+    @Override
+    public PlayerMessage createMessage(PlayerMessage.Target target) {
+        return mPlayer.createMessage(target);
+    }
+
+    @Override
+    public void setSeekParameters(@Nullable SeekParameters seekParameters) {
+        mPlayer.setSeekParameters(seekParameters);
+    }
+
+    @Override
+    public SeekParameters getSeekParameters() {
+        return mPlayer.getSeekParameters();
+    }
+
+    @Override
+    public void setForegroundMode(boolean foregroundMode) {
+        mPlayer.setForegroundMode(foregroundMode);
+    }
+
+    @Override
+    public void setPauseAtEndOfMediaItems(boolean pauseAtEndOfMediaItems) {
+        mPlayer.setPauseAtEndOfMediaItems(pauseAtEndOfMediaItems);
+    }
+
+    @Override
+    public boolean getPauseAtEndOfMediaItems() {
+        return mPlayer.getPauseAtEndOfMediaItems();
+    }
+
+    @Override
+    public void experimentalSetOffloadSchedulingEnabled(boolean offloadSchedulingEnabled) {
+        mPlayer.experimentalSetOffloadSchedulingEnabled(offloadSchedulingEnabled);
+    }
+
+    @Override
+    public boolean experimentalIsSleepingForOffload() {
+        return mPlayer.experimentalIsSleepingForOffload();
     }
 }

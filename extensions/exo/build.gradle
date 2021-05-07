@@ -31,7 +31,7 @@ dependencies {
     api 'com.google.android.exoplayer:exoplayer-smoothstreaming:'+exolayerVersion
     api 'com.google.android.exoplayer:extension-rtmp:'+exolayerVersion
 
-    implementation 'androidx.media:media:1.1.0'
+    implementation 'androidx.media:media:1.2.1'
 }
 
 ext {

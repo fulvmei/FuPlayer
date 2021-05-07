@@ -24,7 +24,6 @@ import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.ui.spherical.SingleTapListener;
 import com.chengfu.android.fuplayer.ui.spherical.SphericalGLSurfaceView;
 import com.chengfu.android.fuplayer.util.FuLog;
-import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextOutput;
 import com.google.android.exoplayer2.util.Assertions;
@@ -183,12 +182,13 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
                 mPlayer.getVideoComponent().setVideoTextureView((TextureView) mSurfaceView);
             } else if (mSurfaceView instanceof SurfaceView) {
                 mPlayer.getVideoComponent().setVideoSurfaceView((SurfaceView) mSurfaceView);
-            } else if (mSurfaceView instanceof SphericalGLSurfaceView) {
-                ((SphericalGLSurfaceView) mSurfaceView).setVideoComponent(mPlayer.getVideoComponent());
-            } else if (mSurfaceView instanceof VideoDecoderGLSurfaceView) {
-                mPlayer.getVideoComponent().setVideoDecoderOutputBufferRenderer(
-                        ((VideoDecoderGLSurfaceView) mSurfaceView).getVideoDecoderOutputBufferRenderer());
             }
+//            else if (mSurfaceView instanceof SphericalGLSurfaceView) {
+//                ((SphericalGLSurfaceView) mSurfaceView).setVideoComponent(mPlayer.getVideoComponent());
+//            } else if (mSurfaceView instanceof VideoDecoderGLSurfaceView) {
+//                mPlayer.getVideoComponent().setVideoDecoderOutputBufferRenderer(
+//                        ((VideoDecoderGLSurfaceView) mSurfaceView).getVideoDecoderOutputBufferRenderer());
+//            }
         }
 
         FuLog.i(TAG, "setSurfaceView : surfaceType : " + (mSurfaceView == null ? "None" : mSurfaceView.getClass().getSimpleName()));
@@ -280,11 +280,12 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
                     oldVideoComponent.setVideoTextureView(null);
                 } else if (mSurfaceView instanceof SurfaceView) {
                     oldVideoComponent.setVideoSurfaceView(null);
-                } else if (mSurfaceView instanceof SphericalGLSurfaceView) {
-                    ((SphericalGLSurfaceView) mSurfaceView).setVideoComponent(null);
-                } else if (mSurfaceView instanceof VideoDecoderGLSurfaceView) {
-                    oldVideoComponent.setVideoDecoderOutputBufferRenderer(null);
                 }
+//                else if (mSurfaceView instanceof SphericalGLSurfaceView) {
+//                    ((SphericalGLSurfaceView) mSurfaceView).setVideoComponent(null);
+//                } else if (mSurfaceView instanceof VideoDecoderGLSurfaceView) {
+//                    oldVideoComponent.setVideoDecoderOutputBufferRenderer(null);
+//                }
             }
             FuPlayer.TextComponent oldTextComponent = mPlayer.getTextComponent();
             if (oldTextComponent != null) {
@@ -371,8 +372,14 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
     private final class ComponentListener implements FuPlayer.EventListener, VideoListener, TextOutput, OnLayoutChangeListener, SingleTapListener {
 
         @Override
-        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            FuLog.d(TAG, "onPlayerStateChanged : playWhenReady=" + playWhenReady + " ,playbackState=" + playbackState);
+        public void onPlaybackStateChanged(int state) {
+            FuLog.d(TAG, "onPlayerStateChanged : state=" + state);
+            updateScreenOn();
+        }
+
+        @Override
+        public void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
+            FuLog.d(TAG, "onPlayWhenReadyChanged : playWhenReady=" + playWhenReady + " ,reason=" + reason);
             updateScreenOn();
         }
 
@@ -431,11 +438,6 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         }
 
         @Override
-        public void onPlayerError(ExoPlaybackException error) {
-
-        }
-
-        @Override
         public void onPositionDiscontinuity(int reason) {
             FuLog.d(TAG, "onPositionDiscontinuity : reason=" + reason);
             if (mSurfaceView instanceof TextureView) {
@@ -455,16 +457,6 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
             applyTextureViewRotation((TextureView) v, mTextureViewRotation);
         }
-
-//        @Override
-//        public void surfaceChanged(@Nullable Surface surface) {
-//            if (mPlayer != null) {
-//                FuPlayer.VideoComponent videoComponent = mPlayer.getVideoComponent();
-//                if (videoComponent != null) {
-//                    videoComponent.setVideoSurface(surface);
-//                }
-//            }
-//        }
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {

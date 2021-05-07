@@ -939,19 +939,26 @@ public class DefaultControlView extends BaseControlView {
         }
 
         @Override
-        public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
-            FuLog.d(TAG, "onTimelineChanged : timeline=" + timeline + ",manifest=" + manifest + ",reason=" + reason);
+        public void onTimelineChanged(Timeline timeline, int reason) {
+            FuLog.d(TAG, "onTimelineChanged : timeline=" + timeline + ",reason=" + reason);
             updateNavigation();
             updateProgress();
         }
 
         @Override
-        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            FuLog.d(TAG, "onPlayerStateChanged : playWhenReady=" + playWhenReady + ",playbackState=" + playbackState);
+        public void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
+            FuLog.d(TAG, "onPlayWhenReadyChanged : playWhenReady=" + playWhenReady + ",reason=" + reason);
             updateShowOrHide();
             updatePlayPauseView();
             updateProgress();
-//            updateAll();
+        }
+
+        @Override
+        public void onPlaybackStateChanged(int state) {
+            FuLog.d(TAG, "onPlayerStateChanged : state=" + state);
+            updateShowOrHide();
+            updatePlayPauseView();
+            updateProgress();
         }
 
         @Override
@@ -972,7 +979,6 @@ public class DefaultControlView extends BaseControlView {
         public void onVolumeChanged(float volume) {
             FuLog.d(TAG, "onVolumeChanged : volume=" + volume);
             updateNavigation();
-//            mVolume = volume;
             updateVolumeView();
         }
     }

@@ -30,6 +30,7 @@ import com.chengfu.android.fuplayer.ui.SampleBufferingView;
 import com.chengfu.android.fuplayer.ui.SampleEndedView;
 import com.chengfu.android.fuplayer.ui.SampleErrorView;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
@@ -86,7 +87,6 @@ public class PlayerActivity extends AppCompatActivity {
                     contentType = C.TYPE_HLS;
                 }
                 mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(PlayerActivity.this, "http://mvoice.spriteapp.cn/voice/2016/1108/5821463c8ea94.mp3", contentType));
-
 //                player.stop(true);
             }
         });
@@ -273,7 +273,10 @@ public class PlayerActivity extends AppCompatActivity {
         }
         mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath(), contentType));
 
-        player.prepare(mediaSource);
+        MediaItem mediaItem=MediaItem.fromUri(media.getPath());
+
+        player.setMediaItem(mediaItem);
+        player.prepare();
         player.setPlayWhenReady(true);
 
         loadingView.setPlayer(player);

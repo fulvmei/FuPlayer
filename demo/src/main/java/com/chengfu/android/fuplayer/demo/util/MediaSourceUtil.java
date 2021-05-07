@@ -35,9 +35,9 @@ public class MediaSourceUtil {
 //        }
 
         switch (contentType) {
-            case C.TYPE_DASH:
-                DefaultDashChunkSource.Factory factory = new DefaultDashChunkSource.Factory(dataSourceFactory);
-                return new DashMediaSource(uri, dataSourceFactory, factory, null, null);
+//            case C.TYPE_DASH:
+//                DefaultDashChunkSource.Factory factory = new DefaultDashChunkSource.Factory(dataSourceFactory);
+//                return new DashMediaSource(uri, dataSourceFactory, factory, null, null);
             case C.TYPE_SS:
                 DefaultSsChunkSource.Factory ssFactory = new DefaultSsChunkSource.Factory(dataSourceFactory);
                 return new SsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);

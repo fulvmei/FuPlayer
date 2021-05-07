@@ -38,8 +38,8 @@
     "name": "RTMP",
     "media_list": [
       {
-        "name": "kktv8",
-        "path": "rtmp://pull-g.kktv8.com/livekktv/100987038",
+        "name": "演示流",
+        "path": "rtmp://d.ossrs.net/live/livestream",
         "type": "video",
         "tag": "rtmp"
       },
@@ -55,8 +55,8 @@
     "name": "HLS",
     "media_list": [
       {
-        "name": "直播",
-        "path": "https://hls-qnhi-live.gzstv.com/livegztv-hi/CH01_hi.m3u8?s=97e492ce7592ac4136c8e3b274a25869&ts=5ddf369f",
+        "name": "演示流",
+        "path": "http://d.ossrs.net/live/livestream.m3u8",
         "type": "video",
         "tag": "m3u8"
       },
@@ -119,8 +119,8 @@
     "name": "HTTP-FLV",
     "media_list": [
       {
-        "name": "DesktopLiveStreaming",
-        "path": "http://10.0.2.2/live.flv",
+        "name": "演示流",
+        "path": "http://d.ossrs.net/live/livestream.flv",
         "type": "video",
         "tag": "flv"
       },
