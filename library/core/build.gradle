@@ -27,9 +27,9 @@ dependencies {
     implementation 'androidx.media:media:1.2.1'
 }
 
-ext {
-    releaseArtifact = 'fuplayer-core'
-    releaseDescription = 'The FuPlayer library core module.'
-}
-
-apply from: '../../publish.gradle'
+//ext {
+//    releaseArtifact = 'fuplayer-core'
+//    releaseDescription = 'The FuPlayer library core module.'
+//}
+//
+//apply from: '../../publish.gradle'

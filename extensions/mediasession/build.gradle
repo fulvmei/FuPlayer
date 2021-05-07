@@ -27,11 +27,11 @@ android {
 
 dependencies {
     implementation project(':library:core')
-    api 'androidx.media:media:1.1.0'
+    api 'androidx.media:media:1.2.1'
 }
 
-ext {
-    releaseArtifact = 'extension-mediasession'
-    releaseDescription = 'Mediasession extension for FuPlayer.'
-}
-apply from: '../../publish.gradle'
+//ext {
+//    releaseArtifact = 'extension-mediasession'
+//    releaseDescription = 'Mediasession extension for FuPlayer.'
+//}
+//apply from: '../../publish.gradle'

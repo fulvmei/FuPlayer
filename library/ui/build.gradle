@@ -24,15 +24,15 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.annotation:annotation:1.1.0'
-    implementation 'androidx.media:media:1.1.0'
-    compileOnly 'org.checkerframework:checker-qual:2.5.3'
-    compileOnly 'org.checkerframework:checker-compat-qual:2.5.3'
+    implementation 'androidx.annotation:annotation:1.2.0'
+    implementation 'androidx.media:media:1.2.1'
+    compileOnly 'org.checkerframework:checker-qual:3.8.0'
+    compileOnly 'org.checkerframework:checker-compat-qual:2.5.5'
     implementation project(':library:core')
 }
 
-ext {
-    releaseArtifact = 'fuplayer-ui'
-    releaseDescription = 'The FuPlayer library ui module.'
-}
-apply from: '../../publish.gradle'
+//ext {
+//    releaseArtifact = 'fuplayer-ui'
+//    releaseDescription = 'The FuPlayer library ui module.'
+//}
+//apply from: '../../publish.gradle'

@@ -29,8 +29,8 @@ dependencies {
 }
 
 
-ext {
-    releaseArtifact = 'fuplayer'
-    releaseDescription = 'The FuPlayer library (all modules).'
-}
-apply from: '../../publish.gradle'
+//ext {
+//    releaseArtifact = 'fuplayer'
+//    releaseDescription = 'The FuPlayer library (all modules).'
+//}
+//apply from: '../../publish.gradle'
