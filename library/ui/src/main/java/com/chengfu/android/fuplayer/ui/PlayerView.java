@@ -1,5 +1,7 @@
 package com.chengfu.android.fuplayer.ui;
 
+import androidx.annotation.Nullable;
+
 import com.chengfu.android.fuplayer.FuPlayer;
 
 public interface PlayerView {
@@ -7,6 +9,7 @@ public interface PlayerView {
      * Returns the {@link FuPlayer} currently being controlled by this view, or null if no player is
      * set.
      */
+    @Nullable
     FuPlayer getPlayer();
 
     /**
@@ -14,6 +17,6 @@ public interface PlayerView {
      *
      * @param player The {@link FuPlayer} to control.
      */
-    void setPlayer(FuPlayer player);
+    void setPlayer(@Nullable FuPlayer player);
 
 }

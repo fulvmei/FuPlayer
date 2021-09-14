@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
@@ -21,26 +20,30 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.chengfu.android.fuplayer.FuPlayer;
-import com.chengfu.android.fuplayer.ui.spherical.SingleTapListener;
-import com.chengfu.android.fuplayer.ui.spherical.SphericalGLSurfaceView;
 import com.chengfu.android.fuplayer.util.FuLog;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextOutput;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.video.VideoDecoderGLSurfaceView;
 import com.google.android.exoplayer2.video.VideoListener;
+import com.google.android.exoplayer2.video.VideoSize;
+import com.google.android.exoplayer2.video.spherical.SphericalGLSurfaceView;
 
 import java.util.List;
+
+import static com.google.android.exoplayer2.Player.COMMAND_GET_TEXT;
+import static com.google.android.exoplayer2.Player.COMMAND_SET_VIDEO_SURFACE;
 
 public class FuPlayerView extends FrameLayout implements PlayerView {
 
     public static final String TAG = "FuPlayerView";
 
-    private static final int SURFACE_TYPE_NONE = 0;
+    public static final int SURFACE_TYPE_NONE = 0;
     public static final int SURFACE_TYPE_SURFACE_VIEW = 1;
     public static final int SURFACE_TYPE_TEXTURE_VIEW = 2;
-    private static final int SURFACE_TYPE_SPHERICAL_GL_SURFACE_VIEW = 3;
-    private static final int SURFACE_TYPE_VIDEO_DECODER_GL_SURFACE_VIEW = 4;
+    public static final int SURFACE_TYPE_SPHERICAL_GL_SURFACE_VIEW = 3;
+    public static final int SURFACE_TYPE_VIDEO_DECODER_GL_SURFACE_VIEW = 4;
 
     public static final int RESIZE_MODE_FIT = AspectRatioFrameLayout.RESIZE_MODE_FIT;
     public static final int RESIZE_MODE_FIXED_WIDTH = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
@@ -161,7 +164,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
                 break;
             case SURFACE_TYPE_SPHERICAL_GL_SURFACE_VIEW:
                 SphericalGLSurfaceView sphericalGLSurfaceView = new SphericalGLSurfaceView(getContext());
-                sphericalGLSurfaceView.setSingleTapListener(componentListener);
+//                sphericalGLSurfaceView.setSingleTapListener(componentListener);
                 mSurfaceView = sphericalGLSurfaceView;
                 break;
             case SURFACE_TYPE_VIDEO_DECODER_GL_SURFACE_VIEW:
@@ -246,6 +249,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
      * Returns the player currently set on this view, or null if no player is set.
      */
     @Override
+    @Nullable
     public FuPlayer getPlayer() {
         return mPlayer;
     }
@@ -264,7 +268,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
      *               player.getApplicationLooper() == Looper.getMainLooper()}).
      */
     @Override
-    public void setPlayer(FuPlayer player) {
+    public void setPlayer(@Nullable FuPlayer player) {
         Assertions.checkState(Looper.myLooper() == Looper.getMainLooper());
         Assertions.checkArgument(
                 player == null || player.getApplicationLooper() == Looper.getMainLooper());
@@ -273,47 +277,40 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         }
         if (mPlayer != null) {
             mPlayer.removeListener(componentListener);
-            FuPlayer.VideoComponent oldVideoComponent = mPlayer.getVideoComponent();
-            if (oldVideoComponent != null) {
-                oldVideoComponent.removeVideoListener(componentListener);
+            if (mPlayer.isCommandAvailable(COMMAND_SET_VIDEO_SURFACE)) {
                 if (mSurfaceView instanceof TextureView) {
-                    oldVideoComponent.setVideoTextureView(null);
+                    mPlayer.clearVideoTextureView((TextureView) mSurfaceView);
                 } else if (mSurfaceView instanceof SurfaceView) {
-                    oldVideoComponent.setVideoSurfaceView(null);
+                    mPlayer.clearVideoSurfaceView((SurfaceView) mSurfaceView);
                 }
-//                else if (mSurfaceView instanceof SphericalGLSurfaceView) {
-//                    ((SphericalGLSurfaceView) mSurfaceView).setVideoComponent(null);
-//                } else if (mSurfaceView instanceof VideoDecoderGLSurfaceView) {
-//                    oldVideoComponent.setVideoDecoderOutputBufferRenderer(null);
-//                }
-            }
-            FuPlayer.TextComponent oldTextComponent = mPlayer.getTextComponent();
-            if (oldTextComponent != null) {
-                oldTextComponent.removeTextOutput(componentListener);
-            }
-            if (subtitleView != null) {
-                subtitleView.setCues(null);
             }
         }
+        if (subtitleView != null) {
+            subtitleView.setCues(null);
+        }
         mPlayer = player;
-
         if (player != null) {
-            FuPlayer.VideoComponent newVideoComponent = player.getVideoComponent();
-            if (newVideoComponent != null) {
+            if (player.isCommandAvailable(COMMAND_SET_VIDEO_SURFACE)) {
                 if (mSurfaceView instanceof TextureView) {
-                    newVideoComponent.setVideoTextureView((TextureView) mSurfaceView);
+                    player.setVideoTextureView((TextureView) mSurfaceView);
                 } else if (mSurfaceView instanceof SurfaceView) {
-                    newVideoComponent.setVideoSurfaceView((SurfaceView) mSurfaceView);
+                    player.setVideoSurfaceView((SurfaceView) mSurfaceView);
                 }
-                newVideoComponent.addVideoListener(componentListener);
             }
-            FuPlayer.TextComponent newTextComponent = player.getTextComponent();
-            if (newTextComponent != null) {
-                newTextComponent.addTextOutput(componentListener);
+            if (subtitleView != null && player.isCommandAvailable(COMMAND_GET_TEXT)) {
+                subtitleView.setCues(player.getCurrentCues());
             }
             player.addListener(componentListener);
         }
         updateScreenOn();
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        super.setVisibility(visibility);
+        if (mSurfaceView instanceof SurfaceView) {
+            mSurfaceView.setVisibility(visibility);
+        }
     }
 
     /**
@@ -369,7 +366,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         }
     }
 
-    private final class ComponentListener implements FuPlayer.EventListener, VideoListener, TextOutput, OnLayoutChangeListener, SingleTapListener {
+    private final class ComponentListener implements Player.Listener, TextOutput, OnLayoutChangeListener {
 
         @Override
         public void onPlaybackStateChanged(int state) {
@@ -384,12 +381,12 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         }
 
         @Override
-        public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
+        public void onVideoSizeChanged(VideoSize videoSize) {
+            int width = videoSize != null ? videoSize.width : 0;
+            int height = videoSize != null ? videoSize.height : 0;
+            int unappliedRotationDegrees = videoSize != null ? videoSize.unappliedRotationDegrees : 0;
+            float pixelWidthHeightRatio = videoSize != null ? videoSize.pixelWidthHeightRatio : 0;
             FuLog.d(TAG, "onVideoSizeChanged : width=" + width + ",height=" + height + ",unappliedRotationDegrees=" + unappliedRotationDegrees + ",pixelWidthHeightRatio=" + pixelWidthHeightRatio);
-//            if (pixelWidthHeightRatio == 0) {
-//                pixelWidthHeightRatio = 1.0f;
-//            }
-
             float videoAspectRatio =
                     (height == 0 || width == 0) ? 1 : (width * pixelWidthHeightRatio) / height;
 
@@ -438,8 +435,8 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         }
 
         @Override
-        public void onPositionDiscontinuity(int reason) {
-            FuLog.d(TAG, "onPositionDiscontinuity : reason=" + reason);
+        public void onPositionDiscontinuity(Player.PositionInfo oldPosition, Player.PositionInfo newPosition, int reason) {
+            FuLog.d(TAG, "onPositionDiscontinuity : oldPosition=" + oldPosition + ",newPosition=" + newPosition + ",reason=" + reason);
             if (mSurfaceView instanceof TextureView) {
                 TextureView surfaceView = (TextureView) mSurfaceView;
                 shutterView.setImageBitmap(surfaceView.getBitmap());
@@ -456,11 +453,6 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         @Override
         public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
             applyTextureViewRotation((TextureView) v, mTextureViewRotation);
-        }
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            return false;
         }
     }
 }

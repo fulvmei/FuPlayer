@@ -718,7 +718,7 @@ public final class MediaSessionConnector {
         int playbackState = player.getPlaybackState();
         Bundle extras = new Bundle();
         ExoPlaybackException playbackError =
-                playbackState == FuPlayer.STATE_IDLE ? player.getPlaybackError() : null;
+                playbackState == FuPlayer.STATE_IDLE ? player.getPlayerError() : null;
         boolean reportError = playbackError != null || customError != null;
         int sessionPlaybackState =
                 reportError
@@ -1021,9 +1021,9 @@ public final class MediaSessionConnector {
 
         // Player.EventListener implementation.
 
+
         @Override
-        public void onTimelineChanged(
-                Timeline timeline, @Nullable Object manifest, @FuPlayer.TimelineChangeReason int reason) {
+        public void onTimelineChanged(Timeline timeline, int reason) {
             int windowCount = player.getCurrentTimeline().getWindowCount();
             int windowIndex = player.getCurrentWindowIndex();
             if (queueNavigator != null) {

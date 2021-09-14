@@ -11,7 +11,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class BaseControlView extends FrameLayout implements PlayerControllerView {
 
+    public interface ProgressUpdateListener {
+        void onProgressUpdate(long position, long bufferedPosition);
+    }
+
     private final CopyOnWriteArraySet<VisibilityChangeListener> visibilityChangeListeners;
+
+    private final CopyOnWriteArraySet<ProgressUpdateListener> progressUpdateListeners;
 
     public BaseControlView(@NonNull Context context) {
         this(context, null);
@@ -25,6 +31,7 @@ public abstract class BaseControlView extends FrameLayout implements PlayerContr
         super(context, attrs, defStyleAttr);
 
         visibilityChangeListeners = new CopyOnWriteArraySet<>();
+        progressUpdateListeners=new CopyOnWriteArraySet<>();
     }
 
     public boolean isFullScreen() {
@@ -45,6 +52,14 @@ public abstract class BaseControlView extends FrameLayout implements PlayerContr
         visibilityChangeListeners.remove(l);
     }
 
+    public void addProgressUpdateListener(ProgressUpdateListener l) {
+        progressUpdateListeners.add(l);
+    }
+
+    public void removeProgressUpdateListener(ProgressUpdateListener l) {
+        progressUpdateListeners.remove(l);
+    }
+
     /**
      * Dispatch callbacks to {@link #addVisibilityChangeListener} down
      * the view hierarchy.
@@ -53,6 +68,18 @@ public abstract class BaseControlView extends FrameLayout implements PlayerContr
         for (VisibilityChangeListener listener : visibilityChangeListeners) {
             if (listener != null) {
                 listener.onVisibilityChange(this, visibility);
+            }
+        }
+    }
+
+    /**
+     * Dispatch callbacks to {@link #addProgressUpdateListener} down
+     * the view hierarchy.
+     */
+    protected void dispatchProgressUpdate(long position, long bufferedPosition) {
+        for (ProgressUpdateListener listener : progressUpdateListeners) {
+            if (listener != null) {
+                listener.onProgressUpdate(position, bufferedPosition);
             }
         }
     }

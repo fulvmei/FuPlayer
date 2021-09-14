@@ -8,10 +8,13 @@ import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,21 +24,33 @@ import com.bumptech.glide.Glide;
 import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.demo.bean.Media;
 import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
+import com.chengfu.android.fuplayer.ext.exo.FuExoPlayer;
+import com.chengfu.android.fuplayer.ui.BaseControlView;
 import com.chengfu.android.fuplayer.ui.DefaultControlView;
 import com.chengfu.android.fuplayer.ui.DefaultTimeBar;
 import com.chengfu.android.fuplayer.ui.FuPlayerView;
 import com.chengfu.android.fuplayer.ext.exo.FuExoPlayerFactory;
-import com.chengfu.android.fuplayer.ui.PlayerNotificationManager;
+//import com.chengfu.android.fuplayer.ui.PlayerNotificationManager;
 import com.chengfu.android.fuplayer.ui.SampleBufferingView;
 import com.chengfu.android.fuplayer.ui.SampleEndedView;
 import com.chengfu.android.fuplayer.ui.SampleErrorView;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.MediaMetadata;
+import com.google.android.exoplayer2.PlaybackException;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.source.ShuffleOrder;
 import com.google.android.exoplayer2.source.hls.HlsManifest;
+import com.google.android.exoplayer2.upstream.DefaultDataSource;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
+import com.google.android.exoplayer2.util.Util;
 import com.gyf.barlibrary.BarHide;
 import com.gyf.barlibrary.ImmersionBar;
 import com.squareup.picasso.Picasso;
@@ -45,33 +60,41 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import timber.log.Timber;
 
 public class PlayerActivity extends AppCompatActivity {
 
     public static final String TAG = "VideoPlayerActivity";
-    private Media media;
+//    private Media media;
 
     private View playerRoot;
     private FuPlayer player;
     private SampleBufferingView loadingView;
     private SampleErrorView errorView;
     private SampleEndedView endedView;
-    private PlayerNotificationManager playerNotificationManager;
+    //    private PlayerNotificationManager playerNotificationManager;
     private Bitmap bigIcon;
     DefaultControlView controlView;
-    ConcatenatingMediaSource mediaSource;
+    //    ConcatenatingMediaSource mediaSource;
     FuPlayerView playerView;
+
+    List<Media> dataList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
-        media = (Media) getIntent().getSerializableExtra("media");
+//        media = (Media) getIntent().getParcelableExtra("media");
 
         setContentView(R.layout.activity_player);
+
+        dataList = getIntent().getParcelableArrayListExtra("list");
 
         ImmersionBar.with(this)
                 .statusBarColorInt(Color.BLACK)
@@ -82,23 +105,71 @@ public class PlayerActivity extends AppCompatActivity {
         findViewById(R.id.add1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int contentType = C.TYPE_OTHER;
-                if (media.getTag().endsWith("m3u8")) {
-                    contentType = C.TYPE_HLS;
+                for (int i = 0; i < player.getAvailableCommands().size(); i++) {
+                    Timber.e("AvailableCommands=" + player.getAvailableCommands().get(i));
                 }
-                mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(PlayerActivity.this, "http://mvoice.spriteapp.cn/voice/2016/1108/5821463c8ea94.mp3", contentType));
-//                player.stop(true);
+
+//                MediaMetadata mediaMetadata=new MediaMetadata.Builder()
+//                        .setTitle("HHHHHHHHHHHHHHHHHHHH")
+//                        .build();
+//                MediaItem mediaItem = new MediaItem.Builder()
+//                        .setMediaId("1")
+//                        .setMediaMetadata(mediaMetadata)
+//                        .setUri(media.getPath())
+//                        .build();
+
+//                player.clearMediaItems();
+
+//                Timber.e("hasNextWindow=%s", player.hasNextWindow());
+//                Timber.e("hasPreviousWindow=%s", player.hasPreviousWindow());
+
+//                int contentType = C.TYPE_OTHER;
+//                if (media.getTag().endsWith("m3u8")) {
+//                    contentType = C.TYPE_HLS;
+//                }
+////                mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(PlayerActivity.this, "http://mvoice.spriteapp.cn/voice/2016/1108/5821463c8ea94.mp3", contentType));
+////                player.stop(true);
             }
         });
 
         findViewById(R.id.add2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                player.seekToNext();
+                Timber.e("rrrrr hasNextWindow=" + player.hasNextWindow());
+                Timber.e("rrrrr hasPreviousWindow=" + player.hasPreviousWindow());
+                Timber.e("rrrrr isCurrentWindowDynamic=" + player.isCurrentWindowDynamic());
+                Timber.e("rrrrr isCurrentWindowLive=" + player.isCurrentWindowLive());
+                Timber.e("rrrrr isCurrentWindowSeekable=" + player.isCurrentWindowSeekable());
+                Timber.e("rrrrr getCurrentLiveOffset=" + player.getCurrentLiveOffset());
+
+
+                Timeline.Window window = new Timeline.Window();
+                player.getCurrentTimeline().getWindow(player.getCurrentWindowIndex(), window);// timeline.getWindow(getCurrentWindowIndex(), window).windowStartTimeMs;
+                Timber.e("window defaultPositionUs=" + window.defaultPositionUs);
+                Timber.e("window durationUs=" + window.durationUs);
+                Timber.e("window elapsedRealtimeEpochOffsetMs=" + window.elapsedRealtimeEpochOffsetMs);
+                Timber.e("window firstPeriodIndex=" + window.firstPeriodIndex);
+                Timber.e("window isDynamic=" + window.isDynamic);
+                Timber.e("window isPlaceholder=" + window.isPlaceholder);
+                Timber.e("window isSeekable=" + window.isSeekable);
+                Timber.e("window lastPeriodIndex=" + window.lastPeriodIndex);
+                Timber.e("window windowStartTimeMs=" + window.windowStartTimeMs);
+                Timber.e("window manifest=" + window.manifest);
+                Timber.e("window liveConfiguration.maxOffsetMs=" + window.liveConfiguration.maxOffsetMs);
+                Timber.e("window liveConfiguration.maxPlaybackSpeed=" + window.liveConfiguration.maxPlaybackSpeed);
+                Timber.e("window liveConfiguration.minOffsetMs=" + window.liveConfiguration.minOffsetMs);
+                Timber.e("window liveConfiguration.minPlaybackSpeed=" + window.liveConfiguration.minPlaybackSpeed);
+                Timber.e("window liveConfiguration.targetOffsetMs=" + window.liveConfiguration.targetOffsetMs);
+//                if (windowStartTimeMs == C.TIME_UNSET) {
+//                    return C.TIME_UNSET;
+//                }
+//                return window.getCurrentUnixTimeMs() - window.windowStartTimeMs - getContentPosition();
                 int contentType = C.TYPE_OTHER;
-                if (media.getTag().endsWith("m3u8")) {
-                    contentType = C.TYPE_HLS;
-                }
-                mediaSource.addMediaSource(0,MediaSourceUtil.getMediaSource(PlayerActivity.this, "https://qn-live.gzstv.com/icvkuzqj/yinyue.m3u8", C.TYPE_HLS));
+//                if (media.getTag().endsWith("m3u8")) {
+//                    contentType = C.TYPE_HLS;
+//                }
+//                mediaSource.addMediaSource(0,MediaSourceUtil.getMediaSource(PlayerActivity.this, "https://qn-live.gzstv.com/icvkuzqj/yinyue.m3u8", C.TYPE_HLS));
 
 //                player.stop(true);
             }
@@ -133,6 +204,13 @@ public class PlayerActivity extends AppCompatActivity {
         endedView = findViewById(R.id.endedView);
         controlView = findViewById(R.id.controlView);
 
+        controlView.addProgressUpdateListener(new BaseControlView.ProgressUpdateListener() {
+            @Override
+            public void onProgressUpdate(long position, long bufferedPosition) {
+                Timber.e("onProgressUpdate,position=%d,bufferedPosition=%d", position, bufferedPosition);
+            }
+        });
+
         controlView.setShowAlwaysInPaused(true);
 
 //        controlView.setProgressAdapter(new DynamicProgressAdapter(1000,6000));
@@ -145,63 +223,63 @@ public class PlayerActivity extends AppCompatActivity {
 
 //        player.retry();
 
-        playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(this, "com.chengfu.android.media.NOW_PLAYING", R.string.app_name, 2, new PlayerNotificationManager.MediaDescriptionAdapter() {
-            @Override
-            public String getCurrentContentTitle(FuPlayer player) {
-                return media.getName();
-            }
-
-            @Nullable
-            @Override
-            public PendingIntent createCurrentContentIntent(FuPlayer player) {
-                return null;
-            }
-
-            @Nullable
-            @Override
-            public String getCurrentContentText(FuPlayer player) {
-                return media.getTag();
-            }
-
-            @Nullable
-            @Override
-            public Bitmap getCurrentLargeIcon(FuPlayer player, PlayerNotificationManager.BitmapCallback callback) {
-
-                if (bigIcon != null) {
-                    return bigIcon;
-                }
-                Picasso.get().load("http://pic29.nipic.com/20130517/9252150_140653449378_2.jpg")
-                        .centerCrop()
-                        .resize(100, 100)
-                        .into(new Target() {
-                            @Override
-                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                                bigIcon = bitmap;
-                                callback.onBitmap(bitmap);
-                            }
-
-                            @Override
-                            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-                                callback.onBitmap(bigIcon);
-                            }
-
-                            @Override
-                            public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                            }
-                        });
-                return null;
-            }
-        });
-
-        playerNotificationManager.setRewindIncrementMs(0);
-        playerNotificationManager.setFastForwardIncrementMs(0);
-        playerNotificationManager.setUseNavigationActions(true);
-        playerNotificationManager.setPlayer(player);
-        playerNotificationManager.setUseNavigationActionsInCompactView(true);
-        playerNotificationManager.setVisibility(NotificationCompat.VISIBILITY_PRIVATE);
-        playerNotificationManager.setUseStopAction(true);
-        playerNotificationManager.setPriority(NotificationCompat.PRIORITY_MAX);
+//        playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(this, "com.chengfu.android.media.NOW_PLAYING", R.string.app_name, 2, new PlayerNotificationManager.MediaDescriptionAdapter() {
+//            @Override
+//            public String getCurrentContentTitle(FuPlayer player) {
+//                return media.getName();
+//            }
+//
+//            @Nullable
+//            @Override
+//            public PendingIntent createCurrentContentIntent(FuPlayer player) {
+//                return null;
+//            }
+//
+//            @Nullable
+//            @Override
+//            public String getCurrentContentText(FuPlayer player) {
+//                return media.getTag();
+//            }
+//
+//            @Nullable
+//            @Override
+//            public Bitmap getCurrentLargeIcon(FuPlayer player, PlayerNotificationManager.BitmapCallback callback) {
+//
+//                if (bigIcon != null) {
+//                    return bigIcon;
+//                }
+//                Picasso.get().load("http://pic29.nipic.com/20130517/9252150_140653449378_2.jpg")
+//                        .centerCrop()
+//                        .resize(100, 100)
+//                        .into(new Target() {
+//                            @Override
+//                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//                                bigIcon = bitmap;
+//                                callback.onBitmap(bitmap);
+//                            }
+//
+//                            @Override
+//                            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+//                                callback.onBitmap(bigIcon);
+//                            }
+//
+//                            @Override
+//                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+//
+//                            }
+//                        });
+//                return null;
+//            }
+//        });
+//
+//        playerNotificationManager.setRewindIncrementMs(0);
+//        playerNotificationManager.setFastForwardIncrementMs(0);
+//        playerNotificationManager.setUseNavigationActions(true);
+//        playerNotificationManager.setPlayer(player);
+//        playerNotificationManager.setUseNavigationActionsInCompactView(true);
+//        playerNotificationManager.setVisibility(NotificationCompat.VISIBILITY_PRIVATE);
+//        playerNotificationManager.setUseStopAction(true);
+//        playerNotificationManager.setPriority(NotificationCompat.PRIORITY_MAX);
 
 
         onOrientationChanged(getResources().getConfiguration().orientation);
@@ -213,12 +291,36 @@ public class PlayerActivity extends AppCompatActivity {
         timeBar.setDuration(60000);
     }
 
-    private void initPlayer() {
-        player = new FuExoPlayerFactory(this).create();
+    private final Runnable runnable = () -> {
+        handleMessage();
+    };
 
-        player.addListener(new Player.EventListener() {
+    private void handleMessage(){
+        Timber.e("handleMessage bufferedPosition=" + player.getBufferedPosition());
+        handler.postDelayed(runnable,1000);
+    }
+
+    Handler handler = new Handler();
+
+
+    private void initPlayer() {
+        DefaultHttpDataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory();
+        dataSourceFactory.setUserAgent(Util.getUserAgent(this, getPackageName()));
+        Map<String, String> requestProperties = new HashMap<>();
+        requestProperties.put("referer", "y1w6kj.gzstv.com");
+        dataSourceFactory.setDefaultRequestProperties(requestProperties);
+
+        DefaultMediaSourceFactory mediaSourceFactory = new DefaultMediaSourceFactory(dataSourceFactory);
+
+        SimpleExoPlayer exoPlayer = new SimpleExoPlayer.Builder(this).setMediaSourceFactory(mediaSourceFactory).build();
+
+        player = new FuExoPlayer(exoPlayer);
+        player.setRepeatMode(Player.REPEAT_MODE_OFF);
+        handleMessage();
+        player.addListener(new Player.Listener() {
+
             @Override
-            public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
+            public void onTimelineChanged(Timeline timeline, int reason) {
                 JSONObject ja = new JSONObject();
                 Timeline.Window window = new Timeline.Window();
                 Timeline.Period period = new Timeline.Period();
@@ -227,55 +329,65 @@ public class PlayerActivity extends AppCompatActivity {
                 }
                 timeline.getWindow(player.getCurrentWindowIndex(), window);
                 timeline.getPeriod(player.getCurrentWindowIndex(), period);
-
                 try {
                     ja.put("getWindowCount", timeline.getWindowCount());
                     ja.put("getPeriodCount", timeline.getPeriodCount());
                     ja.put("getCurrentPeriodIndex", player.getCurrentPeriodIndex());
                     ja.put("getCurrentWindowIndex", player.getCurrentWindowIndex());
-//                    ja.put("defaultPositionUs", window.defaultPositionUs);
-//                    ja.put("durationUs", window.durationUs);
-//                    ja.put("firstPeriodIndex", window.firstPeriodIndex);
-//                    ja.put("isDynamic", window.isDynamic);
-//                    ja.put("isLive", window.isLive);
-//                    ja.put("isSeekable", window.isSeekable);
-//                    ja.put("lastPeriodIndex", window.lastPeriodIndex);
-//                    ja.put("positionInFirstPeriodUs", window.positionInFirstPeriodUs);
-//                    ja.put("presentationStartTimeMs", window.presentationStartTimeMs);
-//                    ja.put("windowStartTimeMs", window.windowStartTimeMs);
-//                    ja.put("manifest", window.manifest);
-//                    ja.put("tag", window.tag);
-//                    ja.put("uid", window.uid);
-//                    ja.put("period_durationUs",period.durationUs);
-//                    ja.put("period_windowIndex",period.windowIndex);
-//                    ja.put("period_id",period.id);
-//                    ja.put("period_uid",period.uid);
-
-                    HlsManifest s;
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Timber.e("onTimelineChanged reason="+reason+",data"+ja.toString());
-//                System.out.println(ja.toString());
+                Timber.e("onTimelineChanged reason=" + reason + ",data" + ja.toString());
+            }
+
+            @Override
+            public void onIsLoadingChanged(boolean isLoading) {
+
+                Timber.e("handleMessage isLoading=" + isLoading);
+            }
+
+            @Override
+            public void onIsPlayingChanged(boolean isPlaying) {
             }
 
             @Override
             public void onPositionDiscontinuity(int reason) {
-                Timber.e("onPositionDiscontinuity reason="+reason);
+                Timber.e("onPositionDiscontinuity reason=" + reason);
+            }
+
+            @Override
+            public void onMetadata(Metadata metadata) {
+                Timber.e("onMetadata metadata=" + metadata);
+            }
+
+            @Override
+            public void onMediaMetadataChanged(MediaMetadata mediaMetadata) {
+                Timber.e("onMediaMetadataChanged mediaMetadata=" + mediaMetadata);
+            }
+
+            @Override
+            public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
+                Timber.e("onMediaItemTransition mediaItem=" + mediaItem);
             }
         });
 
-        mediaSource = new ConcatenatingMediaSource(false,false,new ShuffleOrder.DefaultShuffleOrder(0));
-        int contentType = C.TYPE_OTHER;
-        if (media.getTag().endsWith("m3u8")) {
-            contentType = C.TYPE_HLS;
+//        mediaSource = new ConcatenatingMediaSource(false,false,new ShuffleOrder.DefaultShuffleOrder(0));
+//        int contentType = C.TYPE_OTHER;
+//        if (media.getTag().endsWith("m3u8")) {
+//            contentType = C.TYPE_HLS;
+//        }
+//        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath(), contentType));
+
+        List<MediaItem> mediaItemList = new ArrayList<>();
+        for (Media media : dataList) {
+            MediaItem mediaItem = new MediaItem.Builder()
+                    .setMediaId(media.getPath())
+                    .setUri(media.getPath())
+                    .build();
+            mediaItemList.add(mediaItem);
         }
-        mediaSource.addMediaSource(MediaSourceUtil.getMediaSource(this, media.getPath(), contentType));
 
-        MediaItem mediaItem=MediaItem.fromUri(media.getPath());
-
-        player.setMediaItem(mediaItem);
+        player.setMediaItems(mediaItemList);
         player.prepare();
         player.setPlayWhenReady(true);
 
@@ -314,8 +426,18 @@ public class PlayerActivity extends AppCompatActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         onOrientationChanged(newConfig.orientation);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        playerView.onResume();
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        playerView.onPause();
     }
 
     @Override

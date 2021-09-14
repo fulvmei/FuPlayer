@@ -38,6 +38,11 @@ public class DefaultProgressAdapter implements ProgressAdapter {
     }
 
     @Override
+    public boolean isCurrentWindowLive() {
+        return player != null && player.isCurrentWindowLive();
+    }
+
+    @Override
     public long getCurrentPosition() {
         return player != null ? player.getCurrentPosition() : 0;
     }
@@ -56,6 +61,21 @@ public class DefaultProgressAdapter implements ProgressAdapter {
     @Override
     public int getBufferedPercentage() {
         return player != null ? player.getBufferedPercentage() : 0;
+    }
+
+    @Override
+    public boolean showSeekView() {
+        return isCurrentWindowSeekable();
+    }
+
+    @Override
+    public boolean showPositionViewView() {
+        return isCurrentWindowSeekable();
+    }
+
+    @Override
+    public boolean showDurationView() {
+        return isCurrentWindowSeekable();
     }
 
     @Override

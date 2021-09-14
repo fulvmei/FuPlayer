@@ -21,10 +21,17 @@ import android.widget.TextView;
 import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.util.FuLog;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioListener;
 import com.google.android.exoplayer2.util.RepeatModeUtil;
 import com.google.android.exoplayer2.video.VideoListener;
+
+import static com.google.android.exoplayer2.Player.COMMAND_SEEK_BACK;
+import static com.google.android.exoplayer2.Player.COMMAND_SEEK_FORWARD;
+import static com.google.android.exoplayer2.Player.COMMAND_SEEK_IN_CURRENT_WINDOW;
+import static com.google.android.exoplayer2.Player.COMMAND_SEEK_TO_NEXT;
+import static com.google.android.exoplayer2.Player.COMMAND_SEEK_TO_PREVIOUS;
 
 public class DefaultControlView extends BaseControlView {
 
@@ -51,12 +58,6 @@ public class DefaultControlView extends BaseControlView {
     public static final int DEFAULT_SEEK_NUMBER = 1000;
 
     public static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
-
-    /**
-     * The default repeat toggle modes.
-     */
-    public static final @RepeatModeUtil.RepeatToggleModes
-    int DEFAULT_REPEAT_TOGGLE_MODES = RepeatModeUtil.REPEAT_TOGGLE_MODE_ALL;
 
     protected final Context mContext;
     protected FuPlayer mPlayer;
@@ -96,16 +97,13 @@ public class DefaultControlView extends BaseControlView {
     protected boolean mTracking;
     private int mCurrentSeekProgress;
 
-    protected @RepeatModeUtil.RepeatToggleModes
-    int mRepeatToggleModes;
-
     private final Runnable mHideAction = () -> {
         if (!mShowAlwaysInPaused || !isInShowAlwaysInPausedState()) {
             hide();
         }
     };
 
-    private final Runnable mUpdateProgressAction = () -> updateProgress();
+    private final Runnable mUpdateProgressAction = this::updateProgress;
 
     public DefaultControlView(Context context) {
         this(context, null);
@@ -129,7 +127,6 @@ public class DefaultControlView extends BaseControlView {
         mShowTimeoutMs = DEFAULT_SHOW_TIMEOUT_MS;
         mProgressUpdateIntervalMs = DEFAULT_PROGRESS_UPDATE_INTERVAL_MS;
         mSeekNumber = DEFAULT_SEEK_NUMBER;
-        mRepeatToggleModes = DEFAULT_REPEAT_TOGGLE_MODES;
         mHideInBuffering = false;
         mHideInEnded = false;
         mHideInError = false;
@@ -339,23 +336,11 @@ public class DefaultControlView extends BaseControlView {
         }
         if (mPlayer != null) {
             mPlayer.removeListener(mComponentListener);
-            if (mPlayer.getVideoComponent() != null) {
-                mPlayer.getVideoComponent().removeVideoListener(mComponentListener);
-            }
-            if (mPlayer.getAudioComponent() != null) {
-                mPlayer.getAudioComponent().removeAudioListener(mComponentListener);
-            }
         }
 
         mPlayer = player;
         if (player != null) {
             player.addListener(mComponentListener);
-            if (player.getVideoComponent() != null) {
-                player.getVideoComponent().addVideoListener(mComponentListener);
-            }
-            if (player.getAudioComponent() != null) {
-                player.getAudioComponent().addAudioListener(mComponentListener);
-            }
         }
         if (mProgressAdapter != null) {
             mProgressAdapter.setPlayer(player);
@@ -410,24 +395,25 @@ public class DefaultControlView extends BaseControlView {
         if (!isShowing() || !mAttachedToWindow) {
             return;
         }
-        Timeline timeline = mPlayer != null ? mPlayer.getCurrentTimeline() : null;
-        boolean haveNonEmptyTimeline = timeline != null && !timeline.isEmpty();
-        boolean isSeekable = false;
+        boolean enableSeeking = false;
         boolean enablePrevious = false;
+        boolean enableRewind = false;
+        boolean enableFastForward = false;
         boolean enableNext = false;
-        if (haveNonEmptyTimeline && !mPlayer.isPlayingAd()) {
-            int windowIndex = mPlayer.getCurrentWindowIndex();
-            timeline.getWindow(windowIndex, mWindow);
-            isSeekable = mWindow.isSeekable;
-            enablePrevious = isSeekable || !mWindow.isDynamic || mPlayer.hasPrevious();
-            enableNext = mWindow.isDynamic || mPlayer.hasNext();
+        if (mPlayer != null) {
+            enableSeeking = mPlayer.isCurrentWindowSeekable();
+            enablePrevious = mPlayer.hasPreviousWindow();
+            enableRewind = mPlayer.isCommandAvailable(COMMAND_SEEK_BACK);
+            enableFastForward = mPlayer.isCommandAvailable(COMMAND_SEEK_FORWARD);
+            enableNext = mPlayer.hasNextWindow();
         }
+
         setViewEnabled(enablePrevious, mSkipPrevious);
         setViewEnabled(enableNext, mSkipNext);
-        setViewEnabled(mFastForwardMs > 0 && isSeekable, mFastForwardView);
-        setViewEnabled(mRewindMs > 0 && isSeekable, mFastRewindView);
+        setViewEnabled(enableFastForward, mFastForwardView);
+        setViewEnabled(enableRewind, mFastRewindView);
         if (mSeekView != null) {
-            mSeekView.setEnabled(isSeekable);
+            mSeekView.setEnabled(enableSeeking);
         }
     }
 
@@ -478,7 +464,7 @@ public class DefaultControlView extends BaseControlView {
             mVolumeSwitchView.setVisibility(View.GONE);
             return;
         }
-        if (mPlayer == null || mPlayer.getAudioComponent() == null) {
+        if (mPlayer == null) {
             setViewEnabled(false, mVolumeSwitchView);
             return;
         }
@@ -486,7 +472,7 @@ public class DefaultControlView extends BaseControlView {
 
         mVolumeSwitchView.setVisibility(View.VISIBLE);
 
-        updateVolumeViewResource(mVolumeSwitchView, mPlayer.getAudioComponent().getVolume());
+        updateVolumeViewResource(mVolumeSwitchView, mPlayer.getVolume());
     }
 
     protected void updateVolumeViewResource(@NonNull ImageButton imageButton, float volume) {
@@ -529,10 +515,13 @@ public class DefaultControlView extends BaseControlView {
         long position = mProgressAdapter.getCurrentPosition();
         long duration = mProgressAdapter.getDuration();
         int bufferedPercent = mProgressAdapter.getBufferedPercentage();
+        long bufferedPosition = mProgressAdapter.getBufferedPosition();
 
         if (!onProgressUpdate(position, duration, bufferedPercent) && !isShowing()) {
-            return;
+//            return;
         }
+
+        dispatchProgressUpdate(position,bufferedPosition);
 
         if (mSeekView != null) {
             if (duration > 0 && !mTracking) {
@@ -540,23 +529,26 @@ public class DefaultControlView extends BaseControlView {
                 long pos = mSeekNumber * position / duration;
                 mSeekView.setProgress((int) pos);
             }
-            mSeekView.setSecondaryProgress(bufferedPercent * 10);
-            mSeekView.setVisibility(mProgressAdapter.isCurrentWindowDynamic() ? INVISIBLE : VISIBLE);
+            if (duration > 0) {
+                long pos = mSeekNumber * bufferedPosition / duration;
+                mSeekView.setSecondaryProgress((int) pos);
+            }
+            mSeekView.setVisibility(mProgressAdapter.showSeekView() ? VISIBLE : INVISIBLE);
         }
 
         if (mDurationView != null) {
             mDurationView.setText(mProgressAdapter.getPositionText(duration));
-            mDurationView.setVisibility(mProgressAdapter.isCurrentWindowDynamic() ? INVISIBLE : VISIBLE);
+            mDurationView.setVisibility(mProgressAdapter.showDurationView() ? VISIBLE : INVISIBLE);
         }
         if (mPositionView != null && !mTracking) {
             mPositionView.setText(mProgressAdapter.getPositionText(position));
-            mPositionView.setVisibility(mProgressAdapter.isCurrentWindowDynamic() ? INVISIBLE : VISIBLE);
+            mPositionView.setVisibility(mProgressAdapter.showPositionViewView() ? VISIBLE : INVISIBLE);
         }
 
-        if (mProgressAdapter.isCurrentWindowDynamic()) {
-            removeCallbacks(mUpdateProgressAction);
-            return;
-        }
+//        if (!mProgressAdapter.isCurrentWindowSeekable()) {
+//            removeCallbacks(mUpdateProgressAction);
+//            return;
+//        }
         removeCallbacks(mUpdateProgressAction);
         postDelayed(mUpdateProgressAction, mProgressUpdateIntervalMs);
     }
@@ -610,13 +602,11 @@ public class DefaultControlView extends BaseControlView {
         }
     }
 
-
     @Override
     public void hide() {
         if (mShowing) {
             mShowing = false;
             mContainerView.setVisibility(View.GONE);
-//            removeCallbacks(mUpdateProgressAction);
             removeCallbacks(mHideAction);
             mHideAtMs = -1;
 
@@ -645,7 +635,7 @@ public class DefaultControlView extends BaseControlView {
         }
         switch (mPlayer.getPlaybackState()) {
             case FuPlayer.STATE_IDLE:
-                return !mHideInError && mPlayer.getPlaybackError() != null;
+                return !mHideInError && mPlayer.getPlayerError() != null;
             case FuPlayer.STATE_BUFFERING:
                 return !mHideInBuffering;
             case FuPlayer.STATE_READY:
@@ -668,24 +658,6 @@ public class DefaultControlView extends BaseControlView {
             mHideAtMs = -1;
         }
     }
-
-//    protected String stringForTime(long timeMs) {
-//        if (timeMs <= 0) {
-//            timeMs = 0;
-//        }
-//
-//        long totalSeconds = (timeMs + 500) / 1000;
-//        long seconds = totalSeconds % 60;
-//        long minutes = (totalSeconds / 60) % 60;
-//        long hours = totalSeconds / 3600;
-//
-//        mFormatBuilder.setLength(0);
-//        if (hours > 0) {
-//            return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
-//        } else {
-//            return mFormatter.format("%02d:%02d", minutes, seconds).toString();
-//        }
-//    }
 
     protected boolean isPlaying() {
         return mPlayer != null
@@ -729,65 +701,43 @@ public class DefaultControlView extends BaseControlView {
         mPlayer.seekTo(windowIndex, positionMs);
     }
 
-    protected void previous() {
-        if (mPlayer == null) {
+    protected void seekToPreviousWindow() {
+        if (mPlayer == null || !mPlayer.hasPreviousWindow()) {
             return;
         }
-        Timeline timeline = mPlayer.getCurrentTimeline();
-        if (timeline.isEmpty() || mPlayer.isPlayingAd()) {
-            return;
-        }
-        int windowIndex = mPlayer.getCurrentWindowIndex();
-        timeline.getWindow(windowIndex, mWindow);
-        int previousWindowIndex = mPlayer.getPreviousWindowIndex();
-        if (previousWindowIndex != C.INDEX_UNSET
-                && (mPlayer.getCurrentPosition() <= MAX_POSITION_FOR_SEEK_TO_PREVIOUS
-                || (mWindow.isDynamic && !mWindow.isSeekable))) {
-            seekTo(previousWindowIndex, C.TIME_UNSET);
-        } else {
-            seekTo(0);
-        }
+        mPlayer.seekToPreviousWindow();
     }
 
-    protected void next() {
-        if (mPlayer == null) {
+    protected void seekToNextWindow() {
+        if (mPlayer == null || !mPlayer.hasNextWindow()) {
             return;
         }
-        Timeline timeline = mPlayer.getCurrentTimeline();
-        if (timeline.isEmpty() || mPlayer.isPlayingAd()) {
-            return;
-        }
-        int windowIndex = mPlayer.getCurrentWindowIndex();
-        int nextWindowIndex = mPlayer.getNextWindowIndex();
-        if (nextWindowIndex != C.INDEX_UNSET) {
-            seekTo(nextWindowIndex, C.TIME_UNSET);
-        } else if (timeline.getWindow(windowIndex, mWindow).isDynamic) {
-            seekTo(windowIndex, C.TIME_UNSET);
-        }
+        mPlayer.seekToNextWindow();
     }
 
-    protected void rewind() {
+    protected void seekBack() {
         if (mRewindMs <= 0 || mPlayer == null) {
             return;
         }
-        if (mPlayer.getCurrentPosition() > 0) {
-            seekTo(Math.max(mPlayer.getCurrentPosition() - mRewindMs, 0));
-        }
+        mPlayer.seekBack();
     }
 
-    protected void fastForward() {
+    protected void seekForward() {
         if (mFastForwardMs <= 0 || mPlayer == null) {
             return;
         }
-        long durationMs = mPlayer.getDuration();
-        long currentPosition = mPlayer.getCurrentPosition();
-        long seekPositionMs = currentPosition + mFastForwardMs;
-        if (durationMs > 0) {
-            seekPositionMs = Math.min(seekPositionMs, durationMs);
+        mPlayer.seekForward();
+    }
+
+    @Player.RepeatMode
+    protected int getNextRepeatMode(@Player.RepeatMode int currentRepeatMode) {
+        if (currentRepeatMode == Player.REPEAT_MODE_OFF) {
+            return Player.REPEAT_MODE_ONE;
         }
-        if (currentPosition < durationMs) {
-            seekTo(seekPositionMs);
+        if (currentRepeatMode == Player.REPEAT_MODE_ONE) {
+            return Player.REPEAT_MODE_ALL;
         }
+        return Player.REPEAT_MODE_OFF;
     }
 
     @Override
@@ -835,9 +785,9 @@ public class DefaultControlView extends BaseControlView {
         }
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
-                fastForward();
+                seekForward();
             } else if (keyCode == KeyEvent.KEYCODE_MEDIA_REWIND) {
-                rewind();
+                seekBack();
             } else if (event.getRepeatCount() == 0) {
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
@@ -868,7 +818,7 @@ public class DefaultControlView extends BaseControlView {
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS;
     }
 
-    private final class ComponentListener implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, FuPlayer.EventListener, VideoListener, AudioListener {
+    private final class ComponentListener implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, FuPlayer.Listener {
 
         @Override
         public void onClick(View v) {
@@ -878,19 +828,16 @@ public class DefaultControlView extends BaseControlView {
             if (mPlayPauseSwitchView == v) {
                 togglePlayWhenReady();
             } else if (mFastRewindView == v) {
-                rewind();
+                seekBack();
             } else if (mFastForwardView == v) {
-                fastForward();
+                seekForward();
             } else if (mRepeatSwitchView == v) {
-                mPlayer.setRepeatMode(RepeatModeUtil.getNextRepeatMode(mPlayer.getRepeatMode(), mRepeatToggleModes));
+                mPlayer.setRepeatMode(getNextRepeatMode(mPlayer.getRepeatMode()));
             } else if (mVolumeSwitchView == v) {
-                if (mPlayer.getAudioComponent() == null) {
-                    return;
-                }
-                if (mPlayer.getAudioComponent().getVolume() > 0) {
-                    mPlayer.getAudioComponent().setVolume(0.0f);
+                if (mPlayer.getVolume() > 0) {
+                    mPlayer.setVolume(0.0f);
                 } else {
-                    mPlayer.getAudioComponent().setVolume(1.0f);
+                    mPlayer.setVolume(1.0f);
                 }
             } else if (mShuffleSwitchView == v) {
                 if (mPlayer.getShuffleModeEnabled()) {
@@ -899,9 +846,9 @@ public class DefaultControlView extends BaseControlView {
                     mPlayer.setShuffleModeEnabled(true);
                 }
             } else if (mSkipPrevious == v) {
-                previous();
+                seekToPreviousWindow();
             } else if (mSkipNext == v) {
-                next();
+                seekToNextWindow();
             }
             hideAfterTimeout();
         }
@@ -972,14 +919,19 @@ public class DefaultControlView extends BaseControlView {
         public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
             FuLog.d(TAG, "onShuffleModeEnabledChanged : shuffleModeEnabled=" + shuffleModeEnabled);
             updateNavigation();
+            updateRepeatView();
             updateShuffleView();
         }
 
         @Override
         public void onVolumeChanged(float volume) {
             FuLog.d(TAG, "onVolumeChanged : volume=" + volume);
-            updateNavigation();
             updateVolumeView();
+        }
+
+        @Override
+        public void onPositionDiscontinuity(Player.PositionInfo oldPosition, Player.PositionInfo newPosition, int reason) {
+            updateNavigation();
         }
     }
 }

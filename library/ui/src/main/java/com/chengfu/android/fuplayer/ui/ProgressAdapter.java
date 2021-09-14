@@ -6,6 +6,8 @@ public interface ProgressAdapter extends PlayerView{
 
     boolean isCurrentWindowDynamic();
 
+    boolean isCurrentWindowLive();
+
     long getCurrentPosition();
 
     long getDuration();
@@ -13,6 +15,12 @@ public interface ProgressAdapter extends PlayerView{
     long getBufferedPosition();
 
     int getBufferedPercentage();
+
+    boolean showSeekView();
+
+    boolean showPositionViewView();
+
+    boolean showDurationView();
 
     CharSequence getPositionText(long position);
 

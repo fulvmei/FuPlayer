@@ -6,7 +6,7 @@ import android.net.Uri;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
+//import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
@@ -20,6 +20,9 @@ import com.google.android.exoplayer2.util.Util;
 public class MediaSourceUtil {
 
     public static MediaSource getMediaSource(Context context, String path, int contentType) {
+
+
+
 
         Uri uri = Uri.parse(path);
 
@@ -48,8 +51,9 @@ public class MediaSourceUtil {
             default:
                 // This is the MediaSource representing the media to be played.
                 ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-                return new ExtractorMediaSource(uri,
-                        dataSourceFactory, extractorsFactory, null, null);
+                return null;
+//                return new ExtractorMediaSource(uri,
+//                        dataSourceFactory, extractorsFactory, null, null);
         }
     }
 }

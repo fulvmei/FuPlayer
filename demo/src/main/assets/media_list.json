@@ -61,6 +61,18 @@
         "tag": "m3u8"
       },
       {
+        "name": "路况直播",
+        "path": "https://83dalshocjcy.gzstv.com/live/952gzlb.m3u8",
+        "type": "video",
+        "tag": "m3u8"
+      },
+      {
+        "name": "贵州卫视",
+        "path": "https://hls-qnhi-live.gzstv.com/livegztv-hi/CH01_hi.m3u8?s=816bb7fe5dfd7fc69f2706c0ba7d7dfa&ts=6139a70a",
+        "type": "video",
+        "tag": "m3u8"
+      },
+      {
         "name": "Apple 4x3 basic stream",
         "path": "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8",
         "type": "video",
@@ -126,9 +138,26 @@
       },
       {
         "name": "资源1",
-        "path": "http://flv1948666e.live.126.net/live/3c5170e6cdfa4e758d1ca67f1673b949.flv?netease=flv1948666e.live.126.net",
+        "path": "https://mov.bn.netease.com/open-movie/nos/mp4/2015/08/27/SB13F5AGJ_sd.mp4",
         "type": "video",
-        "tag": "flv"
+        "tag": "MP4"
+      }
+    ]
+  },
+  {
+    "name": "全景视频",
+    "media_list": [
+      {
+        "name": "过山车",
+        "path": "https://media.gzstv.com/videos/d70b605ecaa27b43b2eda13883155b2b.mp4",
+        "type": "video",
+        "tag": "vr"
+      },
+      {
+        "name": "测试流",
+        "path": "rtmp://live-rtmp2.utovr.com/utovr2/21754903804",
+        "type": "video",
+        "tag": "vr"
       }
     ]
   },

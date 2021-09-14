@@ -1,6 +1,10 @@
 package com.chengfu.android.fuplayer.ext.exo;
 
 import android.os.Looper;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.TextureView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,18 +13,23 @@ import com.chengfu.android.fuplayer.FuPlayer;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.MediaMetadata;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.PlayerMessage;
 import com.google.android.exoplayer2.SeekParameters;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.audio.AudioAttributes;
+import com.google.android.exoplayer2.device.DeviceInfo;
 import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ShuffleOrder;
 import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.util.Clock;
+import com.google.android.exoplayer2.video.VideoSize;
 
 import java.util.List;
 
@@ -63,6 +72,16 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public void addAudioOffloadListener(AudioOffloadListener listener) {
+        mPlayer.addAudioOffloadListener(listener);
+    }
+
+    @Override
+    public void removeAudioOffloadListener(AudioOffloadListener listener) {
+        mPlayer.removeAudioOffloadListener(listener);
+    }
+
+    @Override
     public Looper getApplicationLooper() {
         return mPlayer.getApplicationLooper();
     }
@@ -73,7 +92,17 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public void addListener(Listener listener) {
+        mPlayer.addListener(listener);
+    }
+
+    @Override
     public void removeListener(Player.EventListener listener) {
+        mPlayer.removeListener(listener);
+    }
+
+    @Override
+    public void removeListener(Listener listener) {
         mPlayer.removeListener(listener);
     }
 
@@ -153,6 +182,16 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public boolean isCommandAvailable(int command) {
+        return mPlayer.isCommandAvailable(command);
+    }
+
+    @Override
+    public Commands getAvailableCommands() {
+        return mPlayer.getAvailableCommands();
+    }
+
+    @Override
     public void prepare() {
         mPlayer.prepare();
     }
@@ -178,11 +217,11 @@ public class FuExoPlayer implements FuPlayer {
         return mPlayer.getPlayerError();
     }
 
-    @Nullable
-    @Override
-    public ExoPlaybackException getPlaybackError() {
-        return mPlayer.getPlaybackError();
-    }
+//    @Nullable
+//    @Override
+//    public ExoPlaybackException getPlaybackError() {
+//        return mPlayer.getPlaybackError();
+//    }
 
     @Override
     public void play() {
@@ -250,8 +289,33 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public long getSeekBackIncrement() {
+        return mPlayer.getSeekBackIncrement();
+    }
+
+    @Override
+    public void seekBack() {
+        mPlayer.seekBack();
+    }
+
+    @Override
+    public long getSeekForwardIncrement() {
+        return mPlayer.getSeekForwardIncrement();
+    }
+
+    @Override
+    public void seekForward() {
+        mPlayer.seekForward();
+    }
+
+    @Override
     public boolean hasPrevious() {
         return mPlayer.hasPrevious();
+    }
+
+    @Override
+    public boolean hasPreviousWindow() {
+        return mPlayer.hasPreviousWindow();
     }
 
     @Override
@@ -260,8 +324,28 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public void seekToPreviousWindow() {
+        mPlayer.seekToPreviousWindow();
+    }
+
+    @Override
+    public int getMaxSeekToPreviousPosition() {
+        return mPlayer.getMaxSeekToPreviousPosition();
+    }
+
+    @Override
+    public void seekToPrevious() {
+        mPlayer.seekToPrevious();
+    }
+
+    @Override
     public boolean hasNext() {
         return mPlayer.hasNext();
+    }
+
+    @Override
+    public boolean hasNextWindow() {
+        return mPlayer.hasNextWindow();
     }
 
     @Override
@@ -270,8 +354,23 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public void seekToNextWindow() {
+        mPlayer.seekToNextWindow();
+    }
+
+    @Override
+    public void seekToNext() {
+        mPlayer.seekToNext();
+    }
+
+    @Override
     public void setPlaybackParameters(@Nullable PlaybackParameters playbackParameters) {
         mPlayer.setPlaybackParameters(playbackParameters);
+    }
+
+    @Override
+    public void setPlaybackSpeed(float speed) {
+        mPlayer.setPlaybackSpeed(speed);
     }
 
     @Override
@@ -319,6 +418,21 @@ public class FuExoPlayer implements FuPlayer {
         return mPlayer.getCurrentStaticMetadata();
     }
 
+    @Override
+    public MediaMetadata getMediaMetadata() {
+        return mPlayer.getMediaMetadata();
+    }
+
+    @Override
+    public MediaMetadata getPlaylistMetadata() {
+        return mPlayer.getPlaylistMetadata();
+    }
+
+    @Override
+    public void setPlaylistMetadata(MediaMetadata mediaMetadata) {
+        mPlayer.setPlaylistMetadata(mediaMetadata);
+    }
+
     @Nullable
     @Override
     public Object getCurrentManifest() {
@@ -350,11 +464,11 @@ public class FuExoPlayer implements FuPlayer {
         return mPlayer.getPreviousWindowIndex();
     }
 
-    @Nullable
-    @Override
-    public Object getCurrentTag() {
-        return mPlayer.getCurrentTag();
-    }
+//    @Nullable
+//    @Override
+//    public Object getCurrentTag() {
+//        return mPlayer.getCurrentTag();
+//    }
 
     @Nullable
     @Override
@@ -445,6 +559,111 @@ public class FuExoPlayer implements FuPlayer {
     @Override
     public long getContentBufferedPosition() {
         return mPlayer.getContentBufferedPosition();
+    }
+
+    @Override
+    public AudioAttributes getAudioAttributes() {
+        return mPlayer.getAudioAttributes();
+    }
+
+    @Override
+    public void setVolume(float audioVolume) {
+        mPlayer.setVolume(audioVolume);
+    }
+
+    @Override
+    public float getVolume() {
+        return mPlayer.getVolume();
+    }
+
+    @Override
+    public void clearVideoSurface() {
+        mPlayer.clearVideoSurface();
+    }
+
+    @Override
+    public void clearVideoSurface(@Nullable Surface surface) {
+        mPlayer.clearVideoSurface(surface);
+    }
+
+    @Override
+    public void setVideoSurface(@Nullable Surface surface) {
+        mPlayer.setVideoSurface(surface);
+    }
+
+    @Override
+    public void setVideoSurfaceHolder(@Nullable SurfaceHolder surfaceHolder) {
+        mPlayer.setVideoSurfaceHolder(surfaceHolder);
+    }
+
+    @Override
+    public void clearVideoSurfaceHolder(@Nullable SurfaceHolder surfaceHolder) {
+        mPlayer.clearVideoSurfaceHolder(surfaceHolder);
+    }
+
+    @Override
+    public void setVideoSurfaceView(@Nullable SurfaceView surfaceView) {
+        mPlayer.setVideoSurfaceView(surfaceView);
+    }
+
+    @Override
+    public void clearVideoSurfaceView(@Nullable SurfaceView surfaceView) {
+        mPlayer.clearVideoSurfaceView(surfaceView);
+    }
+
+    @Override
+    public void setVideoTextureView(@Nullable TextureView textureView) {
+        mPlayer.setVideoTextureView(textureView);
+    }
+
+    @Override
+    public void clearVideoTextureView(@Nullable TextureView textureView) {
+        mPlayer.clearVideoTextureView(textureView);
+    }
+
+    @Override
+    public VideoSize getVideoSize() {
+        return mPlayer.getVideoSize();
+    }
+
+    @Override
+    public List<Cue> getCurrentCues() {
+        return mPlayer.getCurrentCues();
+    }
+
+    @Override
+    public DeviceInfo getDeviceInfo() {
+        return mPlayer.getDeviceInfo();
+    }
+
+    @Override
+    public int getDeviceVolume() {
+        return mPlayer.getDeviceVolume();
+    }
+
+    @Override
+    public boolean isDeviceMuted() {
+        return mPlayer.isDeviceMuted();
+    }
+
+    @Override
+    public void setDeviceVolume(int volume) {
+         mPlayer.setDeviceVolume(volume);
+    }
+
+    @Override
+    public void increaseDeviceVolume() {
+        mPlayer.increaseDeviceVolume();
+    }
+
+    @Override
+    public void decreaseDeviceVolume() {
+        mPlayer.decreaseDeviceVolume();
+    }
+
+    @Override
+    public void setDeviceMuted(boolean muted) {
+        mPlayer.setDeviceMuted(muted);
     }
 
     @Nullable

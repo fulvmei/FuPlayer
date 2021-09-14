@@ -84,7 +84,6 @@
         app:ad_marker_color="#000000"
         app:scrubber_drawable="@drawable/fu_ic_notification"
         app:scrubber_color="#00ff00"
-        android:background="@color/colorAccent"
         android:layout_width="match_parent"
         android:layout_height="0dp" />
 

@@ -1,17 +1,18 @@
 package com.chengfu.android.fuplayer.demo.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MediaGroup {
 
     public String name;
-    public List<Media> mediaList;
+    public ArrayList<Media> mediaList;
 
     public MediaGroup() {
 
     }
 
-    public MediaGroup(String name, List<Media> mediaList) {
+    public MediaGroup(String name, ArrayList<Media> mediaList) {
         this.name = name;
         this.mediaList = mediaList;
     }
@@ -24,7 +25,7 @@ public class MediaGroup {
         return name;
     }
 
-    public void setMediaList(List<Media> mediaList) {
+    public void setMediaList(ArrayList<Media> mediaList) {
         this.mediaList = mediaList;
     }
 

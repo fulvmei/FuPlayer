@@ -112,10 +112,10 @@ public class PlayerAnalytics implements AnalyticsListener {
 
     }
 
-    @Override
-    public void onPlayerError(EventTime eventTime, ExoPlaybackException error) {
-        Timber.d("onPlayerError ： error=%s", error);
-    }
+//    @Override
+//    public void onPlayerError(EventTime eventTime, ExoPlaybackException error) {
+//        Timber.d("onPlayerError ： error=%s", error);
+//    }
 
     @Override
     public void onPlayerStateChanged(EventTime eventTime, boolean playWhenReady, int playbackState) {
@@ -127,11 +127,11 @@ public class PlayerAnalytics implements AnalyticsListener {
         Timber.d("onPositionDiscontinuity ： eventTime=" + eventTime.realtimeMs);
     }
 
-
-    @Override
-    public void onRenderedFirstFrame(EventTime eventTime, @Nullable Surface surface) {
-        Timber.d("onRenderedFirstFrame ： eventTime=" + eventTime.realtimeMs);
-    }
+//
+//    @Override
+//    public void onRenderedFirstFrame(EventTime eventTime, @Nullable Surface surface) {
+//        Timber.d("onRenderedFirstFrame ： eventTime=" + eventTime.realtimeMs);
+//    }
 
     @Override
     public void onRepeatModeChanged(EventTime eventTime, int repeatMode) {

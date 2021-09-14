@@ -47,6 +47,11 @@ public class DynamicProgressAdapter implements ProgressAdapter {
     }
 
     @Override
+    public boolean isCurrentWindowLive() {
+        return false;
+    }
+
+    @Override
     public long getCurrentPosition() {
         return currentPosition;
     }
@@ -65,6 +70,21 @@ public class DynamicProgressAdapter implements ProgressAdapter {
     @Override
     public int getBufferedPercentage() {
         return (int) (getBufferedPosition() / duration + 0.0001);
+    }
+
+    @Override
+    public boolean showSeekView() {
+        return false;
+    }
+
+    @Override
+    public boolean showPositionViewView() {
+        return false;
+    }
+
+    @Override
+    public boolean showDurationView() {
+        return false;
     }
 
     @Override

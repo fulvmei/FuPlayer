@@ -8,3 +8,5 @@ include ':library:all'
 include ':library:core'
 include ':library:ui'
 
+rootProject.name = "FuPlayer"
+

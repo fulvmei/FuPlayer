@@ -1,325 +1,372 @@
 package com.chengfu.android.fuplayer.ui;
 
-import android.annotation.TargetApi;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.accessibility.CaptioningManager;
-
-import com.google.android.exoplayer2.text.CaptionStyleCompat;
+import android.webkit.WebView;
+import android.widget.FrameLayout;
+import androidx.annotation.Dimension;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextOutput;
 import com.google.android.exoplayer2.util.Util;
-
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-/**
- * A view for displaying subtitle {@link Cue}s.
- */
-public final class SubtitleView extends View implements TextOutput {
+/** A view for displaying subtitle {@link Cue}s. */
+public final class SubtitleView extends FrameLayout implements TextOutput {
 
-  /**
-   * The default fractional text size.
-   *
-   * @see #setFractionalTextSize(float, boolean)
-   */
-  public static final float DEFAULT_TEXT_SIZE_FRACTION = 0.0533f;
+    /**
+     * An output for displaying subtitles.
+     *
+     * <p>Implementations of this also need to extend {@link View} in order to be attached to the
+     * Android view hierarchy.
+     */
+    /* package */ interface Output {
 
-  /**
-   * The default bottom padding to apply when {@link Cue#line} is {@link Cue#DIMEN_UNSET}, as a
-   * fraction of the viewport height.
-   *
-   * @see #setBottomPaddingFraction(float)
-   */
-  public static final float DEFAULT_BOTTOM_PADDING_FRACTION = 0.08f;
-
-  private final List<SubtitlePainter> painters;
-
-  private List<Cue> cues;
-  private @Cue.TextSizeType int textSizeType;
-  private float textSize;
-  private boolean applyEmbeddedStyles;
-  private boolean applyEmbeddedFontSizes;
-  private CaptionStyleCompat style;
-  private float bottomPaddingFraction;
-
-  public SubtitleView(Context context) {
-    this(context, null);
-  }
-
-  public SubtitleView(Context context, AttributeSet attrs) {
-    super(context, attrs);
-    painters = new ArrayList<>();
-    textSizeType = Cue.TEXT_SIZE_TYPE_FRACTIONAL;
-    textSize = DEFAULT_TEXT_SIZE_FRACTION;
-    applyEmbeddedStyles = true;
-    applyEmbeddedFontSizes = true;
-    style = CaptionStyleCompat.DEFAULT;
-    bottomPaddingFraction = DEFAULT_BOTTOM_PADDING_FRACTION;
-  }
-
-  @Override
-  public void onCues(List<Cue> cues) {
-    setCues(cues);
-  }
-
-  /**
-   * Sets the cues to be displayed by the view.
-   *
-   * @param cues The cues to display, or null to clear the cues.
-   */
-  public void setCues(@Nullable List<Cue> cues) {
-    if (this.cues == cues) {
-      return;
-    }
-    this.cues = cues;
-    // Ensure we have sufficient painters.
-    int cueCount = (cues == null) ? 0 : cues.size();
-    while (painters.size() < cueCount) {
-      painters.add(new SubtitlePainter(getContext()));
-    }
-    // Invalidate to trigger drawing.
-    invalidate();
-  }
-
-  /**
-   * Set the text size to a given unit and value.
-   *
-   * See {@link TypedValue} for the possible dimension units.
-   *
-   * @param unit The desired dimension unit.
-   * @param size The desired size in the given units.
-   */
-  public void setFixedTextSize(int unit, float size) {
-    Context context = getContext();
-    Resources resources;
-    if (context == null) {
-      resources = Resources.getSystem();
-    } else {
-      resources = context.getResources();
-    }
-    setTextSize(
-        Cue.TEXT_SIZE_TYPE_ABSOLUTE,
-        TypedValue.applyDimension(unit, size, resources.getDisplayMetrics()));
-  }
-
-  /**
-   * Sets the text size to one derived from {@link CaptioningManager#getFontScale()}, or to a
-   * default size before API level 19.
-   */
-  public void setUserDefaultTextSize() {
-    float fontScale = Util.SDK_INT >= 19 && !isInEditMode() ? getUserCaptionFontScaleV19() : 1f;
-    setFractionalTextSize(DEFAULT_TEXT_SIZE_FRACTION * fontScale);
-  }
-
-  /**
-   * Sets the text size to be a fraction of the view's remaining height after its top and bottom
-   * padding have been subtracted.
-   *
-   * Equivalent to {@code #setFractionalTextSize(fractionOfHeight, false)}.
-   *
-   * @param fractionOfHeight A fraction between 0 and 1.
-   */
-  public void setFractionalTextSize(float fractionOfHeight) {
-    setFractionalTextSize(fractionOfHeight, false);
-  }
-
-  /**
-   * Sets the text size to be a fraction of the height of this view.
-   *
-   * @param fractionOfHeight A fraction between 0 and 1.
-   * @param ignorePadding Set to true if {@code fractionOfHeight} should be interpreted as a
-   *     fraction of this view's height ignoring any top and bottom padding. Set to false if
-   *     {@code fractionOfHeight} should be interpreted as a fraction of this view's remaining
-   *     height after the top and bottom padding has been subtracted.
-   */
-  public void setFractionalTextSize(float fractionOfHeight, boolean ignorePadding) {
-    setTextSize(
-        ignorePadding
-            ? Cue.TEXT_SIZE_TYPE_FRACTIONAL_IGNORE_PADDING
-            : Cue.TEXT_SIZE_TYPE_FRACTIONAL,
-        fractionOfHeight);
-  }
-
-  private void setTextSize(@Cue.TextSizeType int textSizeType, float textSize) {
-    if (this.textSizeType == textSizeType && this.textSize == textSize) {
-      return;
-    }
-    this.textSizeType = textSizeType;
-    this.textSize = textSize;
-    // Invalidate to trigger drawing.
-    invalidate();
-  }
-
-  /**
-   * Sets whether styling embedded within the cues should be applied. Enabled by default.
-   * Overrides any setting made with {@link SubtitleView#setApplyEmbeddedFontSizes}.
-   *
-   * @param applyEmbeddedStyles Whether styling embedded within the cues should be applied.
-   */
-  public void setApplyEmbeddedStyles(boolean applyEmbeddedStyles) {
-    if (this.applyEmbeddedStyles == applyEmbeddedStyles
-        && this.applyEmbeddedFontSizes == applyEmbeddedStyles) {
-      return;
-    }
-    this.applyEmbeddedStyles = applyEmbeddedStyles;
-    this.applyEmbeddedFontSizes = applyEmbeddedStyles;
-    // Invalidate to trigger drawing.
-    invalidate();
-  }
-
-  /**
-   * Sets whether font sizes embedded within the cues should be applied. Enabled by default.
-   * Only takes effect if {@link SubtitleView#setApplyEmbeddedStyles} is set to true.
-   *
-   * @param applyEmbeddedFontSizes Whether font sizes embedded within the cues should be applied.
-   */
-  public void setApplyEmbeddedFontSizes(boolean applyEmbeddedFontSizes) {
-    if (this.applyEmbeddedFontSizes == applyEmbeddedFontSizes) {
-      return;
-    }
-    this.applyEmbeddedFontSizes = applyEmbeddedFontSizes;
-    // Invalidate to trigger drawing.
-    invalidate();
-  }
-
-  /**
-   * Sets the caption style to be equivalent to the one returned by
-   * {@link CaptioningManager#getUserStyle()}, or to a default style before API level 19.
-   */
-  public void setUserDefaultStyle() {
-    setStyle(
-        Util.SDK_INT >= 19 && isCaptionManagerEnabled() && !isInEditMode()
-            ? getUserCaptionStyleV19()
-            : CaptionStyleCompat.DEFAULT);
-  }
-
-  /**
-   * Sets the caption style.
-   *
-   * @param style A style for the view.
-   */
-  public void setStyle(CaptionStyleCompat style) {
-    if (this.style == style) {
-      return;
-    }
-    this.style = style;
-    // Invalidate to trigger drawing.
-    invalidate();
-  }
-
-  /**
-   * Sets the bottom padding fraction to apply when {@link Cue#line} is {@link Cue#DIMEN_UNSET},
-   * as a fraction of the view's remaining height after its top and bottom padding have been
-   * subtracted.
-   *
-   * Note that this padding is applied in addition to any standard view padding.
-   *
-   * @param bottomPaddingFraction The bottom padding fraction.
-   */
-  public void setBottomPaddingFraction(float bottomPaddingFraction) {
-    if (this.bottomPaddingFraction == bottomPaddingFraction) {
-      return;
-    }
-    this.bottomPaddingFraction = bottomPaddingFraction;
-    // Invalidate to trigger drawing.
-    invalidate();
-  }
-
-  @Override
-  public void dispatchDraw(Canvas canvas) {
-    int cueCount = (cues == null) ? 0 : cues.size();
-    int rawViewHeight = getHeight();
-
-    // Calculate the cue box bounds relative to the canvas after padding is taken into account.
-    int left = getPaddingLeft();
-    int top = getPaddingTop();
-    int right = getWidth() - getPaddingRight();
-    int bottom = rawViewHeight - getPaddingBottom();
-    if (bottom <= top || right <= left) {
-      // No space to draw subtitles.
-      return;
-    }
-    int viewHeightMinusPadding = bottom - top;
-
-    float defaultViewTextSizePx =
-        resolveTextSize(textSizeType, textSize, rawViewHeight, viewHeightMinusPadding);
-    if (defaultViewTextSizePx <= 0) {
-      // Text has no height.
-      return;
+        /**
+         * Updates the list of cues displayed.
+         *
+         * @param cues The cues to display.
+         * @param style A {@link CaptionStyleCompat} to use for styling unset properties of cues.
+         * @param defaultTextSize The default font size to apply when {@link Cue#textSize} is {@link
+         *     Cue#DIMEN_UNSET}.
+         * @param defaultTextSizeType The type of {@code defaultTextSize}.
+         * @param bottomPaddingFraction The bottom padding to apply when {@link Cue#line} is {@link
+         *     Cue#DIMEN_UNSET}, as a fraction of the view's remaining height after its top and bottom
+         *     padding have been subtracted.
+         * @see #setStyle(CaptionStyleCompat)
+         * @see #setTextSize(int, float)
+         * @see #setBottomPaddingFraction(float)
+         */
+        void update(
+                List<Cue> cues,
+                CaptionStyleCompat style,
+                float defaultTextSize,
+                @Cue.TextSizeType int defaultTextSizeType,
+                float bottomPaddingFraction);
     }
 
-    for (int i = 0; i < cueCount; i++) {
-      Cue cue = cues.get(i);
-      float cueTextSizePx = resolveCueTextSize(cue, rawViewHeight, viewHeightMinusPadding);
-      SubtitlePainter painter = painters.get(i);
-      painter.draw(
-          cue,
-          applyEmbeddedStyles,
-          applyEmbeddedFontSizes,
-          style,
-          defaultViewTextSizePx,
-          cueTextSizePx,
-          bottomPaddingFraction,
-          canvas,
-          left,
-          top,
-          right,
-          bottom);
+    /**
+     * The default fractional text size.
+     *
+     * @see SubtitleView#setFractionalTextSize(float, boolean)
+     */
+    public static final float DEFAULT_TEXT_SIZE_FRACTION = 0.0533f;
+
+    /**
+     * The default bottom padding to apply when {@link Cue#line} is {@link Cue#DIMEN_UNSET}, as a
+     * fraction of the viewport height.
+     *
+     * @see #setBottomPaddingFraction(float)
+     */
+    public static final float DEFAULT_BOTTOM_PADDING_FRACTION = 0.08f;
+
+    /** Indicates subtitles should be displayed using a {@link Canvas}. This is the default. */
+    public static final int VIEW_TYPE_CANVAS = 1;
+
+    /**
+     * Indicates subtitles should be displayed using a {@link WebView}.
+     *
+     * <p>This will use CSS and HTML styling to render the subtitles. This supports some additional
+     * styling features beyond those supported by {@link #VIEW_TYPE_CANVAS} such as vertical text.
+     */
+    public static final int VIEW_TYPE_WEB = 2;
+
+    /**
+     * The type of {@link View} to use to display subtitles.
+     *
+     * <p>One of:
+     *
+     * <ul>
+     *   <li>{@link #VIEW_TYPE_CANVAS}
+     *   <li>{@link #VIEW_TYPE_WEB}
+     * </ul>
+     */
+    @Documented
+    @Retention(SOURCE)
+    @IntDef({VIEW_TYPE_CANVAS, VIEW_TYPE_WEB})
+    public @interface ViewType {}
+
+    private List<Cue> cues;
+    private CaptionStyleCompat style;
+    @Cue.TextSizeType private int defaultTextSizeType;
+    private float defaultTextSize;
+    private float bottomPaddingFraction;
+    private boolean applyEmbeddedStyles;
+    private boolean applyEmbeddedFontSizes;
+
+    private @ViewType int viewType;
+    private Output output;
+    private View innerSubtitleView;
+
+    public SubtitleView(Context context) {
+        this(context, null);
     }
-  }
 
-  private float resolveCueTextSize(Cue cue, int rawViewHeight, int viewHeightMinusPadding) {
-    if (cue.textSizeType == Cue.TYPE_UNSET || cue.textSize == Cue.DIMEN_UNSET) {
-      return 0;
+    public SubtitleView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        cues = Collections.emptyList();
+        style = CaptionStyleCompat.DEFAULT;
+        defaultTextSizeType = Cue.TEXT_SIZE_TYPE_FRACTIONAL;
+        defaultTextSize = DEFAULT_TEXT_SIZE_FRACTION;
+        bottomPaddingFraction = DEFAULT_BOTTOM_PADDING_FRACTION;
+        applyEmbeddedStyles = true;
+        applyEmbeddedFontSizes = true;
+
+        CanvasSubtitleOutput canvasSubtitleOutput = new CanvasSubtitleOutput(context);
+        output = canvasSubtitleOutput;
+        innerSubtitleView = canvasSubtitleOutput;
+        addView(innerSubtitleView);
+        viewType = VIEW_TYPE_CANVAS;
     }
-    float defaultCueTextSizePx =
-        resolveTextSize(cue.textSizeType, cue.textSize, rawViewHeight, viewHeightMinusPadding);
-    return Math.max(defaultCueTextSizePx, 0);
-  }
 
-  private float resolveTextSize(
-      @Cue.TextSizeType int textSizeType,
-      float textSize,
-      int rawViewHeight,
-      int viewHeightMinusPadding) {
-    switch (textSizeType) {
-      case Cue.TEXT_SIZE_TYPE_ABSOLUTE:
-        return textSize;
-      case Cue.TEXT_SIZE_TYPE_FRACTIONAL:
-        return textSize * viewHeightMinusPadding;
-      case Cue.TEXT_SIZE_TYPE_FRACTIONAL_IGNORE_PADDING:
-        return textSize * rawViewHeight;
-      case Cue.TYPE_UNSET:
-      default:
-        return Cue.DIMEN_UNSET;
+    @Override
+    public void onCues(List<Cue> cues) {
+        setCues(cues);
     }
-  }
 
-  @TargetApi(19)
-  private boolean isCaptionManagerEnabled() {
-    CaptioningManager captioningManager =
-        (CaptioningManager) getContext().getSystemService(Context.CAPTIONING_SERVICE);
-    return captioningManager.isEnabled();
-  }
+    /**
+     * Sets the cues to be displayed by the view.
+     *
+     * @param cues The cues to display, or null to clear the cues.
+     */
+    public void setCues(@Nullable List<Cue> cues) {
+        this.cues = (cues != null ? cues : Collections.emptyList());
+        updateOutput();
+    }
 
-  @TargetApi(19)
-  private float getUserCaptionFontScaleV19() {
-    CaptioningManager captioningManager =
-        (CaptioningManager) getContext().getSystemService(Context.CAPTIONING_SERVICE);
-    return captioningManager.getFontScale();
-  }
+    /**
+     * Set the type of {@link View} used to display subtitles.
+     *
+     * <p>NOTE: {@link #VIEW_TYPE_WEB} is currently very experimental, and doesn't support most
+     * styling and layout properties of {@link Cue}.
+     *
+     * @param viewType The {@link ViewType} to use.
+     */
+    public void setViewType(@ViewType int viewType) {
+        if (this.viewType == viewType) {
+            return;
+        }
+        switch (viewType) {
+            case VIEW_TYPE_CANVAS:
+                setView(new CanvasSubtitleOutput(getContext()));
+                break;
+            case VIEW_TYPE_WEB:
+                setView(new WebViewSubtitleOutput(getContext()));
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+        this.viewType = viewType;
+    }
 
-  @TargetApi(19)
-  private CaptionStyleCompat getUserCaptionStyleV19() {
-    CaptioningManager captioningManager =
-        (CaptioningManager) getContext().getSystemService(Context.CAPTIONING_SERVICE);
-    return CaptionStyleCompat.createFromCaptionStyle(captioningManager.getUserStyle());
-  }
+    private <T extends View & Output> void setView(T view) {
+        removeView(innerSubtitleView);
+        if (innerSubtitleView instanceof WebViewSubtitleOutput) {
+            ((WebViewSubtitleOutput) innerSubtitleView).destroy();
+        }
+        innerSubtitleView = view;
+        output = view;
+        addView(view);
+    }
+
+    /**
+     * Set the text size to a given unit and value.
+     *
+     * <p>See {@link TypedValue} for the possible dimension units.
+     *
+     * @param unit The desired dimension unit.
+     * @param size The desired size in the given units.
+     */
+    public void setFixedTextSize(@Dimension int unit, float size) {
+        Context context = getContext();
+        Resources resources;
+        if (context == null) {
+            resources = Resources.getSystem();
+        } else {
+            resources = context.getResources();
+        }
+        setTextSize(
+                Cue.TEXT_SIZE_TYPE_ABSOLUTE,
+                TypedValue.applyDimension(unit, size, resources.getDisplayMetrics()));
+    }
+
+    /**
+     * Sets the text size based on {@link CaptioningManager#getFontScale()} if {@link
+     * CaptioningManager} is available and enabled.
+     *
+     * <p>Otherwise (and always before API level 19) uses a default font scale of 1.0.
+     */
+    public void setUserDefaultTextSize() {
+        setFractionalTextSize(DEFAULT_TEXT_SIZE_FRACTION * getUserCaptionFontScale());
+    }
+
+    /**
+     * Sets the text size to be a fraction of the view's remaining height after its top and bottom
+     * padding have been subtracted.
+     * <p>
+     * Equivalent to {@code #setFractionalTextSize(fractionOfHeight, false)}.
+     *
+     * @param fractionOfHeight A fraction between 0 and 1.
+     */
+    public void setFractionalTextSize(float fractionOfHeight) {
+        setFractionalTextSize(fractionOfHeight, false);
+    }
+
+    /**
+     * Sets the text size to be a fraction of the height of this view.
+     *
+     * @param fractionOfHeight A fraction between 0 and 1.
+     * @param ignorePadding Set to true if {@code fractionOfHeight} should be interpreted as a
+     *     fraction of this view's height ignoring any top and bottom padding. Set to false if
+     *     {@code fractionOfHeight} should be interpreted as a fraction of this view's remaining
+     *     height after the top and bottom padding has been subtracted.
+     */
+    public void setFractionalTextSize(float fractionOfHeight, boolean ignorePadding) {
+        setTextSize(
+                ignorePadding
+                        ? Cue.TEXT_SIZE_TYPE_FRACTIONAL_IGNORE_PADDING
+                        : Cue.TEXT_SIZE_TYPE_FRACTIONAL,
+                fractionOfHeight);
+    }
+
+    private void setTextSize(@Cue.TextSizeType int textSizeType, float textSize) {
+        this.defaultTextSizeType = textSizeType;
+        this.defaultTextSize = textSize;
+        updateOutput();
+    }
+
+    /**
+     * Sets whether styling embedded within the cues should be applied. Enabled by default.
+     * Overrides any setting made with {@link SubtitleView#setApplyEmbeddedFontSizes}.
+     *
+     * @param applyEmbeddedStyles Whether styling embedded within the cues should be applied.
+     */
+    public void setApplyEmbeddedStyles(boolean applyEmbeddedStyles) {
+        this.applyEmbeddedStyles = applyEmbeddedStyles;
+        updateOutput();
+    }
+
+    /**
+     * Sets whether font sizes embedded within the cues should be applied. Enabled by default.
+     * Only takes effect if {@link SubtitleView#setApplyEmbeddedStyles} is set to true.
+     *
+     * @param applyEmbeddedFontSizes Whether font sizes embedded within the cues should be applied.
+     */
+    public void setApplyEmbeddedFontSizes(boolean applyEmbeddedFontSizes) {
+        this.applyEmbeddedFontSizes = applyEmbeddedFontSizes;
+        updateOutput();
+    }
+
+    /**
+     * Styles the captions using {@link CaptioningManager#getUserStyle()} if {@link CaptioningManager}
+     * is available and enabled.
+     *
+     * <p>Otherwise (and always before API level 19) uses a default style.
+     */
+    public void setUserDefaultStyle() {
+        setStyle(getUserCaptionStyle());
+    }
+
+    /**
+     * Sets the caption style.
+     *
+     * @param style A style for the view.
+     */
+    public void setStyle(CaptionStyleCompat style) {
+        this.style = style;
+        updateOutput();
+    }
+
+    /**
+     * Sets the bottom padding fraction to apply when {@link Cue#line} is {@link Cue#DIMEN_UNSET},
+     * as a fraction of the view's remaining height after its top and bottom padding have been
+     * subtracted.
+     * <p>
+     * Note that this padding is applied in addition to any standard view padding.
+     *
+     * @param bottomPaddingFraction The bottom padding fraction.
+     */
+    public void setBottomPaddingFraction(float bottomPaddingFraction) {
+        this.bottomPaddingFraction = bottomPaddingFraction;
+        updateOutput();
+    }
+
+    private float getUserCaptionFontScale() {
+        if (Util.SDK_INT < 19 || isInEditMode()) {
+            return 1f;
+        }
+        @Nullable
+        CaptioningManager captioningManager =
+                (CaptioningManager) getContext().getSystemService(Context.CAPTIONING_SERVICE);
+        return captioningManager != null && captioningManager.isEnabled()
+                ? captioningManager.getFontScale()
+                : 1f;
+    }
+
+    private CaptionStyleCompat getUserCaptionStyle() {
+        if (Util.SDK_INT < 19 || isInEditMode()) {
+            return CaptionStyleCompat.DEFAULT;
+        }
+        @Nullable
+        CaptioningManager captioningManager =
+                (CaptioningManager) getContext().getSystemService(Context.CAPTIONING_SERVICE);
+        return captioningManager != null && captioningManager.isEnabled()
+                ? CaptionStyleCompat.createFromCaptionStyle(captioningManager.getUserStyle())
+                : CaptionStyleCompat.DEFAULT;
+    }
+
+    private void updateOutput() {
+        output.update(
+                getCuesWithStylingPreferencesApplied(),
+                style,
+                defaultTextSize,
+                defaultTextSizeType,
+                bottomPaddingFraction);
+    }
+
+    /**
+     * Returns {@link #cues} with {@link #applyEmbeddedStyles} and {@link #applyEmbeddedFontSizes}
+     * applied.
+     *
+     * <p>If {@link #applyEmbeddedStyles} is false then all styling spans are removed from {@link
+     * Cue#text}, {@link Cue#textSize} and {@link Cue#textSizeType} are set to {@link Cue#DIMEN_UNSET}
+     * and {@link Cue#windowColorSet} is set to false.
+     *
+     * <p>Otherwise if {@link #applyEmbeddedFontSizes} is false then only size-related styling spans
+     * are removed from {@link Cue#text} and {@link Cue#textSize} and {@link Cue#textSizeType} are set
+     * to {@link Cue#DIMEN_UNSET}
+     */
+    private List<Cue> getCuesWithStylingPreferencesApplied() {
+        if (applyEmbeddedStyles && applyEmbeddedFontSizes) {
+            return cues;
+        }
+        List<Cue> strippedCues = new ArrayList<>(cues.size());
+        for (int i = 0; i < cues.size(); i++) {
+            strippedCues.add(removeEmbeddedStyling(cues.get(i)));
+        }
+        return strippedCues;
+    }
+
+    private Cue removeEmbeddedStyling(Cue cue) {
+        Cue.Builder strippedCue = cue.buildUpon();
+        if (!applyEmbeddedStyles) {
+            SubtitleViewUtils.removeAllEmbeddedStyling(strippedCue);
+        } else if (!applyEmbeddedFontSizes) {
+            SubtitleViewUtils.removeEmbeddedFontSizes(strippedCue);
+        }
+        return strippedCue.build();
+    }
 
 }

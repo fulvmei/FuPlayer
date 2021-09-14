@@ -4,12 +4,16 @@ import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
 import android.widget.ExpandableListView;
 
 import com.chengfu.android.fuplayer.demo.bean.Media;
 import com.chengfu.android.fuplayer.demo.bean.MediaGroup;
+import com.chengfu.android.fuplayer.demo.ui.GroupListAdapter;
+import com.chengfu.android.fuplayer.demo.ui.MediaListAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,27 +25,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements ExpandableListView.OnChildClickListener {
+public class MainActivity extends AppCompatActivity  {
 
     private MediaGroupListAdapter mediaGroupListAdapter;
     private List<MediaGroup> mediaGroupList;
+
+    RecyclerView recyclerView;
+
+    List<MediaGroup> dataList;
+    GroupListAdapter listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ExpandableListView expandableListView = findViewById(R.id.expandableListView);
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        expandableListView.setOnChildClickListener(this);
 
-        mediaGroupList = getMediaGroupList();
-        mediaGroupListAdapter = new MediaGroupListAdapter(mediaGroupList);
+        dataList = getMediaGroupList();
 
-        expandableListView.setAdapter(mediaGroupListAdapter);
-
-        mediaGroupListAdapter.notifyDataSetChanged();
-
+        listAdapter = new GroupListAdapter();
+        listAdapter.submitList(dataList);
+        recyclerView.setAdapter(listAdapter);
     }
 
     private List<MediaGroup> getMediaGroupList() {
@@ -74,8 +81,8 @@ public class MainActivity extends AppCompatActivity implements ExpandableListVie
         return mediaGroup;
     }
 
-    private List<Media> parsedMediaList(JSONArray ja) {
-        List<Media> mediaList = null;
+    private ArrayList<Media> parsedMediaList(JSONArray ja) {
+        ArrayList<Media> mediaList = null;
         if (ja != null) {
             mediaList = new ArrayList<>();
             for (int i = 0; i < ja.length(); i++) {
@@ -119,16 +126,5 @@ public class MainActivity extends AppCompatActivity implements ExpandableListVie
             }
         }
         return media_list;
-    }
-
-
-    @Override
-    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
-                                int childPosition, long id) {
-        Media media = mediaGroupList.get(groupPosition).getMediaList().get(childPosition);
-        Intent intent = new Intent(this, PlayerActivity.class);
-        intent.putExtra("media", media);
-        startActivity(intent);
-        return true;
     }
 }
