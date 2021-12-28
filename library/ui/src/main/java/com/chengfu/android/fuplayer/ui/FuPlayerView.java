@@ -58,7 +58,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
     private SubtitleView subtitleView;
 
     private FuPlayer mPlayer;
-    private ComponentListener componentListener;
+    private PlayerEventsHandler playerEventsHandler;
 
     private int mTextureViewRotation;
     private int mSurfaceType = -1;
@@ -107,7 +107,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
 
         setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
 
-        componentListener = new ComponentListener();
+        playerEventsHandler = initPlayerEventsHandler();
 
         setShutterBackgroundColor(shutterColor);
 
@@ -116,6 +116,10 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         setResizeMode(resizeMode);
 
         updateScreenOn();
+    }
+
+    protected PlayerEventsHandler initPlayerEventsHandler() {
+        return new PlayerEventsHandler();
     }
 
     private void updateScreenOn() {
@@ -276,7 +280,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
             return;
         }
         if (mPlayer != null) {
-            mPlayer.removeListener(componentListener);
+            mPlayer.removeListener(playerEventsHandler);
             if (mPlayer.isCommandAvailable(COMMAND_SET_VIDEO_SURFACE)) {
                 if (mSurfaceView instanceof TextureView) {
                     mPlayer.clearVideoTextureView((TextureView) mSurfaceView);
@@ -300,7 +304,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
             if (subtitleView != null && player.isCommandAvailable(COMMAND_GET_TEXT)) {
                 subtitleView.setCues(player.getCurrentCues());
             }
-            player.addListener(componentListener);
+            player.addListener(playerEventsHandler);
         }
         updateScreenOn();
     }
@@ -366,7 +370,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
         }
     }
 
-    private final class ComponentListener implements Player.Listener, TextOutput, OnLayoutChangeListener {
+    protected class PlayerEventsHandler implements Player.Listener, OnLayoutChangeListener {
 
         @Override
         public void onPlaybackStateChanged(int state) {

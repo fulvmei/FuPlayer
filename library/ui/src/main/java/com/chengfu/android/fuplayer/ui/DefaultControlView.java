@@ -6,10 +6,8 @@ import android.content.res.TypedArray;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -20,18 +18,11 @@ import android.widget.TextView;
 
 import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.util.FuLog;
-import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.audio.AudioListener;
-import com.google.android.exoplayer2.util.RepeatModeUtil;
-import com.google.android.exoplayer2.video.VideoListener;
 
 import static com.google.android.exoplayer2.Player.COMMAND_SEEK_BACK;
 import static com.google.android.exoplayer2.Player.COMMAND_SEEK_FORWARD;
-import static com.google.android.exoplayer2.Player.COMMAND_SEEK_IN_CURRENT_WINDOW;
-import static com.google.android.exoplayer2.Player.COMMAND_SEEK_TO_NEXT;
-import static com.google.android.exoplayer2.Player.COMMAND_SEEK_TO_PREVIOUS;
 
 public class DefaultControlView extends BaseControlView {
 
@@ -61,7 +52,8 @@ public class DefaultControlView extends BaseControlView {
 
     protected final Context mContext;
     protected FuPlayer mPlayer;
-    protected final ComponentListener mComponentListener;
+    protected final PlayerEventsHandler playerEventsHandler;
+    protected final ActionHandler actionHandler;
     protected final Timeline.Window mWindow;
     protected ProgressAdapter mProgressAdapter;
 
@@ -118,7 +110,9 @@ public class DefaultControlView extends BaseControlView {
 
         mContext = context;
 
-        mComponentListener = initComponentListener();
+        playerEventsHandler = initPlayerEventsHandler();
+        actionHandler = initActionHandler();
+
         mWindow = new Timeline.Window();
 
         int controllerLayoutId = R.layout.default_controller_view;
@@ -165,8 +159,12 @@ public class DefaultControlView extends BaseControlView {
 
     }
 
-    protected ComponentListener initComponentListener() {
-        return new ComponentListener();
+    protected PlayerEventsHandler initPlayerEventsHandler() {
+        return new PlayerEventsHandler();
+    }
+
+    protected ActionHandler initActionHandler() {
+        return new ActionHandler();
     }
 
     protected int getLayoutResourcesId(int layoutId) {
@@ -184,7 +182,7 @@ public class DefaultControlView extends BaseControlView {
         mSeekView = findViewById(R.id.fu_controller_seek);
         if (mSeekView != null) {
             mSeekView.setMax(mSeekNumber);
-            mSeekView.setOnSeekBarChangeListener(mComponentListener);
+            mSeekView.setOnSeekBarChangeListener(actionHandler);
 
             mSeekView.setOnTouchListener((v, event) -> {
                 if (mProgressAdapter != null) {
@@ -195,35 +193,35 @@ public class DefaultControlView extends BaseControlView {
         }
         mPlayPauseSwitchView = findViewById(R.id.fu_controller_play_pause_switch);
         if (mPlayPauseSwitchView != null) {
-            mPlayPauseSwitchView.setOnClickListener(mComponentListener);
+            mPlayPauseSwitchView.setOnClickListener(actionHandler);
         }
         mFastRewindView = findViewById(R.id.fu_controller_fast_rewind);
         if (mFastRewindView != null) {
-            mFastRewindView.setOnClickListener(mComponentListener);
+            mFastRewindView.setOnClickListener(actionHandler);
         }
         mFastForwardView = findViewById(R.id.fu_controller_fast_forward);
         if (mFastForwardView != null) {
-            mFastForwardView.setOnClickListener(mComponentListener);
+            mFastForwardView.setOnClickListener(actionHandler);
         }
         mRepeatSwitchView = findViewById(R.id.fu_controller_repeat_switch);
         if (mRepeatSwitchView != null) {
-            mRepeatSwitchView.setOnClickListener(mComponentListener);
+            mRepeatSwitchView.setOnClickListener(actionHandler);
         }
         mVolumeSwitchView = findViewById(R.id.fu_controller_volume_switch);
         if (mVolumeSwitchView != null) {
-            mVolumeSwitchView.setOnClickListener(mComponentListener);
+            mVolumeSwitchView.setOnClickListener(actionHandler);
         }
         mShuffleSwitchView = findViewById(R.id.fu_controller_shuffle_switch);
         if (mShuffleSwitchView != null) {
-            mShuffleSwitchView.setOnClickListener(mComponentListener);
+            mShuffleSwitchView.setOnClickListener(actionHandler);
         }
         mSkipPrevious = findViewById(R.id.fu_controller_skip_previous);
         if (mSkipPrevious != null) {
-            mSkipPrevious.setOnClickListener(mComponentListener);
+            mSkipPrevious.setOnClickListener(actionHandler);
         }
         mSkipNext = findViewById(R.id.fu_controller_skip_next);
         if (mSkipNext != null) {
-            mSkipNext.setOnClickListener(mComponentListener);
+            mSkipNext.setOnClickListener(actionHandler);
         }
     }
 
@@ -335,12 +333,12 @@ public class DefaultControlView extends BaseControlView {
             return;
         }
         if (mPlayer != null) {
-            mPlayer.removeListener(mComponentListener);
+            mPlayer.removeListener(playerEventsHandler);
         }
 
         mPlayer = player;
         if (player != null) {
-            player.addListener(mComponentListener);
+            player.addListener(playerEventsHandler);
         }
         if (mProgressAdapter != null) {
             mProgressAdapter.setPlayer(player);
@@ -438,10 +436,6 @@ public class DefaultControlView extends BaseControlView {
 
     protected void updateRepeatViewResource(@NonNull ImageButton imageButton, int repeatMode) {
         switch (repeatMode) {
-            case FuPlayer.REPEAT_MODE_OFF:
-                imageButton.setImageResource(R.drawable.fu_ic_repeat_off);
-                imageButton.setContentDescription("");
-                break;
             case FuPlayer.REPEAT_MODE_ONE:
                 imageButton.setImageResource(R.drawable.fu_ic_repeat_one);
                 imageButton.setContentDescription("");
@@ -521,7 +515,7 @@ public class DefaultControlView extends BaseControlView {
 //            return;
         }
 
-        dispatchProgressUpdate(position,bufferedPosition);
+        dispatchProgressUpdate(position, bufferedPosition);
 
         if (mSeekView != null) {
             if (duration > 0 && !mTracking) {
@@ -818,8 +812,59 @@ public class DefaultControlView extends BaseControlView {
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS;
     }
 
-    private final class ComponentListener implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, FuPlayer.Listener {
+    protected class PlayerEventsHandler implements FuPlayer.Listener {
+        @Override
+        public void onTimelineChanged(Timeline timeline, int reason) {
+            FuLog.d(TAG, "onTimelineChanged : timeline=" + timeline + ",reason=" + reason);
+            updateNavigation();
+            updateProgress();
+        }
 
+        @Override
+        public void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
+            FuLog.d(TAG, "onPlayWhenReadyChanged : playWhenReady=" + playWhenReady + ",reason=" + reason);
+            updateShowOrHide();
+            updatePlayPauseView();
+            updateProgress();
+        }
+
+        @Override
+        public void onPlaybackStateChanged(int state) {
+            FuLog.d(TAG, "onPlayerStateChanged : state=" + state);
+            updateShowOrHide();
+            updatePlayPauseView();
+            updateProgress();
+        }
+
+        @Override
+        public void onRepeatModeChanged(int repeatMode) {
+            FuLog.d(TAG, "onRepeatModeChanged : repeatMode=" + repeatMode);
+            updateNavigation();
+            updateRepeatView();
+        }
+
+        @Override
+        public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+            FuLog.d(TAG, "onShuffleModeEnabledChanged : shuffleModeEnabled=" + shuffleModeEnabled);
+            updateNavigation();
+            updateRepeatView();
+            updateShuffleView();
+        }
+
+        @Override
+        public void onVolumeChanged(float volume) {
+            FuLog.d(TAG, "onVolumeChanged : volume=" + volume);
+            updateVolumeView();
+        }
+
+        @Override
+        public void onPositionDiscontinuity(Player.PositionInfo oldPosition, Player.PositionInfo newPosition, int reason) {
+            updateNavigation();
+        }
+
+    }
+
+    protected class ActionHandler implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
         @Override
         public void onClick(View v) {
             if (mPlayer == null) {
@@ -884,54 +929,6 @@ public class DefaultControlView extends BaseControlView {
 
             hideAfterTimeout();
         }
-
-        @Override
-        public void onTimelineChanged(Timeline timeline, int reason) {
-            FuLog.d(TAG, "onTimelineChanged : timeline=" + timeline + ",reason=" + reason);
-            updateNavigation();
-            updateProgress();
-        }
-
-        @Override
-        public void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
-            FuLog.d(TAG, "onPlayWhenReadyChanged : playWhenReady=" + playWhenReady + ",reason=" + reason);
-            updateShowOrHide();
-            updatePlayPauseView();
-            updateProgress();
-        }
-
-        @Override
-        public void onPlaybackStateChanged(int state) {
-            FuLog.d(TAG, "onPlayerStateChanged : state=" + state);
-            updateShowOrHide();
-            updatePlayPauseView();
-            updateProgress();
-        }
-
-        @Override
-        public void onRepeatModeChanged(int repeatMode) {
-            FuLog.d(TAG, "onRepeatModeChanged : repeatMode=" + repeatMode);
-            updateNavigation();
-            updateRepeatView();
-        }
-
-        @Override
-        public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
-            FuLog.d(TAG, "onShuffleModeEnabledChanged : shuffleModeEnabled=" + shuffleModeEnabled);
-            updateNavigation();
-            updateRepeatView();
-            updateShuffleView();
-        }
-
-        @Override
-        public void onVolumeChanged(float volume) {
-            FuLog.d(TAG, "onVolumeChanged : volume=" + volume);
-            updateVolumeView();
-        }
-
-        @Override
-        public void onPositionDiscontinuity(Player.PositionInfo oldPosition, Player.PositionInfo newPosition, int reason) {
-            updateNavigation();
-        }
     }
+
 }
