@@ -1,6 +1,6 @@
 package com.chengfu.android.fuplayer.ui;
 
-public interface StateView extends PlayerView {
+public interface StateView extends PlayerHolder {
 
     interface VisibilityChangeListener {
         void onVisibilityChange(StateView stateView, boolean visibility);

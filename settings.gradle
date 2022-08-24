@@ -1,12 +1,25 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "FuPlayer"
 include ':demo'
-
 include ':extensions:pldroid'
 include ':extensions:exo'
 include ':extensions:mediasession'
-
 include ':library:all'
 include ':library:core'
 include ':library:ui'
 
-rootProject.name = "FuPlayer"
+
 

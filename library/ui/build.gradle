@@ -24,9 +24,9 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.annotation:annotation:1.2.0'
-    implementation 'androidx.media:media:1.2.1'
-    compileOnly 'org.checkerframework:checker-qual:3.8.0'
+    implementation 'androidx.annotation:annotation:'+androidxAnnotation
+    implementation 'androidx.media:media:'+androidxMedia
+    compileOnly 'org.checkerframework:checker-qual:3.12.0'
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.5'
     implementation project(':library:core')
 }

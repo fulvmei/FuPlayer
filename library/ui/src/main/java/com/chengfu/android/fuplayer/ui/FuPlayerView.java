@@ -23,10 +23,8 @@ import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.util.FuLog;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.Cue;
-import com.google.android.exoplayer2.text.TextOutput;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.video.VideoDecoderGLSurfaceView;
-import com.google.android.exoplayer2.video.VideoListener;
 import com.google.android.exoplayer2.video.VideoSize;
 import com.google.android.exoplayer2.video.spherical.SphericalGLSurfaceView;
 
@@ -35,7 +33,7 @@ import java.util.List;
 import static com.google.android.exoplayer2.Player.COMMAND_GET_TEXT;
 import static com.google.android.exoplayer2.Player.COMMAND_SET_VIDEO_SURFACE;
 
-public class FuPlayerView extends FrameLayout implements PlayerView {
+public class FuPlayerView extends FrameLayout implements PlayerHolder {
 
     public static final String TAG = "FuPlayerView";
 
@@ -302,7 +300,7 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
                 }
             }
             if (subtitleView != null && player.isCommandAvailable(COMMAND_GET_TEXT)) {
-                subtitleView.setCues(player.getCurrentCues());
+                subtitleView.setCues(player.getCurrentCues().cues);
             }
             player.addListener(playerEventsHandler);
         }
@@ -386,10 +384,10 @@ public class FuPlayerView extends FrameLayout implements PlayerView {
 
         @Override
         public void onVideoSizeChanged(VideoSize videoSize) {
-            int width = videoSize != null ? videoSize.width : 0;
-            int height = videoSize != null ? videoSize.height : 0;
-            int unappliedRotationDegrees = videoSize != null ? videoSize.unappliedRotationDegrees : 0;
-            float pixelWidthHeightRatio = videoSize != null ? videoSize.pixelWidthHeightRatio : 0;
+            int width = videoSize.width;
+            int height = videoSize.height;
+            int unappliedRotationDegrees = videoSize.unappliedRotationDegrees;
+            float pixelWidthHeightRatio = videoSize.pixelWidthHeightRatio;
             FuLog.d(TAG, "onVideoSizeChanged : width=" + width + ",height=" + height + ",unappliedRotationDegrees=" + unappliedRotationDegrees + ",pixelWidthHeightRatio=" + pixelWidthHeightRatio);
             float videoAspectRatio =
                     (height == 0 || width == 0) ? 1 : (width * pixelWidthHeightRatio) / height;

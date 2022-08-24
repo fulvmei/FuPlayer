@@ -163,11 +163,6 @@ public class PlayerAnalytics implements AnalyticsListener {
 
     }
 
-    @Override
-    public void onTracksChanged(EventTime eventTime, TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-
-    }
-
 
     @Override
     public void onVideoSizeChanged(EventTime eventTime, int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {

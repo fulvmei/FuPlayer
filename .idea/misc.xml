@@ -9,6 +9,22 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/demo/src/main/res/layout/item_group.xml" value="0.12273550724637682" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_fast_forward.xml" value="0.102" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_fast_rewind.xml" value="0.102" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_pause.xml" value="0.102" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_play.xml" value="0.102" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_repeat_all.xml" value="0.102" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_repeat_off.xml" value="0.102" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_repeat_one.xml" value="0.102" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_replay.xml" value="0.102" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_shuffle_off.xml" value="0.102" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_shuffle_up.xml" value="0.102" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_skip_next.xml" value="0.102" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_skip_previous.xml" value="0.17" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_volume_off.xml" value="0.102" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_volume_up.xml" value="0.22" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/layout/default_controller_view.xml" value="0.3333333333333333" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/layout/default_player_view.xml" value="0.16621376811594202" />
       </map>
     </option>
   </component>
@@ -58,7 +74,7 @@
       </value>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

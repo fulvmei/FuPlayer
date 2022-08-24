@@ -1,62 +1,41 @@
 package com.chengfu.android.fuplayer.demo;
 
-import android.app.PendingIntent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.media.AudioManager;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 
 import com.bumptech.glide.Glide;
 import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.demo.bean.Media;
-import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
 import com.chengfu.android.fuplayer.ext.exo.FuExoPlayer;
 import com.chengfu.android.fuplayer.ui.BaseControlView;
 import com.chengfu.android.fuplayer.ui.DefaultControlView;
 import com.chengfu.android.fuplayer.ui.DefaultTimeBar;
 import com.chengfu.android.fuplayer.ui.FuPlayerView;
-import com.chengfu.android.fuplayer.ext.exo.FuExoPlayerFactory;
-//import com.chengfu.android.fuplayer.ui.PlayerNotificationManager;
 import com.chengfu.android.fuplayer.ui.SampleBufferingView;
 import com.chengfu.android.fuplayer.ui.SampleEndedView;
 import com.chengfu.android.fuplayer.ui.SampleErrorView;
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.MediaMetadata;
-import com.google.android.exoplayer2.PlaybackException;
-import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.metadata.Metadata;
-import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
-import com.google.android.exoplayer2.source.ShuffleOrder;
-import com.google.android.exoplayer2.source.hls.HlsManifest;
-import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.Util;
-import com.gyf.barlibrary.BarHide;
-import com.gyf.barlibrary.ImmersionBar;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+import com.gyf.immersionbar.BarHide;
+import com.gyf.immersionbar.ImmersionBar;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -291,16 +270,16 @@ public class PlayerActivity extends AppCompatActivity {
         timeBar.setDuration(60000);
     }
 
-    private final Runnable runnable = () -> {
-        handleMessage();
-    };
-
-    private void handleMessage(){
-        Timber.e("handleMessage bufferedPosition=" + player.getBufferedPosition());
-        handler.postDelayed(runnable,1000);
-    }
-
-    Handler handler = new Handler();
+//    private final Runnable runnable = () -> {
+//        handleMessage();
+//    };
+//
+//    private void handleMessage(){
+//        Timber.e("handleMessage bufferedPosition=" + player.getBufferedPosition());
+//        handler.postDelayed(runnable,1000);
+//    }
+//
+//    Handler handler = new Handler();
 
 
     private void initPlayer() {
@@ -316,7 +295,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         player = new FuExoPlayer(exoPlayer);
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
-        handleMessage();
+//        handleMessage();
         player.addListener(new Player.Listener() {
 
             @Override

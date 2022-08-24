@@ -11,16 +11,15 @@ import android.provider.Settings;
 import android.view.OrientationEventListener;
 
 import com.chengfu.android.fuplayer.FuPlayer;
-import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.video.VideoListener;
+import com.google.android.exoplayer2.video.VideoSize;
 
 public class ScreenRotationHelper {
 
     private Activity activity;
     private FuPlayer player;
-    private final PlayerEventListener playerEventListener;
+    private final PlayerEventsListener playerEventsListener;
     private final OrientationEventListener orientationEventListener;
     private boolean enableInPlayerStateEnd;// 播放完成时是否可用，默认false
     private boolean enableInPlayerStateError;// 播放出错时是否可用，默认false
@@ -39,7 +38,7 @@ public class ScreenRotationHelper {
         this.activity = activity;
         accelerometerRotation = Settings.System.getInt(activity.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
         rotationObserver = new RotationObserver(activity);
-        playerEventListener = new PlayerEventListener();
+        playerEventsListener = new PlayerEventsListener();
         orientationEventListener = new OrientationEventListener(activity) {
             @Override
             public void onOrientationChanged(int orientation) {
@@ -93,17 +92,11 @@ public class ScreenRotationHelper {
             return;
         }
         if (this.player != null) {
-            this.player.removeListener(playerEventListener);
-            if (this.player.getVideoComponent() != null) {
-                this.player.getVideoComponent().removeVideoListener(playerEventListener);
-            }
+            this.player.removeListener(playerEventsListener);
         }
         this.player = player;
         if (player != null) {
-            player.addListener(playerEventListener);
-            if (this.player.getVideoComponent() != null) {
-                this.player.getVideoComponent().addVideoListener(playerEventListener);
-            }
+            player.addListener(playerEventsListener);
         }
         videoWidth = 0;
         videoHeight = 0;
@@ -236,7 +229,7 @@ public class ScreenRotationHelper {
         return false;
     }
 
-    private class PlayerEventListener implements Player.EventListener, VideoListener {
+    private class PlayerEventsListener implements Player.Listener {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
@@ -249,9 +242,9 @@ public class ScreenRotationHelper {
         }
 
         @Override
-        public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
-            videoWidth = width;
-            videoHeight = height;
+        public void onVideoSizeChanged(VideoSize videoSize) {
+            videoWidth = videoSize.width;
+            videoHeight = videoSize.height;
             switchOrientationState();
         }
     }

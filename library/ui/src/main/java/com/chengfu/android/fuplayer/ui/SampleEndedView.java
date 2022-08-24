@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.chengfu.android.fuplayer.FuPlayer;
+import com.google.android.exoplayer2.Player;
 
 public class SampleEndedView extends BaseStateView {
 
@@ -117,11 +118,12 @@ public class SampleEndedView extends BaseStateView {
         this.onRetryListener = onRetryListener;
     }
 
-    private final class ComponentListener implements FuPlayer.EventListener {
+    private final class ComponentListener implements Player.Listener {
 
         @Override
-        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        public void onPlaybackStateChanged(int playbackState) {
             updateVisibility();
         }
+
     }
 }

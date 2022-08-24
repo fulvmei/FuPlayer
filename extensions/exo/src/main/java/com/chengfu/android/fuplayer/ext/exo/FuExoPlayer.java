@@ -10,26 +10,35 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.chengfu.android.fuplayer.FuPlayer;
+import com.google.android.exoplayer2.DeviceInfo;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.MediaMetadata;
 import com.google.android.exoplayer2.PlaybackParameters;
-import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.PlayerMessage;
+import com.google.android.exoplayer2.Renderer;
 import com.google.android.exoplayer2.SeekParameters;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.Tracks;
+import com.google.android.exoplayer2.analytics.AnalyticsCollector;
+import com.google.android.exoplayer2.analytics.AnalyticsListener;
 import com.google.android.exoplayer2.audio.AudioAttributes;
-import com.google.android.exoplayer2.device.DeviceInfo;
-import com.google.android.exoplayer2.metadata.Metadata;
+import com.google.android.exoplayer2.audio.AuxEffectInfo;
+import com.google.android.exoplayer2.decoder.DecoderCounters;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ShuffleOrder;
 import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.text.Cue;
+import com.google.android.exoplayer2.text.CueGroup;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.trackselection.TrackSelectionParameters;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.util.Clock;
+import com.google.android.exoplayer2.util.PriorityTaskManager;
+import com.google.android.exoplayer2.video.VideoFrameMetadataListener;
 import com.google.android.exoplayer2.video.VideoSize;
+import com.google.android.exoplayer2.video.spherical.CameraMotionListener;
 
 import java.util.List;
 
@@ -61,12 +70,6 @@ public class FuExoPlayer implements FuPlayer {
 
     @Nullable
     @Override
-    public MetadataComponent getMetadataComponent() {
-        return mPlayer.getMetadataComponent();
-    }
-
-    @Nullable
-    @Override
     public DeviceComponent getDeviceComponent() {
         return mPlayer.getDeviceComponent();
     }
@@ -82,23 +85,28 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public AnalyticsCollector getAnalyticsCollector() {
+        return mPlayer.getAnalyticsCollector();
+    }
+
+    @Override
+    public void addAnalyticsListener(AnalyticsListener listener) {
+        mPlayer.addAnalyticsListener(listener);
+    }
+
+    @Override
+    public void removeAnalyticsListener(AnalyticsListener listener) {
+        mPlayer.removeAnalyticsListener(listener);
+    }
+
+    @Override
     public Looper getApplicationLooper() {
         return mPlayer.getApplicationLooper();
     }
 
     @Override
-    public void addListener(Player.EventListener listener) {
-        mPlayer.addListener(listener);
-    }
-
-    @Override
     public void addListener(Listener listener) {
         mPlayer.addListener(listener);
-    }
-
-    @Override
-    public void removeListener(Player.EventListener listener) {
-        mPlayer.removeListener(listener);
     }
 
     @Override
@@ -187,6 +195,11 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public boolean canAdvertiseSession() {
+        return mPlayer.canAdvertiseSession();
+    }
+
+    @Override
     public Commands getAvailableCommands() {
         return mPlayer.getAvailableCommands();
     }
@@ -216,12 +229,6 @@ public class FuExoPlayer implements FuPlayer {
     public ExoPlaybackException getPlayerError() {
         return mPlayer.getPlayerError();
     }
-
-//    @Nullable
-//    @Override
-//    public ExoPlaybackException getPlaybackError() {
-//        return mPlayer.getPlaybackError();
-//    }
 
     @Override
     public void play() {
@@ -319,6 +326,11 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public boolean hasPreviousMediaItem() {
+        return mPlayer.hasPreviousMediaItem();
+    }
+
+    @Override
     public void previous() {
         mPlayer.previous();
     }
@@ -329,7 +341,12 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
-    public int getMaxSeekToPreviousPosition() {
+    public void seekToPreviousMediaItem() {
+        mPlayer.seekToPreviousMediaItem();
+    }
+
+    @Override
+    public long getMaxSeekToPreviousPosition() {
         return mPlayer.getMaxSeekToPreviousPosition();
     }
 
@@ -349,6 +366,11 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public boolean hasNextMediaItem() {
+        return mPlayer.hasNextMediaItem();
+    }
+
+    @Override
     public void next() {
         mPlayer.next();
     }
@@ -356,6 +378,11 @@ public class FuExoPlayer implements FuPlayer {
     @Override
     public void seekToNextWindow() {
         mPlayer.seekToNextWindow();
+    }
+
+    @Override
+    public void seekToNextMediaItem() {
+        mPlayer.seekToNextMediaItem();
     }
 
     @Override
@@ -394,6 +421,11 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public Tracks getCurrentTracks() {
+        return mPlayer.getCurrentTracks();
+    }
+
+    @Override
     public int getRendererCount() {
         return mPlayer.getRendererCount();
     }
@@ -401,6 +433,11 @@ public class FuExoPlayer implements FuPlayer {
     @Override
     public int getRendererType(int index) {
         return mPlayer.getRendererType(index);
+    }
+
+    @Override
+    public Renderer getRenderer(int index) {
+        return mPlayer.getRenderer(index);
     }
 
     @Override
@@ -414,8 +451,13 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
-    public List<Metadata> getCurrentStaticMetadata() {
-        return mPlayer.getCurrentStaticMetadata();
+    public TrackSelectionParameters getTrackSelectionParameters() {
+        return mPlayer.getTrackSelectionParameters();
+    }
+
+    @Override
+    public void setTrackSelectionParameters(TrackSelectionParameters parameters) {
+        mPlayer.setTrackSelectionParameters(parameters);
     }
 
     @Override
@@ -455,8 +497,18 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public int getCurrentMediaItemIndex() {
+        return mPlayer.getCurrentMediaItemIndex();
+    }
+
+    @Override
     public int getNextWindowIndex() {
         return mPlayer.getNextWindowIndex();
+    }
+
+    @Override
+    public int getNextMediaItemIndex() {
+        return mPlayer.getNextMediaItemIndex();
     }
 
     @Override
@@ -464,11 +516,10 @@ public class FuExoPlayer implements FuPlayer {
         return mPlayer.getPreviousWindowIndex();
     }
 
-//    @Nullable
-//    @Override
-//    public Object getCurrentTag() {
-//        return mPlayer.getCurrentTag();
-//    }
+    @Override
+    public int getPreviousMediaItemIndex() {
+        return mPlayer.getPreviousMediaItemIndex();
+    }
 
     @Nullable
     @Override
@@ -517,8 +568,18 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public boolean isCurrentMediaItemDynamic() {
+        return mPlayer.isCurrentMediaItemDynamic();
+    }
+
+    @Override
     public boolean isCurrentWindowLive() {
         return mPlayer.isCurrentWindowLive();
+    }
+
+    @Override
+    public boolean isCurrentMediaItemLive() {
+        return mPlayer.isCurrentMediaItemLive();
     }
 
     @Override
@@ -529,6 +590,11 @@ public class FuExoPlayer implements FuPlayer {
     @Override
     public boolean isCurrentWindowSeekable() {
         return mPlayer.isCurrentWindowSeekable();
+    }
+
+    @Override
+    public boolean isCurrentMediaItemSeekable() {
+        return mPlayer.isCurrentMediaItemSeekable();
     }
 
     @Override
@@ -627,7 +693,7 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
-    public List<Cue> getCurrentCues() {
+    public CueGroup getCurrentCues() {
         return mPlayer.getCurrentCues();
     }
 
@@ -648,7 +714,7 @@ public class FuExoPlayer implements FuPlayer {
 
     @Override
     public void setDeviceVolume(int volume) {
-         mPlayer.setDeviceVolume(volume);
+        mPlayer.setDeviceVolume(volume);
     }
 
     @Override
@@ -753,6 +819,81 @@ public class FuExoPlayer implements FuPlayer {
     }
 
     @Override
+    public void setAudioAttributes(AudioAttributes audioAttributes, boolean handleAudioFocus) {
+        mPlayer.setAudioAttributes(audioAttributes, handleAudioFocus);
+    }
+
+    @Override
+    public void setAudioSessionId(int audioSessionId) {
+        mPlayer.setAudioSessionId(audioSessionId);
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return mPlayer.getAudioSessionId();
+    }
+
+    @Override
+    public void setAuxEffectInfo(AuxEffectInfo auxEffectInfo) {
+        mPlayer.setAuxEffectInfo(auxEffectInfo);
+    }
+
+    @Override
+    public void clearAuxEffectInfo() {
+        mPlayer.clearAuxEffectInfo();
+    }
+
+    @Override
+    public void setSkipSilenceEnabled(boolean skipSilenceEnabled) {
+        mPlayer.setSkipSilenceEnabled(skipSilenceEnabled);
+    }
+
+    @Override
+    public boolean getSkipSilenceEnabled() {
+        return mPlayer.getSkipSilenceEnabled();
+    }
+
+    @Override
+    public void setVideoScalingMode(int videoScalingMode) {
+        mPlayer.setVideoScalingMode(videoScalingMode);
+    }
+
+    @Override
+    public int getVideoScalingMode() {
+        return mPlayer.getVideoScalingMode();
+    }
+
+    @Override
+    public void setVideoChangeFrameRateStrategy(int videoChangeFrameRateStrategy) {
+        mPlayer.setVideoChangeFrameRateStrategy(videoChangeFrameRateStrategy);
+    }
+
+    @Override
+    public int getVideoChangeFrameRateStrategy() {
+        return mPlayer.getVideoChangeFrameRateStrategy();
+    }
+
+    @Override
+    public void setVideoFrameMetadataListener(VideoFrameMetadataListener listener) {
+        mPlayer.setVideoFrameMetadataListener(listener);
+    }
+
+    @Override
+    public void clearVideoFrameMetadataListener(VideoFrameMetadataListener listener) {
+        mPlayer.clearVideoFrameMetadataListener(listener);
+    }
+
+    @Override
+    public void setCameraMotionListener(CameraMotionListener listener) {
+        mPlayer.setCameraMotionListener(listener);
+    }
+
+    @Override
+    public void clearCameraMotionListener(CameraMotionListener listener) {
+        mPlayer.clearCameraMotionListener(listener);
+    }
+
+    @Override
     public PlayerMessage createMessage(PlayerMessage.Target target) {
         return mPlayer.createMessage(target);
     }
@@ -780,6 +921,50 @@ public class FuExoPlayer implements FuPlayer {
     @Override
     public boolean getPauseAtEndOfMediaItems() {
         return mPlayer.getPauseAtEndOfMediaItems();
+    }
+
+    @Nullable
+    @Override
+    public Format getAudioFormat() {
+        return mPlayer.getAudioFormat();
+    }
+
+    @Nullable
+    @Override
+    public Format getVideoFormat() {
+        return mPlayer.getVideoFormat();
+    }
+
+    @Nullable
+    @Override
+    public DecoderCounters getAudioDecoderCounters() {
+        return mPlayer.getAudioDecoderCounters();
+    }
+
+    @Nullable
+    @Override
+    public DecoderCounters getVideoDecoderCounters() {
+        return mPlayer.getVideoDecoderCounters();
+    }
+
+    @Override
+    public void setHandleAudioBecomingNoisy(boolean handleAudioBecomingNoisy) {
+        mPlayer.setHandleAudioBecomingNoisy(handleAudioBecomingNoisy);
+    }
+
+    @Override
+    public void setHandleWakeLock(boolean handleWakeLock) {
+        mPlayer.setHandleWakeLock(handleWakeLock);
+    }
+
+    @Override
+    public void setWakeMode(int wakeMode) {
+        mPlayer.setWakeMode(wakeMode);
+    }
+
+    @Override
+    public void setPriorityTaskManager(@Nullable PriorityTaskManager priorityTaskManager) {
+        mPlayer.setPriorityTaskManager(priorityTaskManager);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.chengfu.android.fuplayer.ui;
 
-public interface ProgressAdapter extends PlayerView{
+public interface ProgressAdapter extends PlayerHolder {
 
     boolean isCurrentWindowSeekable();
 

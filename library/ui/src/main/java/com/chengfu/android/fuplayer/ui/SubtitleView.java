@@ -15,6 +15,7 @@ import androidx.annotation.Dimension;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import com.google.android.exoplayer2.text.Cue;
+import com.google.android.exoplayer2.text.CueGroup;
 import com.google.android.exoplayer2.text.TextOutput;
 import com.google.android.exoplayer2.util.Util;
 import java.lang.annotation.Documented;
@@ -134,6 +135,11 @@ public final class SubtitleView extends FrameLayout implements TextOutput {
     @Override
     public void onCues(List<Cue> cues) {
         setCues(cues);
+    }
+
+    @Override
+    public void onCues(CueGroup cueGroup) {
+
     }
 
     /**

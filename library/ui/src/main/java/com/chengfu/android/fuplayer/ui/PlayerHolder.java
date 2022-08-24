@@ -4,7 +4,7 @@ import androidx.annotation.Nullable;
 
 import com.chengfu.android.fuplayer.FuPlayer;
 
-public interface PlayerView {
+public interface PlayerHolder {
     /**
      * Returns the {@link FuPlayer} currently being controlled by this view, or null if no player is
      * set.

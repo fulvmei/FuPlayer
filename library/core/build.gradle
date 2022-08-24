@@ -25,7 +25,7 @@ android {
 dependencies {
     api 'com.google.android.exoplayer:exoplayer-core:'+exolayerVersion
     api 'com.google.android.exoplayer:exoplayer-transformer:'+exolayerVersion
-    implementation 'androidx.media:media:1.2.1'
+    implementation 'androidx.media:media:'+androidxMedia
 }
 
 //ext {

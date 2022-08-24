@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 //import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -43,9 +44,9 @@ public class MediaSourceUtil {
 //                return new DashMediaSource(uri, dataSourceFactory, factory, null, null);
             case C.TYPE_SS:
                 DefaultSsChunkSource.Factory ssFactory = new DefaultSsChunkSource.Factory(dataSourceFactory);
-                return new SsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+                return new SsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
             case C.TYPE_HLS:
-                return new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+                return new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
 //                return new HlsMediaSource(uri, dataSourceFactory, null, null);
             case C.TYPE_OTHER:
             default:

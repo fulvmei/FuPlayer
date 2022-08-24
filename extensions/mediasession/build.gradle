@@ -27,7 +27,7 @@ android {
 
 dependencies {
     implementation project(':library:core')
-    api 'androidx.media:media:1.2.1'
+    api 'androidx.media:media:'+androidxMedia
 }
 
 //ext {
