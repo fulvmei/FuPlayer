@@ -27,10 +27,3 @@ dependencies {
     api 'com.google.android.exoplayer:exoplayer-transformer:'+exolayerVersion
     implementation 'androidx.media:media:'+androidxMedia
 }
-
-//ext {
-//    releaseArtifact = 'fuplayer-core'
-//    releaseDescription = 'The FuPlayer library core module.'
-//}
-//
-//apply from: '../../publish.gradle'

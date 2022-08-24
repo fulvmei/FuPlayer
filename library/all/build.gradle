@@ -27,10 +27,3 @@ dependencies {
     api project(':library:core')
     api project(':library:ui')
 }
-
-
-//ext {
-//    releaseArtifact = 'fuplayer'
-//    releaseDescription = 'The FuPlayer library (all modules).'
-//}
-//apply from: '../../publish.gradle'

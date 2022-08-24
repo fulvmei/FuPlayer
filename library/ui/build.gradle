@@ -30,9 +30,3 @@ dependencies {
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.5'
     implementation project(':library:core')
 }
-
-//ext {
-//    releaseArtifact = 'fuplayer-ui'
-//    releaseDescription = 'The FuPlayer library ui module.'
-//}
-//apply from: '../../publish.gradle'

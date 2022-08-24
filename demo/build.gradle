@@ -47,7 +47,6 @@ dependencies {
     }
 
     implementation project(':extensions:exo')
-    implementation project(':extensions:pldroid')
     implementation project(':library:all')
     implementation project(':library:core')
     implementation project(':library:ui')

@@ -35,9 +35,3 @@ dependencies {
 
     implementation 'androidx.media:media:'+androidxMedia
 }
-
-//ext {
-//    releaseArtifact = 'extension-exo'
-//    releaseDescription = 'Exo extension for FuPlayer.'
-//}
-//apply from: '../../publish.gradle'
