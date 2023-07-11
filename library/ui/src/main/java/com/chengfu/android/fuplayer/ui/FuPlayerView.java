@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import com.chengfu.android.fuplayer.util.FuLog;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.Cue;
+import com.google.android.exoplayer2.text.CueGroup;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.video.VideoDecoderGLSurfaceView;
 import com.google.android.exoplayer2.video.VideoSize;
@@ -435,13 +436,6 @@ public class FuPlayerView extends FrameLayout implements PlayerHolder {
             if (mSurfaceView instanceof TextureView) {
                 TextureView surfaceView = (TextureView) mSurfaceView;
                 shutterView.setImageBitmap(surfaceView.getBitmap());
-            }
-        }
-
-        @Override
-        public void onCues(List<Cue> cues) {
-            if (subtitleView != null) {
-                subtitleView.onCues(cues);
             }
         }
 

@@ -698,14 +698,14 @@ public class DefaultControlView extends BaseControlView {
         if (mPlayer == null || !mPlayer.hasPreviousWindow()) {
             return;
         }
-        mPlayer.seekToPreviousWindow();
+        mPlayer.seekToPreviousMediaItem();
     }
 
     protected void seekToNextWindow() {
         if (mPlayer == null || !mPlayer.hasNextWindow()) {
             return;
         }
-        mPlayer.seekToNextWindow();
+        mPlayer.seekToNextMediaItem();
     }
 
     protected void seekBack() {
