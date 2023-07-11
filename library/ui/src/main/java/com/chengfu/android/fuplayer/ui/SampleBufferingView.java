@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.chengfu.android.fuplayer.FuPlayer;
 import com.google.android.exoplayer2.Player;
 
 import java.lang.annotation.Documented;
@@ -25,14 +24,14 @@ public class SampleBufferingView extends BaseStateView {
     }
 
     /**
-     * The buffering view is always shown when the player is in the {@link FuPlayer#STATE_BUFFERING
+     * The buffering view is always shown when the player is in the {@link Player#STATE_BUFFERING
      * buffering} state.
      */
     public static final int SHOW_MODE_ALWAYS = 0;
 
     /**
-     * The buffering view is shown when the player is in the {@link FuPlayer#STATE_BUFFERING buffering}
-     * state and {@link FuPlayer#getPlayWhenReady() playWhenReady} is {@code true}.
+     * The buffering view is shown when the player is in the {@link Player#STATE_BUFFERING buffering}
+     * state and {@link Player#getPlayWhenReady() playWhenReady} is {@code true}.
      */
     public static final int SHOW_MODE_PLAYING = 1;
 
@@ -90,7 +89,7 @@ public class SampleBufferingView extends BaseStateView {
         if (player == null) {
             return showInDetachPlayer;
         } else {
-            if (player.getPlaybackState() == FuPlayer.STATE_BUFFERING) {
+            if (player.getPlaybackState() == Player.STATE_BUFFERING) {
                 if (showMode == SHOW_MODE_ALWAYS) {
                     return true;
                 } else return showMode == SHOW_MODE_PLAYING && player.getPlayWhenReady();
@@ -100,13 +99,13 @@ public class SampleBufferingView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(@NonNull FuPlayer player) {
+    protected void onAttachedToPlayer(@NonNull Player player) {
         player.addListener(componentListener);
         updateVisibility();
     }
 
     @Override
-    protected void onDetachedFromPlayer(@NonNull FuPlayer player) {
+    protected void onDetachedFromPlayer(@NonNull Player player) {
         player.removeListener(componentListener);
         updateVisibility();
     }

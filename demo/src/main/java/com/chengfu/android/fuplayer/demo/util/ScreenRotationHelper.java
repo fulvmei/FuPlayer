@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.view.OrientationEventListener;
 
-import com.chengfu.android.fuplayer.FuPlayer;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.video.VideoSize;
@@ -18,7 +17,7 @@ import com.google.android.exoplayer2.video.VideoSize;
 public class ScreenRotationHelper {
 
     private Activity activity;
-    private FuPlayer player;
+    private Player player;
     private final PlayerEventsListener playerEventsListener;
     private final OrientationEventListener orientationEventListener;
     private boolean enableInPlayerStateEnd;// 播放完成时是否可用，默认false
@@ -87,7 +86,7 @@ public class ScreenRotationHelper {
         };
     }
 
-    public void setPlayer(FuPlayer player) {
+    public void setPlayer(Player player) {
         if (this.player == player) {
             return;
         }

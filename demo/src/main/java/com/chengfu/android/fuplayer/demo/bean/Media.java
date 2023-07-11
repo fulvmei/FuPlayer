@@ -3,12 +3,6 @@ package com.chengfu.android.fuplayer.demo.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.chengfu.android.fuplayer.demo.DemoApplication;
-import com.chengfu.android.fuplayer.demo.util.MediaSourceUtil;
-import com.google.android.exoplayer2.source.MediaSource;
-
-import java.io.Serializable;
-
 public class Media implements Parcelable {
     private String name;
     private String path;

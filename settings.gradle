@@ -1,6 +1,5 @@
 rootProject.name = "FuPlayer"
 include ':demo'
-include ':extensions:exo'
 include ':library:all'
 include ':library:core'
 include ':library:ui'

@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.chengfu.android.fuplayer.FuPlayer;
 import com.google.android.exoplayer2.Player;
 
 public class SampleEndedView extends BaseStateView {
@@ -20,7 +19,7 @@ public class SampleEndedView extends BaseStateView {
     protected boolean showInDetachPlayer;
 
     public interface OnRetryListener {
-        boolean onRetry(FuPlayer player);
+        boolean onRetry(Player player);
     }
 
     public SampleEndedView(@NonNull Context context) {
@@ -50,7 +49,7 @@ public class SampleEndedView extends BaseStateView {
                 if (onRetryListener != null && onRetryListener.onRetry(player)) {
                     return;
                 }
-                if (player != null && player.getPlaybackState() == FuPlayer.STATE_ENDED) {
+                if (player != null && player.getPlaybackState() == Player.STATE_ENDED) {
                     player.seekTo(0);
                     player.setPlayWhenReady(true);
                 }
@@ -64,13 +63,13 @@ public class SampleEndedView extends BaseStateView {
     }
 
     @Override
-    protected void onAttachedToPlayer(@NonNull FuPlayer player) {
+    protected void onAttachedToPlayer(@NonNull Player player) {
         player.addListener(componentListener);
         updateVisibility();
     }
 
     @Override
-    protected void onDetachedFromPlayer(@NonNull FuPlayer player) {
+    protected void onDetachedFromPlayer(@NonNull Player player) {
         player.removeListener(componentListener);
         updateVisibility();
     }
@@ -95,7 +94,7 @@ public class SampleEndedView extends BaseStateView {
         if (player == null) {
             return showInDetachPlayer;
         }
-        if (player.getPlaybackState() == FuPlayer.STATE_ENDED) {
+        if (player.getPlaybackState() == Player.STATE_ENDED) {
             return true;
         }
         return false;

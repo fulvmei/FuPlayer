@@ -1,6 +1,6 @@
 package com.chengfu.android.fuplayer.ui;
 
-import com.chengfu.android.fuplayer.FuPlayer;
+import com.google.android.exoplayer2.Player;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -107,12 +107,12 @@ public class DynamicProgressAdapter implements ProgressAdapter {
     }
 
     @Override
-    public FuPlayer getPlayer() {
+    public Player getPlayer() {
         return null;
     }
 
     @Override
-    public void setPlayer(FuPlayer player) {
+    public void setPlayer(Player player) {
 
     }
 }

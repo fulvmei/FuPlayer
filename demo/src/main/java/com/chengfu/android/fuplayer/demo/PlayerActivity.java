@@ -8,14 +8,11 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
-import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.demo.bean.Media;
-import com.chengfu.android.fuplayer.ext.exo.FuExoPlayer;
 import com.chengfu.android.fuplayer.ui.BaseControlView;
 import com.chengfu.android.fuplayer.ui.DefaultControlView;
 import com.chengfu.android.fuplayer.ui.DefaultTimeBar;
@@ -24,6 +21,7 @@ import com.chengfu.android.fuplayer.ui.SampleBufferingView;
 import com.chengfu.android.fuplayer.ui.SampleEndedView;
 import com.chengfu.android.fuplayer.ui.SampleErrorView;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.MediaMetadata;
 import com.google.android.exoplayer2.Player;
@@ -52,7 +50,7 @@ public class PlayerActivity extends AppCompatActivity {
 //    private Media media;
 
     private View playerRoot;
-    private FuPlayer player;
+    private Player player;
     private SampleBufferingView loadingView;
     private SampleErrorView errorView;
     private SampleEndedView endedView;
@@ -291,9 +289,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         DefaultMediaSourceFactory mediaSourceFactory = new DefaultMediaSourceFactory(dataSourceFactory);
 
-        SimpleExoPlayer exoPlayer = new SimpleExoPlayer.Builder(this).setMediaSourceFactory(mediaSourceFactory).build();
-
-        player = new FuExoPlayer(exoPlayer);
+        player =new ExoPlayer.Builder(this).setMediaSourceFactory(mediaSourceFactory).build();
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
 //        handleMessage();
         player.addListener(new Player.Listener() {

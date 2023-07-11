@@ -46,7 +46,7 @@ dependencies {
         exclude module: 'exifinterface'
     }
 
-    implementation project(':extensions:exo')
+//    implementation project(':extensions:exo')
     implementation project(':library:all')
     implementation project(':library:core')
     implementation project(':library:ui')

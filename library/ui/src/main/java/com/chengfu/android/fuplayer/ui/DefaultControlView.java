@@ -16,7 +16,6 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.util.FuLog;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Timeline;
@@ -51,7 +50,7 @@ public class DefaultControlView extends BaseControlView {
     public static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
 
     protected final Context mContext;
-    protected FuPlayer mPlayer;
+    protected Player mPlayer;
     protected final PlayerEventsHandler playerEventsHandler;
     protected final ActionHandler actionHandler;
     protected final Timeline.Window mWindow;
@@ -323,12 +322,12 @@ public class DefaultControlView extends BaseControlView {
     }
 
     @Override
-    public FuPlayer getPlayer() {
+    public Player getPlayer() {
         return mPlayer;
     }
 
     @Override
-    public void setPlayer(FuPlayer player) {
+    public void setPlayer(Player player) {
         if (mPlayer == player) {
             return;
         }
@@ -436,11 +435,11 @@ public class DefaultControlView extends BaseControlView {
 
     protected void updateRepeatViewResource(@NonNull ImageButton imageButton, int repeatMode) {
         switch (repeatMode) {
-            case FuPlayer.REPEAT_MODE_ONE:
+            case Player.REPEAT_MODE_ONE:
                 imageButton.setImageResource(R.drawable.fu_ic_repeat_one);
                 imageButton.setContentDescription("");
                 break;
-            case FuPlayer.REPEAT_MODE_ALL:
+            case Player.REPEAT_MODE_ALL:
                 imageButton.setImageResource(R.drawable.fu_ic_repeat_all);
                 imageButton.setContentDescription("");
                 break;
@@ -617,7 +616,7 @@ public class DefaultControlView extends BaseControlView {
         if (!isInShowState()) {
             return false;
         }
-        if (mPlayer.getPlaybackState() == FuPlayer.STATE_READY && !mPlayer.getPlayWhenReady()) {
+        if (mPlayer.getPlaybackState() == Player.STATE_READY && !mPlayer.getPlayWhenReady()) {
             return true;
         }
         return false;
@@ -628,13 +627,13 @@ public class DefaultControlView extends BaseControlView {
             return false;
         }
         switch (mPlayer.getPlaybackState()) {
-            case FuPlayer.STATE_IDLE:
+            case Player.STATE_IDLE:
                 return !mHideInError && mPlayer.getPlayerError() != null;
-            case FuPlayer.STATE_BUFFERING:
+            case Player.STATE_BUFFERING:
                 return !mHideInBuffering;
-            case FuPlayer.STATE_READY:
+            case Player.STATE_READY:
                 return true;
-            case FuPlayer.STATE_ENDED:
+            case Player.STATE_ENDED:
                 return !mHideInEnded;
             default:
                 return false;
@@ -655,8 +654,8 @@ public class DefaultControlView extends BaseControlView {
 
     protected boolean isPlaying() {
         return mPlayer != null
-                && mPlayer.getPlaybackState() != FuPlayer.STATE_ENDED
-                && mPlayer.getPlaybackState() != FuPlayer.STATE_IDLE
+                && mPlayer.getPlaybackState() != Player.STATE_ENDED
+                && mPlayer.getPlaybackState() != Player.STATE_IDLE
                 && mPlayer.getPlayWhenReady();
     }
 
@@ -672,7 +671,7 @@ public class DefaultControlView extends BaseControlView {
             return;
         }
         if (!mPlayer.getPlayWhenReady()) {
-            if (mPlayer.getPlaybackState() == FuPlayer.STATE_ENDED) {
+            if (mPlayer.getPlaybackState() == Player.STATE_ENDED) {
                 mPlayer.seekTo(0);
             }
             mPlayer.setPlayWhenReady(true);
@@ -812,7 +811,7 @@ public class DefaultControlView extends BaseControlView {
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS;
     }
 
-    protected class PlayerEventsHandler implements FuPlayer.Listener {
+    protected class PlayerEventsHandler implements Player.Listener {
         @Override
         public void onTimelineChanged(Timeline timeline, int reason) {
             FuLog.d(TAG, "onTimelineChanged : timeline=" + timeline + ",reason=" + reason);

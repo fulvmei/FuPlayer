@@ -1,13 +1,13 @@
 package com.chengfu.android.fuplayer.ui;
 
-import com.chengfu.android.fuplayer.FuPlayer;
+import com.google.android.exoplayer2.Player;
 
 import java.util.Formatter;
 import java.util.Locale;
 
 public class DefaultProgressAdapter implements ProgressAdapter {
 
-    private FuPlayer player;
+    private Player player;
     private StringBuilder mFormatBuilder;
     private Formatter mFormatter;
 
@@ -18,12 +18,12 @@ public class DefaultProgressAdapter implements ProgressAdapter {
     }
 
     @Override
-    public FuPlayer getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
     @Override
-    public void setPlayer(FuPlayer player) {
+    public void setPlayer(Player player) {
         this.player = player;
     }
 

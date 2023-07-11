@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.chengfu.android.fuplayer.FuPlayer;
 import com.chengfu.android.fuplayer.util.FuLog;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.Cue;
@@ -55,7 +54,7 @@ public class FuPlayerView extends FrameLayout implements PlayerHolder {
     private ImageView shutterView;
     private SubtitleView subtitleView;
 
-    private FuPlayer mPlayer;
+    private Player mPlayer;
     private PlayerEventsHandler playerEventsHandler;
 
     private int mTextureViewRotation;
@@ -122,8 +121,8 @@ public class FuPlayerView extends FrameLayout implements PlayerHolder {
 
     private void updateScreenOn() {
         boolean keepScreenOn = false;
-        if (mPlayer != null && mPlayer.getPlaybackState() != FuPlayer.STATE_IDLE
-                && mPlayer.getPlaybackState() != FuPlayer.STATE_ENDED && mPlayer.getPlayWhenReady()) {
+        if (mPlayer != null && mPlayer.getPlaybackState() != Player.STATE_IDLE
+                && mPlayer.getPlaybackState() != Player.STATE_ENDED && mPlayer.getPlayWhenReady()) {
             keepScreenOn = true;
         }
         setKeepScreenOn(keepScreenOn);
@@ -182,18 +181,12 @@ public class FuPlayerView extends FrameLayout implements PlayerHolder {
             mSurfaceContainer.addView(mSurfaceView, 0);
         }
 
-        if (mPlayer != null && mPlayer.getVideoComponent() != null) {
+        if (mPlayer != null) {
             if (mSurfaceView instanceof TextureView) {
-                mPlayer.getVideoComponent().setVideoTextureView((TextureView) mSurfaceView);
+                mPlayer.setVideoTextureView((TextureView) mSurfaceView);
             } else if (mSurfaceView instanceof SurfaceView) {
-                mPlayer.getVideoComponent().setVideoSurfaceView((SurfaceView) mSurfaceView);
+                mPlayer.setVideoSurfaceView((SurfaceView) mSurfaceView);
             }
-//            else if (mSurfaceView instanceof SphericalGLSurfaceView) {
-//                ((SphericalGLSurfaceView) mSurfaceView).setVideoComponent(mPlayer.getVideoComponent());
-//            } else if (mSurfaceView instanceof VideoDecoderGLSurfaceView) {
-//                mPlayer.getVideoComponent().setVideoDecoderOutputBufferRenderer(
-//                        ((VideoDecoderGLSurfaceView) mSurfaceView).getVideoDecoderOutputBufferRenderer());
-//            }
         }
 
         FuLog.i(TAG, "setSurfaceView : surfaceType : " + (mSurfaceView == null ? "None" : mSurfaceView.getClass().getSimpleName()));
@@ -224,14 +217,14 @@ public class FuPlayerView extends FrameLayout implements PlayerHolder {
     }
 
     /**
-     * Switches the view targeted by a given {@link FuPlayer}.
+     * Switches the view targeted by a given {@link Player}.
      *
      * @param player        The player whose target view is being switched.
      * @param oldPlayerView The old view to detach from the player.
      * @param newPlayerView The new view to attach to the player.
      */
     public static void switchTargetView(
-            FuPlayer player, @Nullable FuPlayerView oldPlayerView, @Nullable FuPlayerView newPlayerView) {
+            Player player, @Nullable FuPlayerView oldPlayerView, @Nullable FuPlayerView newPlayerView) {
         if (oldPlayerView == newPlayerView) {
             return;
         }
@@ -252,25 +245,25 @@ public class FuPlayerView extends FrameLayout implements PlayerHolder {
      */
     @Override
     @Nullable
-    public FuPlayer getPlayer() {
+    public Player getPlayer() {
         return mPlayer;
     }
 
     /**
-     * Set the {@link FuPlayer} to use.
+     * Set the {@link Player} to use.
      *
-     * <p>To transition a {@link FuPlayer} from targeting one view to another, it's recommended to use
-     * {@link #switchTargetView(FuPlayer, FuPlayerView, FuPlayerView)} rather than this method. If you do
+     * <p>To transition a {@link Player} from targeting one view to another, it's recommended to use
+     * {@link #switchTargetView(Player, FuPlayerView, FuPlayerView)} rather than this method. If you do
      * wish to use this method directly, be sure to attach the player to the new view <em>before</em>
      * calling {@code setPlayer(null)} to detach it from the old one. This ordering is significantly
      * more efficient and may allow for more seamless transitions.
      *
-     * @param player The {@link FuPlayer} to use, or {@code null} to detach the current player. Only
+     * @param player The {@link Player} to use, or {@code null} to detach the current player. Only
      *               players which are accessed on the main thread are supported ({@code
      *               player.getApplicationLooper() == Looper.getMainLooper()}).
      */
     @Override
-    public void setPlayer(@Nullable FuPlayer player) {
+    public void setPlayer(@Nullable Player player) {
         Assertions.checkState(Looper.myLooper() == Looper.getMainLooper());
         Assertions.checkArgument(
                 player == null || player.getApplicationLooper() == Looper.getMainLooper());

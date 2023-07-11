@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.chengfu.android.fuplayer.FuPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Timeline;
 
@@ -21,7 +20,7 @@ public class SampleErrorView extends BaseStateView {
     protected boolean showInDetachPlayer;
 
     public interface OnReplayListener {
-        boolean onReplay(FuPlayer player);
+        boolean onReplay(Player player);
     }
 
     public SampleErrorView(@NonNull Context context) {
@@ -79,20 +78,20 @@ public class SampleErrorView extends BaseStateView {
         if (player == null) {
             return showInDetachPlayer;
         }
-        if (player.getPlaybackState() == FuPlayer.STATE_IDLE && player.getPlayerError() != null) {
+        if (player.getPlaybackState() == Player.STATE_IDLE && player.getPlayerError() != null) {
             return true;
         }
         return false;
     }
 
     @Override
-    protected void onAttachedToPlayer(@NonNull FuPlayer player) {
+    protected void onAttachedToPlayer(@NonNull Player player) {
         player.addListener(componentListener);
         updateVisibility();
     }
 
     @Override
-    protected void onDetachedFromPlayer(@NonNull FuPlayer player) {
+    protected void onDetachedFromPlayer(@NonNull Player player) {
         player.removeListener(componentListener);
         updateVisibility();
     }
