@@ -24,6 +24,11 @@ android {
 }
 
 dependencies {
+    api 'com.google.android.exoplayer:exoplayer-dash:'+exolayerVersion
+    api 'com.google.android.exoplayer:exoplayer-hls:'+exolayerVersion
+    api 'com.google.android.exoplayer:exoplayer-rtsp:'+exolayerVersion
+    api 'com.google.android.exoplayer:exoplayer-smoothstreaming:'+exolayerVersion
+    api 'com.google.android.exoplayer:extension-rtmp:'+exolayerVersion
     implementation 'androidx.annotation:annotation:'+androidxAnnotation
     implementation 'androidx.media:media:'+androidxMedia
     compileOnly 'org.checkerframework:checker-qual:3.12.0'
