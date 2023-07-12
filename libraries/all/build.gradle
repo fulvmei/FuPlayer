@@ -1,0 +1,13 @@
+apply from: "$gradle.ext.projectSettingsDir/common_library_config.gradle"
+
+dependencies {
+    api project(':libraries:core')
+    api project(':libraries:ui')
+}
+
+ext {
+    releaseArtifactId = 'ui'
+    releaseName = 'Media All module'
+}
+
+apply from: '../../publish.gradle'

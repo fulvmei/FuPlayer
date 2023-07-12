@@ -1,0 +1,14 @@
+apply from: "$gradle.ext.projectSettingsDir/common_library_config.gradle"
+
+dependencies {
+    api 'com.google.android.exoplayer:exoplayer-core:'+exolayerVersion
+    api 'com.google.android.exoplayer:exoplayer-transformer:'+exolayerVersion
+    implementation 'androidx.media:media:'+androidxMedia
+}
+
+ext {
+    releaseArtifactId = 'core'
+    releaseName = 'Media Core module'
+}
+
+apply from: '../../publish.gradle'

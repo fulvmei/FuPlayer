@@ -1,8 +1,25 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 rootProject.name = "FuPlayer"
 include ':demo'
-include ':library:all'
-include ':library:core'
-include ':library:ui'
+include ':libraries:all'
+include ':libraries:core'
+include ':libraries:ui'
 
-
-
+def rootDir = file(".")
+if (!gradle.ext.has('projectSettingsDir')) {
+    gradle.ext.projectSettingsDir = rootDir.getCanonicalPath()
+}

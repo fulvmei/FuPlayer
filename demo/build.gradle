@@ -47,7 +47,7 @@ dependencies {
     }
 
 //    implementation project(':extensions:exo')
-    implementation project(':library:all')
-    implementation project(':library:core')
-    implementation project(':library:ui')
+    implementation project(':libraries:all')
+    implementation project(':libraries:core')
+    implementation project(':libraries:ui')
 }

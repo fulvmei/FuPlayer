@@ -1,16 +1,17 @@
 project.ext {
-    releaseVersion = '2.0.0-alpha01'
-    releaseVersionCode = 19
-    fuplayerPublishEnabled = true
-    publicForTest = true
+    //Release
+    releaseVersion = '2.0.0-alpha03'
+    releaseVersionCode = 20
 
-    minSdkVersion = 17
-    targetSdkVersion = 30
+    //Project
     compileSdkVersion = 30
+    minSdkVersion = 21
+    targetSdkVersion = 30
+
     buildToolsVersion = "30.0.3"
     supportLibraryVersion = '28.0.0'
 
-//    exolayerVersion = '2.16.1'
+    //ExoPlayer
     exolayerVersion = '2.18.1'
 
     androidxAnnotation='1.4.0'
