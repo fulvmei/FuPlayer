@@ -7,20 +7,6 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <com.chengfu.android.fuplayer.ui.DefaultTimeBar
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/secondaryColor"
-        app:bar_height="20dp"
-        app:touch_target_height="100dp"
-        app:ad_marker_width="100dp"
-        app:played_color="#ff0000"
-        app:scrubber_color="#453245"
-        app:buffered_color="#45ff7865"
-        app:unplayed_color="#333333"
-        app:scrubber_drawable="@drawable/fu_ic_notification"
-        app:bar_gravity="bottom"/>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"

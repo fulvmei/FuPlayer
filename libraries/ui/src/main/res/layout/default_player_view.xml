@@ -19,10 +19,6 @@
             android:layout_height="match_parent"
             android:contentDescription="@string/fu_shutter" />
 
-        <com.chengfu.android.fuplayer.ui.SubtitleView
-            android:id="@+id/subtitleView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
     </com.chengfu.android.fuplayer.ui.AspectRatioFrameLayout>
 
     <FrameLayout

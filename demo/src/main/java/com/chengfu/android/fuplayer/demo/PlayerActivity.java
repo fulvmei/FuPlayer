@@ -15,7 +15,6 @@ import com.bumptech.glide.Glide;
 import com.chengfu.android.fuplayer.demo.bean.Media;
 import com.chengfu.android.fuplayer.ui.BaseControlView;
 import com.chengfu.android.fuplayer.ui.DefaultControlView;
-import com.chengfu.android.fuplayer.ui.DefaultTimeBar;
 import com.chengfu.android.fuplayer.ui.FuPlayerView;
 import com.chengfu.android.fuplayer.ui.SampleBufferingView;
 import com.chengfu.android.fuplayer.ui.SampleEndedView;
@@ -25,7 +24,6 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.MediaMetadata;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
@@ -261,11 +259,6 @@ public class PlayerActivity extends AppCompatActivity {
 
         onOrientationChanged(getResources().getConfiguration().orientation);
 
-
-        DefaultTimeBar timeBar = findViewById(R.id.timeBar);
-
-        timeBar.setPosition(30000);
-        timeBar.setDuration(60000);
     }
 
 //    private final Runnable runnable = () -> {

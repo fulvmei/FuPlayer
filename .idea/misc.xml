@@ -8,7 +8,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/demo/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/demo/src/main/res/layout/activity_player.xml" value="0.13597376387487387" />
         <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/demo/src/main/res/layout/item_group.xml" value="0.12273550724637682" />
+        <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/libraries/ui/src/main/res/layout/default_player_view.xml" value="0.11251261352169525" />
         <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_fast_forward.xml" value="0.102" />
         <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_fast_rewind.xml" value="0.102" />
         <entry key="..\:/ChengFu/AndroidStudioProjects/FuPlayer/library/ui/src/main/res/drawable/fu_ic_pause.xml" value="0.102" />

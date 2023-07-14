@@ -53,7 +53,6 @@ public class FuPlayerView extends FrameLayout implements PlayerHolder {
     private AspectRatioFrameLayout mSurfaceContainer;
     private View mSurfaceView;
     private ImageView shutterView;
-    private SubtitleView subtitleView;
 
     private Player mPlayer;
     private PlayerEventsHandler playerEventsHandler;
@@ -97,11 +96,6 @@ public class FuPlayerView extends FrameLayout implements PlayerHolder {
         mUnderlayView = findViewById(R.id.underlay);
         mSurfaceContainer = findViewById(R.id.surface_container);
         shutterView = findViewById(R.id.view_shutter);
-        subtitleView = findViewById(R.id.subtitleView);
-        if (subtitleView != null) {
-            subtitleView.setUserDefaultStyle();
-            subtitleView.setUserDefaultTextSize();
-        }
 
         setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
 
@@ -281,9 +275,7 @@ public class FuPlayerView extends FrameLayout implements PlayerHolder {
                 }
             }
         }
-        if (subtitleView != null) {
-            subtitleView.setCues(null);
-        }
+
         mPlayer = player;
         if (player != null) {
             if (player.isCommandAvailable(COMMAND_SET_VIDEO_SURFACE)) {
@@ -292,9 +284,6 @@ public class FuPlayerView extends FrameLayout implements PlayerHolder {
                 } else if (mSurfaceView instanceof SurfaceView) {
                     player.setVideoSurfaceView((SurfaceView) mSurfaceView);
                 }
-            }
-            if (subtitleView != null && player.isCommandAvailable(COMMAND_GET_TEXT)) {
-                subtitleView.setCues(player.getCurrentCues().cues);
             }
             player.addListener(playerEventsHandler);
         }
