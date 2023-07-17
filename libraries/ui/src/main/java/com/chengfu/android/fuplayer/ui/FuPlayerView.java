@@ -21,16 +21,11 @@ import android.widget.ImageView;
 
 import com.chengfu.android.fuplayer.util.FuLog;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.text.Cue;
-import com.google.android.exoplayer2.text.CueGroup;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.video.VideoDecoderGLSurfaceView;
 import com.google.android.exoplayer2.video.VideoSize;
 import com.google.android.exoplayer2.video.spherical.SphericalGLSurfaceView;
 
-import java.util.List;
-
-import static com.google.android.exoplayer2.Player.COMMAND_GET_TEXT;
 import static com.google.android.exoplayer2.Player.COMMAND_SET_VIDEO_SURFACE;
 
 public class FuPlayerView extends FrameLayout implements PlayerHolder {

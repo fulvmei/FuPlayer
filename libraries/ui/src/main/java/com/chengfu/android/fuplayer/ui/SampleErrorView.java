@@ -78,10 +78,7 @@ public class SampleErrorView extends BaseStateView {
         if (player == null) {
             return showInDetachPlayer;
         }
-        if (player.getPlaybackState() == Player.STATE_IDLE && player.getPlayerError() != null) {
-            return true;
-        }
-        return false;
+        return player.getPlaybackState() == Player.STATE_IDLE && player.getPlayerError() != null;
     }
 
     @Override
@@ -116,7 +113,7 @@ public class SampleErrorView extends BaseStateView {
         }
 
         @Override
-        public void onTimelineChanged(Timeline timeline, int reason) {
+        public void onTimelineChanged(@NonNull Timeline timeline, int reason) {
             updateVisibility();
         }
     }

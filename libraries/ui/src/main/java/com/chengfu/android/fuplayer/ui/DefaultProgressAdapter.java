@@ -8,8 +8,8 @@ import java.util.Locale;
 public class DefaultProgressAdapter implements ProgressAdapter {
 
     private Player player;
-    private StringBuilder mFormatBuilder;
-    private Formatter mFormatter;
+    private final StringBuilder mFormatBuilder;
+    private final Formatter mFormatter;
 
 
     public DefaultProgressAdapter() {
@@ -29,17 +29,17 @@ public class DefaultProgressAdapter implements ProgressAdapter {
 
     @Override
     public boolean isCurrentWindowSeekable() {
-        return player != null && player.isCurrentWindowSeekable();
+        return player != null && player.isCurrentMediaItemSeekable();
     }
 
     @Override
     public boolean isCurrentWindowDynamic() {
-        return player != null && player.isCurrentWindowDynamic();
+        return player != null && player.isCurrentMediaItemDynamic();
     }
 
     @Override
     public boolean isCurrentWindowLive() {
-        return player != null && player.isCurrentWindowLive();
+        return player != null && player.isCurrentMediaItemLive();
     }
 
     @Override

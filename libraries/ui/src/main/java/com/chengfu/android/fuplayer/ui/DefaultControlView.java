@@ -398,11 +398,11 @@ public class DefaultControlView extends BaseControlView {
         boolean enableFastForward = false;
         boolean enableNext = false;
         if (mPlayer != null) {
-            enableSeeking = mPlayer.isCurrentWindowSeekable();
-            enablePrevious = mPlayer.hasPreviousWindow();
+            enableSeeking = mPlayer.isCurrentMediaItemSeekable();
+            enablePrevious = mPlayer. hasPreviousMediaItem();
             enableRewind = mPlayer.isCommandAvailable(COMMAND_SEEK_BACK);
             enableFastForward = mPlayer.isCommandAvailable(COMMAND_SEEK_FORWARD);
-            enableNext = mPlayer.hasNextWindow();
+            enableNext = mPlayer.hasNextMediaItem();
         }
 
         setViewEnabled(enablePrevious, mSkipPrevious);
@@ -695,14 +695,14 @@ public class DefaultControlView extends BaseControlView {
     }
 
     protected void seekToPreviousWindow() {
-        if (mPlayer == null || !mPlayer.hasPreviousWindow()) {
+        if (mPlayer == null || !mPlayer.hasPreviousMediaItem()) {
             return;
         }
         mPlayer.seekToPreviousMediaItem();
     }
 
     protected void seekToNextWindow() {
-        if (mPlayer == null || !mPlayer.hasNextWindow()) {
+        if (mPlayer == null || !mPlayer.hasNextMediaItem()) {
             return;
         }
         mPlayer.seekToNextMediaItem();
@@ -813,7 +813,7 @@ public class DefaultControlView extends BaseControlView {
 
     protected class PlayerEventsHandler implements Player.Listener {
         @Override
-        public void onTimelineChanged(Timeline timeline, int reason) {
+        public void onTimelineChanged(@NonNull Timeline timeline, int reason) {
             FuLog.d(TAG, "onTimelineChanged : timeline=" + timeline + ",reason=" + reason);
             updateNavigation();
             updateProgress();
@@ -857,7 +857,7 @@ public class DefaultControlView extends BaseControlView {
         }
 
         @Override
-        public void onPositionDiscontinuity(Player.PositionInfo oldPosition, Player.PositionInfo newPosition, int reason) {
+        public void onPositionDiscontinuity(@NonNull Player.PositionInfo oldPosition, @NonNull Player.PositionInfo newPosition, int reason) {
             updateNavigation();
         }
 
