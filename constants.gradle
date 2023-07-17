@@ -1,7 +1,7 @@
 project.ext {
     //Release
-    releaseVersion = '2.0.0-alpha04'
-    releaseVersionCode = 21
+    releaseVersion = '2.0.0'
+    releaseVersionCode = 22
 
     //Project
     compileSdkVersion = 31
